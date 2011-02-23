@@ -5,7 +5,8 @@
 #######################################
 
 
-PROG = ppmtopgm pxmtopxm pgmtopgm
+#PROG = ppmtopgm pxmtopxm pgmtopgm
+PROG = pgmtopgm
 
 all : $(PROG)
 
