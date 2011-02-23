@@ -1,0 +1,21 @@
+Exercicio 1:
+
+1. Test pxmtopxm on test.pbm. What kind of conversion is performed ?
+
+It converts the file from format P1 to P2, which are PBM and PGM
+
+2. How is the image stored in the program ?
+
+The image is stored as a char vector (typedef bit)
+
+3. What is the purpose of the functions pm_getc and pm_getint in the file
+Util.c ?
+
+pm_getc returns a valid character from a file, which is a not in a commented line
+pm_getint read char from a file and return as an integer
+
+4. What data types are involved when manipulating intensities ? in the case
+of ASCII decimals (P1, P2, P3) ? in the case of binary values (P4, P5,
+P6) ?
+
+
