@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Util.h"
+#include "math.h"
 
 
 /** Code for histogram:raquel **/
@@ -44,10 +45,17 @@ int getMax(gray* graymap){
 	return val;
 }
 
-void generateHistogramValues(char * title, gray* graymap){
-	//printf("\ndimensions: rows:%d columns:%d\n",rows,cols);
+int getcdfMin(int * valueshisto){
+	for(int i=0; i < 256; i++)
+		if (valueshisto[i] > 0 )
+			return valueshisto[i];
+	return 0;
+}
 
-	int valueshisto[256];
+int * generateHistogramValues(char * title, gray* graymap){
+	//printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
+
+	int * valueshisto=(int *) malloc(256*sizeof(int));
 	int value;
 
 	//initializing the array
@@ -62,33 +70,125 @@ void generateHistogramValues(char * title, gray* graymap){
 		}
 
 	//printing the values of the Histogram
-	//printArray(title, rows, cols, valueshisto);
+	//printArray(title, valueshisto);
 
+	return valueshisto;
 }
 
-gray * stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gray* graymap){
+void stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gray* graymap){
 	double actualRangeMin=(double) getMin(graymap);
 	double actualRangeMax=(double) getMax(graymap);
-
-	//printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
+	//printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f\n",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
 
 	double constant = ( (newRangeMax-newRangeMin) / (actualRangeMax-actualRangeMin) );
-
-	//printf("\nconstant:%3.4f\n",constant);
 
 	gray* graymap_strechted;
 	graymap_strechted = (gray *) malloc(cols * rows * sizeof(gray));
 
+	//performing the stretching
+	//formula: y[n] = newRangeMin + (newRangeMax-newRangeMin / actualRangeMax-actualRangeMin) * (x[n]-actuanRangeMin)
 	for(int i=0; i < rows; i++)
 		for(int j=0; j < cols ; j++){
 			graymap_strechted[i * cols + j] = newRangeMin + (constant*(graymap[i * cols + j]-actualRangeMin) );
 		}
 
-	//generate histogram
+	//generate histogram of the new image
 	generateHistogramValues(title, graymap_strechted);
 	
-	return graymap_strechted; 
-	//free(graymap_strechted);
+	//write the image on the screen
+	displayImageFile(graymap_strechted);
+
+	free(graymap_strechted);
+}
+
+void equalizingHistogram(char * title, gray* graymap, int* valueshisto){
+	gray* graymap_equalized;
+	graymap_equalized = (gray *) malloc(cols * rows * sizeof(gray));
+
+	//acumulating the histogram
+	for(int i=1;i<256;i++)
+		valueshisto[i]=valueshisto[i]+valueshisto[i-1];
+	//printArray("\n\nCumulative distribution function\n\n",valueshisto);
+
+
+	double cdfMin=(double) getcdfMin(valueshisto); //cdf=cumulative distribution function
+	double constant = ( 255.00 / ((rows*cols)-cdfMin) );
+
+	//performing the equalization
+	//formula: h(v) = round ( (cfd(v)-cdfmin / (MxN)-cdfmin) x (L-1) )
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++){
+			graymap_equalized[i * cols + j] = round( (valueshisto[graymap[i * cols + j]] - cdfMin) * constant);
+		}
+
+
+	//generate histogram of the new image
+	generateHistogramValues(title, graymap_equalized);
+
+
+	//write the image on the screen
+	displayImageFile(graymap_equalized);
+	
+	free(graymap_equalized);
+}
+
+gray * readimage_int(int argc, char* argv[]){
+    FILE* ifp;
+    gray* imagemap;
+    int ich1, ich2;
+    int pgmraw;
+    int j,i ;
+
+    /* Test des arguments */
+    if ( argc != 2 ){
+      printf("\nUsage : %s fichier \n\n", argv[0]);
+      exit(0);
+    }
+
+    /* Ouverture */
+    ifp = fopen(argv[1],"r");
+    if (ifp == NULL) {
+      printf("erreur d'ouverture du fichier %s\n", argv[1]);
+      exit(1);
+    }
+
+    /* Lecture du Magic number */
+    ich1 = getc( ifp );
+    if ( ich1 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    ich2 = getc( ifp );
+    if ( ich2 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    if(ich2 != '2' && ich2 != '5')
+      pm_erreur(" mauvais type de fichier ");
+    else
+      if(ich2 == '2')
+	pgmraw = 1;
+      else pgmraw = 0;
+
+    /* Lecture des dimensions */
+    cols = pm_getint( ifp );
+    rows = pm_getint( ifp );
+    maxval = pm_getint( ifp );
+
+    /* Allocation memoire  */
+    imagemap = (gray *) malloc(cols * rows * sizeof(gray));
+
+    
+    if(pgmraw){
+    /* Convertendo para Plaintext */
+    /* Lecture */
+	    for(i=0; i < rows; i++)
+	      for(j=0; j < cols ; j++)
+		imagemap[i * cols + j] = pm_getint(ifp);
+
+    }else { 
+        printf("Invalid file type");
+        exit(1);
+    }
+      /* fermeture */
+      fclose(ifp);
+      return imagemap;
 }
 
 /** Code for histogram:end **/
@@ -275,7 +375,6 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
        minMax(tmpImage,findMin(tmpImage,size),findMax(tmpImage,size),0,255,size);
        return tmpImage;
 }
-gray* image_strectched;
 
 double* binomialfilter()
 {
@@ -299,7 +398,7 @@ double* binomialfilter()
 
 int main(int argc, char* argv[]){
 
-	double* image;
+/*	double* image;
 	double *kernel;
 
 
@@ -307,23 +406,26 @@ int main(int argc, char* argv[]){
 	image=readimage(argc,argv);
 	image=ApplyConvolution(3, kernel, image, lrows, lcols);
 	printimage(image,lcols,lrows,lmaxval);
- 
-	//****** RAQUEL *******//
-	//generate histogram
-	//generateHistogramValues("\nHistogram's values\n\n",image);
-	//displayImageFile(image);
-	//generate histogram
-	//generateHistogramValues(rows,cols,ifp);
+	free(image);
+*/ 
+//****** RAQUEL *************//
+int * valueshisto;
+gray * image_int;
+image_int=readimage_int(argc,argv);
 
-	//histogram stretching
-	//image_strectched=stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image);
+//write the image on the screen
+//displayImageFile(image_int);
+	
+//generate histogram
+valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
 
-	//write the image on the screen
-	//displayImageFile(image_strectched);
+//histogram stretching
+//stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image_int);
 
-	//free(image);
-	//free(image_strectched);
-	return 0;
+//histogram equalization
+equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
+
+free(image_int);
+return 0;
 
 }
-
