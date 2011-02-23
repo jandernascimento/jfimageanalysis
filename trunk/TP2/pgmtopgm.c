@@ -4,8 +4,49 @@
 
 
 /** Code for histogram:raquel **/
+int rows, cols, maxval;
 
-void generateHistogramValues(int rows, int cols, FILE* ifp){
+void displayImageFile(gray * graymap_strectched){
+	printf("P2\n");
+
+	printf("%d %d \n", cols, rows);
+	printf("%d\n",maxval);
+	   
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++)
+			printf("%u ",graymap_strectched[i * cols + j] );
+}
+
+void printArray(char * title, int* valueshisto){
+	printf("%s",title);
+
+	for(int i=0; i < 256; i++)
+		printf("value[%d]:%d\n",i,valueshisto[i]);
+}
+
+int getMin(gray* graymap){
+	int val=2147483647;
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++){
+			if (graymap[i * cols + j] < val )
+				val=graymap[i * cols + j];
+		}
+	return val;
+}
+
+int getMax(gray* graymap){
+	int val=0;
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++){
+			if (graymap[i * cols + j] > val )
+				val=graymap[i * cols + j];
+		}
+	return val;
+}
+
+void generateHistogramValues(char * title, gray* graymap){
+	//printf("\ndimensions: rows:%d columns:%d\n",rows,cols);
+
 	int valueshisto[256];
 	int value;
 
@@ -16,22 +57,43 @@ void generateHistogramValues(int rows, int cols, FILE* ifp){
 	//storing the number of pixels of each intensity
 	for(int i=0; i < rows; i++)
 		for(int j=0; j < cols ; j++){
-			value=pm_getint(ifp);
+			value=graymap[i * cols + j];
 			valueshisto[value] = valueshisto[value]++;
 		}
 
 	//printing the values of the Histogram
-	printf("\nHistogram's values\n\n");
-	for(int i=0; i < 256; i++)
-		printf("value[%d]:%d\n",i,valueshisto[i]);
+	//printArray(title, rows, cols, valueshisto);
 
+}
+
+gray * stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gray* graymap){
+	double actualRangeMin=(double) getMin(graymap);
+	double actualRangeMax=(double) getMax(graymap);
+
+	//printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
+
+	double constant = ( (newRangeMax-newRangeMin) / (actualRangeMax-actualRangeMin) );
+
+	//printf("\nconstant:%3.4f\n",constant);
+
+	gray* graymap_strechted;
+	graymap_strechted = (gray *) malloc(cols * rows * sizeof(gray));
+
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++){
+			graymap_strechted[i * cols + j] = newRangeMin + (constant*(graymap[i * cols + j]-actualRangeMin) );
+		}
+
+	//generate histogram
+	generateHistogramValues(title, graymap_strechted);
+	
+	return graymap_strechted; 
+	//free(graymap_strechted);
 }
 
 /** Code for histogram:end **/
 
 /** Code for filtering:jander **/
-
-int rows, cols, maxval;
 
 void printkernel(int dim, double *kernel){
  for(int i=0;i<3;i++){
@@ -173,7 +235,6 @@ gray* readimage(int argc, char* argv[])
     FILE* ifp;
     gray* graymap;
     int ich1, ich2;
-    //int rows, cols, maxval;
     int pgmraw;
     int j,i ;
 
@@ -233,8 +294,8 @@ gray* readimage(int argc, char* argv[])
 /** Code for filtering:end **/
 
 int main(int argc, char* argv[]){
-
 gray* image;
+gray* image_strectched;
 
 double *kernel;
 
@@ -254,13 +315,26 @@ kernel[2*3+2]=1;
 
 image=readimage(argc,argv);
 
-ApplyConvolution(3, kernel, cols, rows, image);
+//ApplyConvolution(3, kernel, cols, rows, image);
 
-printimage(image,cols,rows,maxval);
+//printimage(image,cols,rows,maxval);
  
-    //generate histogram
-    //generateHistogramValues(rows,cols,ifp);
+//****** RAQUEL *************//
+//generate histogram
+generateHistogramValues("\nHistogram's values\n\n",image);
 
-    return 0;
+//write the image on the screen
+//displayImageFile(image);
+
+//histogram stretching
+image_strectched=stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image);
+
+//write the image on the screen
+displayImageFile(image_strectched);
+
+free(image);
+free(image_strectched);
+return 0;
 
 }
+
