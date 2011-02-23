@@ -5,6 +5,28 @@
 
 /** Code for histogram:raquel **/
 
+void generateHistogramValues(int rows, int cols, FILE* ifp){
+	int valueshisto[256];
+	int value;
+
+	//initializing the array
+	for(int i=0; i < 256; i++)
+		valueshisto[i] = 0;
+
+	//storing the number of pixels of each intensity
+	for(int i=0; i < rows; i++)
+		for(int j=0; j < cols ; j++){
+			value=pm_getint(ifp);
+			valueshisto[value] = valueshisto[value]++;
+		}
+
+	//printing the values of the Histogram
+	printf("\nHistogram's values\n\n");
+	for(int i=0; i < 256; i++)
+		printf("value[%d]:%d\n",i,valueshisto[i]);
+
+}
+
 /** Code for histogram:end **/
 
 /** Code for filtering:jander **/
@@ -210,12 +232,50 @@ char* readimage(int argc, char* argv[])
 /** Code for filtering:end **/
 
 int main(int argc, char* argv[]){
-
+/*
 char image[16];
 char kernel[9];
 
 
 ApplyConvolution(&kernel,3,4,4,image);
+*/
 
 
+    FILE* ifp;    
+    int ich1, ich2, maxval, rows, cols;
+
+    /* Test des arguments */
+    if ( argc != 2 ){
+      printf("\nUsage : %s fichier \n\n", argv[0]);
+      exit(0);
+    }
+
+    /* Ouverture */
+    ifp = fopen(argv[1],"r");
+    if (ifp == NULL) {
+      printf("erreur d'ouverture du fichier %s\n", argv[1]);
+      exit(1);
+    }
+
+    /* Lecture du Magic number */
+    ich1 = getc( ifp );
+    if ( ich1 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    ich2 = getc( ifp );
+    if ( ich2 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    if(ich2 != '2' && ich2 != '5')
+      pm_erreur(" mauvais type de fichier ");
+
+    /* Lecture des dimensions */
+    cols   = pm_getint( ifp );
+    rows   = pm_getint( ifp );
+    maxval = pm_getint( ifp );
+
+    //generate histogram
+    generateHistogramValues(rows,cols,ifp);
+
+    /* fermeture */
+    fclose(ifp);
+    return 0;
 }
