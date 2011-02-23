@@ -8,14 +8,14 @@
 /** Code for histogram:end **/
 
 /** Code for filtering:jander **/
-int getPixel(char *image,int width, int height, int x,int y){
+void setPixel(char *image,int width, int height, int x,int y, int value){
 
   if(x>width || y>height){
   	printf("Out of range x:%i y:%i",x,y);
 	exit(1);
   }
 
-  return image[width*y+x];
+  image[width*y+x]=value;
 
 }
 
