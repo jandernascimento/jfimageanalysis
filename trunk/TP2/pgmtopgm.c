@@ -30,10 +30,22 @@ void generateHistogramValues(int rows, int cols, FILE* ifp){
 /** Code for histogram:end **/
 
 /** Code for filtering:jander **/
+
+int rows, cols, maxval;
+
+void printkernel(int dim, double *kernel){
+ for(int i=0;i<3;i++){
+  	for(int j=0;j<3;j++){
+		printf("%f ",kernel[dim*i+j]);
+	}
+	printf("\n");
+  }
+}
+
 void setPixel(char *image,int width, int height, int x,int y, int value){
 
   if(x>width || y>height){
-  	printf("Out of range x:%i y:%i",x,y);
+  	printf("Setpixel: Out of range x:%i y:%i",x,y);
 	exit(1);
   }
 
@@ -44,7 +56,7 @@ void setPixel(char *image,int width, int height, int x,int y, int value){
 int getPixel(char *image,int width, int height, int x,int y){
 
   if(x>width || y>height){
-  	printf("Out of range x:%i y:%i",x,y);
+  	printf("Getpixel: Out of range x:%i y:%i",x,y);
 	exit(1);
   }
 
@@ -78,7 +90,7 @@ void minMax(int* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len
     }
 }
 
-int ApplyConvolution(int dim, double* kernel, int width, int height, char *image){
+int ApplyConvolution(int dim, double* kernel, int width, int height, gray *image){
        int j;  // row    index of the current image
        int i;  // column index of the current image
        int jk; // row    index of the kernel;
@@ -103,9 +115,9 @@ int ApplyConvolution(int dim, double* kernel, int width, int height, char *image
        // convolution computation
        for (j = 0; j < height; j++) {
          for (i = 0; i < width; i++) {
-           newval[0] = 0;
+           //newval[0] = 0;
            newval[1] = 0;
-           newval[2] = 0;
+           //newval[2] = 0;
            for (jk = 0; jk < dim; jk++) {
              for (ik = 0; ik < dim; ik++) {
                int ii = i + ik - kernelCenteri;
@@ -115,8 +127,8 @@ int ApplyConvolution(int dim, double* kernel, int width, int height, char *image
                    // DO ME
  		   //newval[0] += getPixelColorIntensity(ImageAbstraction::red,jj,ii) * (double)(kernel[jk*dim+ik]);
                    //newval[1] += getPixelColorIntensity(ImageAbstraction::green,jj,ii) * (double)(kernel[jk*dim+ik]);
-                   newval[1] += getPixel(image,width,height,ii,jj) * 
-					(double)(kernel[jk*dim+ik]);
+                   newval[1] += ((double)getPixel(image,width,height,ii,jj)) * 
+					((double)kernel[jk*dim+ik]);
                    //newval[2] += getPixelColorIntensity(ImageAbstraction::blue,jj,ii) * (double)(kernel[jk*dim+ik]);
                }
              }
@@ -126,29 +138,44 @@ int ApplyConvolution(int dim, double* kernel, int width, int height, char *image
            //newval[2] = newval[2] / kernelTotalValue;
 
            //tmpImageR[i*height+j] = newval[0];
-           tmpImageG[i*height+j] = newval[1];
+           tmpImageG[j*width+i] = newval[1];
            //tmpImageB[i*height+j] = newval[2];
          }
        }
 
        //minMax(tmpImageR,findMin(tmpImageR,size),findMax(tmpImageR,size),0,255,size);
-       minMax(tmpImageG,findMin(tmpImageG,size),findMax(tmpImageG,size),0,255,size);
+       //minMax(tmpImageG,findMin(tmpImageG,size),findMax(tmpImageG,size),0,255,size);
        //minMax(tmpImageB,findMin(tmpImageB,size),findMax(tmpImageB,size),0,255,size);
        for (int i=0; i<height;++i)
-            for (int j=0;j<width;++j)
+            for (int j=0;j<width;++j){
                 //DO ME
 		//setPixel(i,j,tmpImageR[j*this->height()+i],tmpImageG[j*this->height()+i],tmpImageB[j*this->height()+i]);
-		setPixel(image,width,height,i,j,getPixel(tmpImageG,width,height,i,j));		
+		//setPixel(image,width,height,j,i,getPixel(tmpImageG,width,height,j,i));		
+		setPixel(image,width,height,j,i,tmpImageG[i*width+j]);
+		}
        return 1;
 }
 
-char* readimage(int argc, char* argv[])
+void printimage(gray* image,int cols, int rows, int maxval){
+
+printf("P2\n");
+    printf("%d %d \n", cols, rows);
+    printf("%d\n",maxval);
+
+    for(int i=0; i < rows; i++)
+      for(int j=0; j < cols ; j++)
+	printf("%i ",image[i * cols + j] );
+
+}
+
+gray* readimage(int argc, char* argv[])
     {
     FILE* ifp;
     gray* graymap;
-    int ich1, ich2, rows, cols, maxval, pgmraw,j,i ;
-
-
+    int ich1, ich2;
+    //int rows, cols, maxval;
+    int pgmraw;
+    int j,i ;
 
     /* Test des arguments */
     if ( argc != 2 ){
@@ -174,8 +201,8 @@ char* readimage(int argc, char* argv[])
       pm_erreur(" mauvais type de fichier ");
     else
       if(ich2 == '2')
-	pgmraw = 0;
-      else pgmraw = 1;
+	pgmraw = 1;
+      else pgmraw = 0;
 
     /* Lecture des dimensions */
     cols = pm_getint( ifp );
@@ -191,91 +218,49 @@ char* readimage(int argc, char* argv[])
     /* Lecture */
 	    for(i=0; i < rows; i++)
 	      for(j=0; j < cols ; j++)
-		graymap[i * cols + j] = pm_getrawbyte(ifp);
+		graymap[i * cols + j] = pm_getint(ifp);
 
-      	    printf("P2\n");
-
-	    printf("%d %d \n", cols, rows);
-	    printf("%d\n",maxval);
-	   
-	    for(i=0; i < rows; i++)
-	      for(j=0; j < cols ; j++)
-		printf("%u ",graymap[i * cols + j] );
-
+    }else { 
+        printf("Invalid file type");
+        exit(1);
     }
-/*
-    else {
-    for(i=0; i < rows; i++)
-      for(j=0; j < cols ; j++)
-	graymap[i * cols + j] = pm_getint(ifp);
-
-     printf("P5\n");
-
-	printf("%d %d \n", cols, rows);
-	    printf("%d\n",maxval);
-	   
-	    for(i=0; i < rows; i++)
-	      for(j=0; j < cols ; j++)
-		printf("%i",graymap[i * cols + j] );
-
-    }
-*/
-    
-
-
       /* fermeture */
       fclose(ifp);
-      return 0;
+      return graymap;
 }
 
 
 /** Code for filtering:end **/
 
 int main(int argc, char* argv[]){
-/*
-char image[16];
-char kernel[9];
 
+gray* image;
 
-ApplyConvolution(&kernel,3,4,4,image);
-*/
+double *kernel;
 
+kernel=(double *)malloc(sizeof(double)*9);
 
-    FILE* ifp;    
-    int ich1, ich2, maxval, rows, cols;
+kernel[0*3+0]=1;
+kernel[0*3+1]=2;
+kernel[0*3+2]=1;
 
-    /* Test des arguments */
-    if ( argc != 2 ){
-      printf("\nUsage : %s fichier \n\n", argv[0]);
-      exit(0);
-    }
+kernel[1*3+0]=2;
+kernel[1*3+1]=4;
+kernel[1*3+2]=2;
 
-    /* Ouverture */
-    ifp = fopen(argv[1],"r");
-    if (ifp == NULL) {
-      printf("erreur d'ouverture du fichier %s\n", argv[1]);
-      exit(1);
-    }
+kernel[2*3+0]=1;
+kernel[2*3+1]=2;
+kernel[2*3+2]=1;
 
-    /* Lecture du Magic number */
-    ich1 = getc( ifp );
-    if ( ich1 == EOF )
-        pm_erreur( "EOF / erreur de lecture / nombre magique" );
-    ich2 = getc( ifp );
-    if ( ich2 == EOF )
-        pm_erreur( "EOF / erreur de lecture / nombre magique" );
-    if(ich2 != '2' && ich2 != '5')
-      pm_erreur(" mauvais type de fichier ");
+image=readimage(argc,argv);
 
-    /* Lecture des dimensions */
-    cols   = pm_getint( ifp );
-    rows   = pm_getint( ifp );
-    maxval = pm_getint( ifp );
+ApplyConvolution(3, kernel, cols, rows, image);
 
+printimage(image,cols,rows,maxval);
+ 
     //generate histogram
-    generateHistogramValues(rows,cols,ifp);
+    //generateHistogramValues(rows,cols,ifp);
 
-    /* fermeture */
-    fclose(ifp);
     return 0;
+
 }
