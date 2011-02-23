@@ -63,9 +63,9 @@ int ApplyConvolution(int dim, double* kernel, int width, int height, char *image
        int ik; // column index of the kernel;
        int newval[3]; // new colors
        int size = height*width;
-       int* tmpImageR = (int*)(malloc(sizeof(int)*size)); // separated by colors
+       //int* tmpImageR = (int*)(malloc(sizeof(int)*size)); // separated by colors
        int* tmpImageG = (int*)(malloc(sizeof(int)*size)); // separated by colors
-       int* tmpImageB = (int*)(malloc(sizeof(int)*size)); // separated by colors
+       //int* tmpImageB = (int*)(malloc(sizeof(int)*size)); // separated by colors
        int kernelCenteri; // index of the central column of the kernel
        int kernelCenterj; // index of the central row of the kernel
        double kernelTotalValue;
@@ -101,20 +101,20 @@ int ApplyConvolution(int dim, double* kernel, int width, int height, char *image
            newval[1] = newval[1] / kernelTotalValue;
            newval[2] = newval[2] / kernelTotalValue;
 
-           tmpImageR[i*height+j] = newval[0];
+           //tmpImageR[i*height+j] = newval[0];
            tmpImageG[i*height+j] = newval[1];
-           tmpImageB[i*height+j] = newval[2];
+           //tmpImageB[i*height+j] = newval[2];
          }
        }
 
-       minMax(tmpImageR,findMin(tmpImageR,size),findMax(tmpImageR,size),0,255,size);
+       //minMax(tmpImageR,findMin(tmpImageR,size),findMax(tmpImageR,size),0,255,size);
        minMax(tmpImageG,findMin(tmpImageG,size),findMax(tmpImageG,size),0,255,size);
-       minMax(tmpImageB,findMin(tmpImageB,size),findMax(tmpImageB,size),0,255,size);
+       //minMax(tmpImageB,findMin(tmpImageB,size),findMax(tmpImageB,size),0,255,size);
        for (int i=0; i<height;++i)
             for (int j=0;j<width;++j)
                 //DO ME
 		//setPixel(i,j,tmpImageR[j*this->height()+i],tmpImageG[j*this->height()+i],tmpImageB[j*this->height()+i]);
-
+		setPixel(image,width,height,i,j,getPixel(tmpImageG,width,height,i,j));		
        return 1;
 }
 
