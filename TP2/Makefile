@@ -6,7 +6,7 @@
 
 
 #PROG = ppmtopgm pxmtopxm pgmtopgm
-PROG = pgmtopgm
+PROG = imagetransform
 
 all : $(PROG)
 
@@ -19,7 +19,7 @@ LDFLAGS   =  -g -lm
 pxmtopxm : pxmtopxm.o Util.o
 ppmtopgm : ppmtopgm.o Util.o
 
-pgmtopgm : pgmtopgm.o Util.o
+imagetransform : imagetransform.o Util.o
 
 clean :
 	@rm -f *.o
