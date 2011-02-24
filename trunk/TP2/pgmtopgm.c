@@ -132,23 +132,16 @@ void equalizingHistogram(char * title, gray* graymap, int* valueshisto){
 	free(graymap_equalized);
 }
 
-gray * readimage_int(int argc, char* argv[]){
+gray * readimage_int(char *filepath){
     FILE* ifp;
     gray* imagemap;
     int ich1, ich2;
     int pgmraw;
     int j,i ;
 
-    /* Test des arguments */
-    if ( argc != 2 ){
-      printf("\nUsage : %s fichier \n\n", argv[0]);
-      exit(0);
-    }
-
-    /* Ouverture */
-    ifp = fopen(argv[1],"r");
+    ifp = fopen(filepath,"r");
     if (ifp == NULL) {
-      printf("erreur d'ouverture du fichier %s\n", argv[1]);
+      printf("erreur d'ouverture du fichier %s\n", filepath);
       exit(1);
     }
 
@@ -266,24 +259,22 @@ printf("P2\n");
 
 }
 
-double* readimage(int argc, char* argv[])
+double* readimage(char* filepath)
     {
     FILE* ifp;
     double* imagemap;
     int ich1, ich2;
     int pgmraw;
     int j,i ;
-
-    /* Test des arguments */
+/*
     if ( argc != 2 ){
       printf("\nUsage : %s fichier \n\n", argv[0]);
       exit(0);
     }
-
-    /* Ouverture */
-    ifp = fopen(argv[1],"r");
+*/
+    ifp = fopen(filepath/*argv[1]*/,"r");
     if (ifp == NULL) {
-      printf("erreur d'ouverture du fichier %s\n", argv[1]);
+      printf("erreur d'ouverture du fichier %s\n", filepath);
       exit(1);
     }
 
@@ -376,54 +367,150 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
        return tmpImage;
 }
 
-double* binomialfilter()
+
+double* binomialfilter(int val)
 {
-	double *kernel = (double*)malloc(sizeof(double)*9);
+	double *kernel = (double*)malloc(sizeof(double)*val*val);
+	if(val==3){
+		kernel[0*3+0]=1;
+		kernel[0*3+1]=2;
+		kernel[0*3+2]=1;
 
-	kernel[0*3+0]=1;
-	kernel[0*3+1]=2;
-	kernel[0*3+2]=1;
+		kernel[1*3+0]=2;
+		kernel[1*3+1]=4;
+		kernel[1*3+2]=2;
 
-	kernel[1*3+0]=2;
-	kernel[1*3+1]=4;
-	kernel[1*3+2]=2;
+		kernel[2*3+0]=1;
+		kernel[2*3+1]=2;
+		kernel[2*3+2]=1;
+		return kernel;
+	}else{
+		kernel[0*3+0]=1;
+		kernel[0*3+1]=4;
+		kernel[0*3+2]=6;
+		kernel[0*3+3]=4;
+		kernel[0*3+4]=1;
 
-	kernel[2*3+0]=1;
-	kernel[2*3+1]=2;
-	kernel[2*3+2]=1;
-	return kernel;
+		kernel[1*3+0]=4;
+		kernel[1*3+1]=16;
+		kernel[1*3+2]=24;
+		kernel[1*3+3]=16;
+		kernel[1*3+4]=4;
+
+		kernel[2*3+0]=6;
+		kernel[2*3+1]=24;
+		kernel[2*3+2]=36;
+		kernel[2*3+3]=24;
+		kernel[2*3+4]=6;
+
+		kernel[3*3+0]=4;
+		kernel[3*3+1]=16;
+		kernel[3*3+2]=24;
+		kernel[3*3+3]=16;
+		kernel[3*3+4]=4;
+
+		kernel[4*3+0]=1;
+		kernel[4*3+1]=4;
+		kernel[4*3+2]=6;
+		kernel[4*3+3]=4;
+		kernel[4*3+4]=1;
+
+		return kernel;
+	}
+	exit(-1);
+	//return kernel;
 }
 
 /** Code for filtering:end **/
 
+
+char* getStrParam(int argc,char* argv[],char* param,char* def){
+
+	for(int i=0;i<argc;i++){
+		if(strcmp(param,argv[i])==0){ 
+			if(argv[i+1][0]=='-') return def;
+			return argv[i+1];
+		}
+	}
+
+	return def;
+
+}
+
+int getBoolParam(int argc,char* argv[],char* param){
+
+	for(int i=0;i<argc;i++){
+		if(strcmp(param,argv[i])==0){ 
+			return 1;
+		}
+	}
+
+	return 0;
+
+}
+
+int getIntParam(int argc,char* argv[],char* param,char* def){
+    char* res=getStrParam(argc,argv,param,def);
+    
+    int val=0;
+ 
+    for(int i=0;i<strlen(res);i++){
+      	if(res[0]=='-') continue;
+	val+=pow(10,(strlen(res)-i-1))*(res[i]-'0'); 
+    }
+
+    return res[0]=='-'?-1*val:val;
+}
+
 int main(int argc, char* argv[]){
-
-/*	double* image;
-	double *kernel;
-
-
-	kernel=binomialfilter();
-	image=readimage(argc,argv);
-	image=ApplyConvolution(3, kernel, image, lrows, lcols);
-	printimage(image,lcols,lrows,lmaxval);
-	free(image);
-*/ 
-//****** RAQUEL *************//
-int * valueshisto;
-gray * image_int;
-image_int=readimage_int(argc,argv);
-
-//write the image on the screen
-//displayImageFile(image_int);
 	
-//generate histogram
-valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
+	int help=getBoolParam(argc,argv,"--help");
+	int isfilter=getBoolParam(argc,argv,"-b");
+	int ishist=getBoolParam(argc,argv,"-h");
+	int isstretch=getBoolParam(argc,argv,"-s");
+	int isequa=getBoolParam(argc,argv,"-e");
+	
+	char *intfilepath=getStrParam(argc,argv,"-f","");
 
-//histogram stretching
-//stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image_int);
+	int * valueshisto;
+	gray * image_int;
 
-//histogram equalization
-equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
+	if(ishist|isstretch|isequa) image_int=readimage_int(intfilepath);
+
+	if(isfilter){
+		int bin=getIntParam(argc,argv,"-b","0");
+		int nr=getIntParam(argc,argv,"-n","1");
+		char *filepath=getStrParam(argc,argv,"-f","");
+		if(bin!=0){	
+			double* image;
+			double *kernel;
+
+			kernel=binomialfilter(bin);
+			image=readimage(filepath);
+			
+			for(int x=0;x<nr;x++){
+				image=ApplyConvolution(3, kernel, image, lrows, lcols);
+			}
+			printimage(image,lcols,lrows,lmaxval);
+				
+			}
+	}else if(ishist){
+		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
+	}else if(isstretch){
+		stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image_int);
+	}else if(isequa){
+		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
+	}else{
+		printf("Usage: cmd [OPTIONS]\n");	
+		printf("OPTIONS: \n");	
+		printf("-b N: binomial filter with size N\n");	
+		printf("-f S: input file\n");	
+		printf("-n N: number of times that the filter will be applyed\n");	
+		printf("-h: Histogram\n");	
+		printf("-e: Equalization\n");	
+		printf("-s: Stretching\n");
+		exit(0);	
+	}
 
 free(image_int);
 return 0;
