@@ -53,7 +53,7 @@ int getcdfMin(int * valueshisto){
 }
 
 int * generateHistogramValues(char * title, gray* graymap){
-	//printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
+	printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
 
 	int * valueshisto=(int *) malloc(256*sizeof(int));
 	int value;
@@ -70,7 +70,7 @@ int * generateHistogramValues(char * title, gray* graymap){
 		}
 
 	//printing the values of the Histogram
-	//printArray(title, valueshisto);
+	printArray(title, valueshisto);
 
 	return valueshisto;
 }
@@ -78,7 +78,7 @@ int * generateHistogramValues(char * title, gray* graymap){
 void stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gray* graymap){
 	double actualRangeMin=(double) getMin(graymap);
 	double actualRangeMax=(double) getMax(graymap);
-	//printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f\n",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
+	printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f\n",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
 
 	double constant = ( (newRangeMax-newRangeMin) / (actualRangeMax-actualRangeMin) );
 
@@ -108,7 +108,7 @@ void equalizingHistogram(char * title, gray* graymap, int* valueshisto){
 	//acumulating the histogram
 	for(int i=1;i<256;i++)
 		valueshisto[i]=valueshisto[i]+valueshisto[i-1];
-	//printArray("\n\nCumulative distribution function\n\n",valueshisto);
+	printArray("\n\nCumulative distribution function\n\n",valueshisto);
 
 
 	double cdfMin=(double) getcdfMin(valueshisto); //cdf=cumulative distribution function
@@ -499,6 +499,7 @@ int main(int argc, char* argv[]){
 	}else if(isstretch){
 		stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image_int);
 	}else if(isequa){
+		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
 		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
 	}else{
 		printf("Usage: cmd [OPTIONS]\n");	
@@ -512,7 +513,7 @@ int main(int argc, char* argv[]){
 		exit(0);	
 	}
 
-free(image_int);
-return 0;
 
+        if(ishist|isstretch|isequa) free(image_int);
+	return 0;
 }
