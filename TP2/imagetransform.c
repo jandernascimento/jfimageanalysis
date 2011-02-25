@@ -317,13 +317,43 @@ double* readimage(char* filepath)
       return imagemap;
 }
 
+void windowSort(double *window,int dim){
+  double **tmp;
+  for(int x=0;x<(dim*dim);x++){
+    for(int y=0;y<(dim*dim);y++){
+       if(window[x]>window[y]){
+ 		//se primeiro maior que segundo, inverte	
+       } 
+    }
+  }
+
+}
+
+double* ApplyMedian(int dim, double* image, int width, int height){
+
+  int edgex=dim/2;
+  int edgey=dim/2;
+
+  for(int x=0;x<width;x++){
+    for(int y=0;y<height;y++){
+      double* window;
+      window=(double *)malloc(sizeof(double)*dim*dim);
+      for(int wx=0;x<dim;wx++){
+        for(int wy=0;x<dim;wy++){
+	  int convx=x+wx-edgex;
+	  int convy=y+wy-edgey;
+          window[y*dim+x]=image[dim*convy+convx];
+        }
+      }
+      windowSort(window,dim);
+      image[y*width+x]=window[edgey*dim+edgex];
+    }
+  }
+  
+
+}
+
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW){
-        //minMaxDouble(kernel,-1,1,0,1,9);
-    /*
-        for (int i=0;i<dim;++i)
-            for (int j=0;j<dim;++j)
-                qDebug("%f KERNEL", (double)(kernel[i*dim+j]));
-     */
        int j;  // row    index of the current image
        int i;  // column index of the current image
        int jk; // row    index of the kernel;
