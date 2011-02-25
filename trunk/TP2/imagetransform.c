@@ -494,6 +494,25 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
     return res[0]=='-'?-1*val:val;
 }
 
+void medianFilter(double * image, double * result, int N, int M){
+	//Move window through all elements of the image
+	for (int m = 1; m < M - 1; ++m)
+		for (int n = 1; n < N - 1; ++n){
+			//Pick up window elements
+			int k = 0;
+			double window[9]; //9 is the size of the kernel
+			for (int j = m - 1; j < m + 2; ++j)
+				for (int i = n - 1; i < n + 2; ++i)
+					window[k++] = image[j * N + i];
+
+			//Order elements
+			windowSort(window,3); //3 is one dimension of the kernel
+
+			//Get result - the middle element
+			result[m*N+n] = window[4];
+		}
+}
+
 int main(int argc, char* argv[]){
 	
 	int help=getBoolParam(argc,argv,"--help");
