@@ -336,23 +336,39 @@ double* ApplyMedian(int dim, double* image, int width, int height){
   int edgex=dim/2;
   int edgey=dim/2;
 
-  for(int x=0;x<width;x++){
-    for(int y=0;y<height;y++){
+  double *newimage;
+  newimage=(double *)malloc(sizeof(double)*width*height);
+
+  for(int x=0;x<width;x++)
+	for(int y=0;y<height;y++)
+		newimage[y*width+x]=0;
+
+  for(int x=(0+edgex);x<(width-edgex);x++){
+    for(int y=(0+edgey);y<(height-edgey);y++){
       double* window;
       window=(double *)malloc(sizeof(double)*dim*dim);
-      for(int wx=0;x<dim;wx++){
-        for(int wy=0;x<dim;wy++){
+      for(int wx=0;wx<dim;wx++){
+        for(int wy=0;wy<dim;wy++){
 	  int convx=x+wx-edgex;
 	  int convy=y+wy-edgey;
-          window[y*dim+x]=image[dim*convy+convx];
+	  //printf("acessing x:%i, y:%i / x:%i, y:%i \n",x,y,convx,convy);//convx,convy);
+        //  if(!(convx<width&&convy<height)||convx<0||convy<0){
+	//  	window[wy*dim+wx]=1;
+	//	continue; //printf("acessing x:%i, y:%i\n",convx,convy);
+	//  }
+	  window[wy*dim+wx]=image[dim*convy+convx];
         }
       }
+      //free(window);
       windowSort(window,dim);
-      image[y*width+x]=window[edgey*dim+edgex];
+      //printf("******** FOR x:%i, y:%i ************\n",x,y);
+      //printkernel(3,window);
+      newimage[y*width+x]=window[5];//window[edgey*dim+edgex];
     }
   }
-  
 
+  return newimage;
+  
 }
 
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW){
@@ -514,9 +530,12 @@ void medianFilter(double * image, double * result, int N, int M){
 }
 
 int main(int argc, char* argv[]){
+	double* image;
+	double *kernel;
 	
 	int help=getBoolParam(argc,argv,"--help");
 	int isfilter=getBoolParam(argc,argv,"-b");
+	int ismean=getBoolParam(argc,argv,"-m");
 	int ishist=getBoolParam(argc,argv,"-h");
 	int isstretch=getBoolParam(argc,argv,"-s");
 	int isequa=getBoolParam(argc,argv,"-e");
@@ -528,13 +547,25 @@ int main(int argc, char* argv[]){
 
 	if(ishist|isstretch|isequa) image_int=readimage_int(intfilepath);
 
-	if(isfilter){
+	if(ismean){
+		char *filepath=getStrParam(argc,argv,"-f","");
+		image=readimage(filepath);
+		double *nn;
+		nn=(double *)malloc(sizeof(double)*lcols*lrows);
+		
+		 for(int x=0;x<lcols;x++)
+			for(int y=0;y<lrows;y++)
+				nn[y*lcols+x]=image[y*lcols+x];
+
+
+		medianFilter(image,nn, lcols,lrows);//ApplyMedian(3,image,lcols,lrows);
+		printimage(nn,lcols,lrows,lmaxval);
+	}
+	else if(isfilter){
 		int bin=getIntParam(argc,argv,"-b","0");
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *filepath=getStrParam(argc,argv,"-f","");
 		if(bin!=0){	
-			double* image;
-			double *kernel;
 
 			kernel=binomialfilter(bin);
 			image=readimage(filepath);
