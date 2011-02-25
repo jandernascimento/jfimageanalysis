@@ -533,49 +533,45 @@ int main(int argc, char* argv[]){
 	double* image;
 	double *kernel;
 	
-	int help=getBoolParam(argc,argv,"--help");
-	int isfilter=getBoolParam(argc,argv,"-b");
-	int ismean=getBoolParam(argc,argv,"-m");
+	int isfilter=getBoolParam(argc,argv,"-f");
 	int ishist=getBoolParam(argc,argv,"-h");
 	int isstretch=getBoolParam(argc,argv,"-s");
 	int isequa=getBoolParam(argc,argv,"-e");
 	
-	char *intfilepath=getStrParam(argc,argv,"-f","");
+	char *intfilepath=getStrParam(argc,argv,"-i","");
 
 	int * valueshisto;
 	gray * image_int;
 
 	if(ishist|isstretch|isequa) image_int=readimage_int(intfilepath);
 
-	if(ismean){
-		char *filepath=getStrParam(argc,argv,"-f","");
-		image=readimage(filepath);
-		double *nn;
-		nn=(double *)malloc(sizeof(double)*lcols*lrows);
-		
-		 for(int x=0;x<lcols;x++)
-			for(int y=0;y<lrows;y++)
-				nn[y*lcols+x]=image[y*lcols+x];
-
-
-		medianFilter(image,nn, lcols,lrows);//ApplyMedian(3,image,lcols,lrows);
-		printimage(nn,lcols,lrows,lmaxval);
-	}
-	else if(isfilter){
-		int bin=getIntParam(argc,argv,"-b","0");
+	if(isfilter){
+		int bin=getIntParam(argc,argv,"-s","0");
 		int nr=getIntParam(argc,argv,"-n","1");
-		char *filepath=getStrParam(argc,argv,"-f","");
-		if(bin!=0){	
-
+		char *method=getStrParam(argc,argv,"-f","binomial");
+		char *filepath=getStrParam(argc,argv,"-i","");
+		if(strcmp(method,"binomial")==0){
 			kernel=binomialfilter(bin);
 			image=readimage(filepath);
-			
 			for(int x=0;x<nr;x++){
 				image=ApplyConvolution(3, kernel, image, lrows, lcols);
 			}
 			printimage(image,lcols,lrows,lmaxval);
 				
-			}
+		}else if(strcmp(method,"median")==0){
+			char *filepath=getStrParam(argc,argv,"-i","");
+			image=readimage(filepath);
+			double *nn;
+			nn=(double *)malloc(sizeof(double)*lcols*lrows);
+			
+			 for(int x=0;x<lcols;x++)
+				for(int y=0;y<lrows;y++)
+					nn[y*lcols+x]=image[y*lcols+x];
+
+
+			medianFilter(image,nn, lcols,lrows);//ApplyMedian(3,image,lcols,lrows);
+			printimage(nn,lcols,lrows,lmaxval);
+		}	
 	}else if(ishist){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
 	}else if(isstretch){
@@ -584,10 +580,11 @@ int main(int argc, char* argv[]){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
 		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
 	}else{
-		printf("Usage: cmd [OPTIONS]\n");	
+		printf("Usage: cmd -i [fsin|h|e|s]\n");	
 		printf("OPTIONS: \n");	
-		printf("-b N: binomial filter with size N\n");	
-		printf("-f S: input file\n");	
+		printf("-f [median|binomial]: chooser the filter\n");	
+		printf("-s N: size of the kernel\n");	
+		printf("-i S: input file\n");	
 		printf("-n N: number of times that the filter will be applyed\n");	
 		printf("-h: Histogram\n");	
 		printf("-e: Equalization\n");	
