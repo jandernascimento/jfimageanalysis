@@ -318,15 +318,17 @@ double* readimage(char* filepath)
 }
 
 void windowSort(double *window,int dim){
-  double **tmp;
-  for(int x=0;x<(dim*dim);x++){
-    for(int y=0;y<(dim*dim);y++){
-       if(window[x]>window[y]){
- 		//se primeiro maior que segundo, inverte	
-       } 
-    }
-  }
-
+  for (int j = 0; j < (dim*dim); ++j){
+    //   Find position of minimum element
+    int min = j;
+    for (int l = j + 1; l < (dim*dim); ++l)
+      if (window[l] < window[min])
+        min = l;
+      //Put found minimum element in its place
+      double temp = window[j];
+      window[j] = window[min];
+      window[min] = temp;
+   }
 }
 
 double* ApplyMedian(int dim, double* image, int width, int height){
