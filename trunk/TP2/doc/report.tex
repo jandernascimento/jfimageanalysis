@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass{article}
 
 \usepackage{listings}
 \usepackage{color}
@@ -18,29 +18,53 @@
 
 \maketitle
 
-\tableofcontents
-
 \section{Filtering}
-
-	\subsection{Normalization}
-
-		DO
 	
-	\subsection{Dimension}
-
-		DO
-
 	\subsection{Binomial}
 
-		DO
+		Binomial filter uses pascal's triangle to create a filter. This filter has the blurry effect with some differences.
+
+One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}.
+
+\begin{figure}[H]
+  \begin{center}
+  \begin{tabular}{ | c | c | c | }
+    \hline
+    1 & 2 & 1 \\ \hline
+
+    2 & 4 & 2 \\ \hline
+
+    1 & 2 & 1 \\
+    \hline
+  \end{tabular}
+  \end{center}
+  \caption{3 x 3 Binomial filter\label{3x3binomial}}\end{figure}
 
 	\subsection{Median}
 
-		DO
+		With a purpose of noise reduction, in certain situations it can preserve the edges while reduce the noise of the image.
+
+		For this reason this kind of filter is regularly used as a pre-traitement for edge detection.
+
+		The Median filtering differ from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analized to generate a new kernel.
+
+		Median kernel is copy a certain sector of the image analized and change the value of the central pixel in the original image. 
+
+		The central pixel in the original image receives the median value of the kernel. It is possible to do it by simply sorting the content of the kernel and assign the value in the middle (central position of the kernel) to the original image. 
 
 	\subsection{Median versus Binomial}
 
-		DO
+		\begin{figure}[H]
+		  \centering
+		  \subfloat[Binomial]{\label{fig:binomial}\includegraphics[width=0.4\textwidth]{../church_binomial}}                
+		  \subfloat[Median]{\label{fig:median}\includegraphics[width=0.4\textwidth]{../church_median}}
+		  \caption{Removing noise}
+		  \label{fig:removingnoise}
+		\end{figure}		
+
+	In the Figure \ref{fig:removingnoise} we applied Binomial and Median filter separetely. 
+	Median preserves the edges better than the Binomial, although the Binomial preserves some central details in the image. 
+	This behaviour can be seen in the window at the chappel, in the Binomial is possible to see the borders of the line, while in the Median this detail is not displayed. 
 
 \section{Histogram}
 
