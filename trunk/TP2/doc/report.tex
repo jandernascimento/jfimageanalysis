@@ -55,7 +55,7 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 		The central pixel in the original image receives the median value of the kernel. It is possible to do it by simply sorting the content of the kernel and assign the value in the middle (central position of the kernel) to the original image. 
 
-	\subsection{Median versus Binomial}
+	\subsection{Binomial {\it versus} Median}
 
 		\begin{figure}[H]
 		  \centering
@@ -71,27 +71,27 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 \section{Histogram}
 
-	The histogram is an important tool when dealing with image analysis. It shows the color distribution of a certain image regarding to its color spectrum. The 		histogram is represented in a Cartesian, where x axis is the color spectrum and y represents the number of pixels that have such intensity.
+	The histogram is an important tool when dealing with image analysis. It shows the color distribution of a certain image regarding to its color intensity. The 		histogram is represented in a Cartesian, where x axis is the color intensity and y represents the number of pixels that have such intensity.
 
 	In this practical work, we wrote a function in c that computes the intensity histogram. The function has the following steps:
 	\begin{itemize}
   		\item take from the main argument the name of the file that will be analyzed.
   		\item create a matrix (with the dimensions of the image) to store the pixels' intensity of the image
-  		\item go through such matrix and count the number of pixels in each intensity at the spectrum of the color (from 0 to 255)
+  		\item go through such matrix and count the number of pixels in each intensity at the intensity of the color (from 0 to 255)
   		\item store that in an array of 256 positions.
   		\item display such array on the standard output device (screen)
 	\end{itemize}
 
 	\subsection{Stretching}
 
-	The histogram stretching is a technique by which the color histogram is used to evaluate and possibly change the color intensity range. This enhances the 		detail level of some images that might appear too dark or too bright. This is done by spreading the pixels to use the entire color spectrum.
+	The histogram stretching is a technique by which the color histogram is used to evaluate and possibly change the color intensity range. This enhances the 		detail level of some images that might appear too dark or too bright. This is done by spreading the pixels to use the entire color intensity.
 	
 	In this practical work, we wrote a function in c that transforms an image with the histogram stretching. The function has the following steps:
 	\begin{itemize}
   		\item take from the main argument the name of the file that will be analyzed.
   		\item create a matrix (with the dimensions of the image) to store the pixels' intensity of the image
-  		\item in the matrix, find the current range minimum of the image({\it $current_{min}$}), which is the minimum intensity of the spectrum of the color 			that is used in the image
-  		\item find also the current range maximum of the image({\it $current_{max}$}), which is the maximum intensity of the spectrum of the color that is 			used in the image
+  		\item in the matrix, find the current range minimum of the image({\it $current_{min}$}), which is the minimum intensity of the intensity of the color 			that is used in the image
+  		\item find also the current range maximum of the image({\it $current_{max}$}), which is the maximum intensity of the intensity of the color that is 			used in the image
   		\item for each pixel of the image, calculate its new intensity based on the stretching formula:
 		\begin{equation}
 			y[n]=new_{min}+\frac{new_{max}-new_{min}}{current_{max}-current_{min}}*(x[n]-current_{min})
@@ -123,7 +123,7 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 	\begin{itemize}
   		\item compute the histogram of the image (following the steps of the question before)
   		\item create an array to store the cumulative distribution function of the histogram, which is the values of the histogram in a cumulative way.
-  		\item in such array, find the minimum value at all the spectrum of the color ($cdf_{min}$)
+  		\item in such array, find the minimum value at all the intensity of the color ($cdf_{min}$)
   		\item for each pixel of the image, calculate its new intensity based on the equalization formula:
 			\begin{equation}
 				h[v]= round \left( \frac{cdf(v)-cdf_{min}}{(M * N) - cdf_{min}} * (L-1) \right) 
@@ -134,8 +134,8 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 			\begin{itemize}
 	  			\item {\it v} is the current intensity of the pixel		
 		  		\item {\it cdf(v)} is the value of such intensity in the array that stores the accumulated values of the histogram
-		  		\item {\it M} is one dimension of the image		
-		  		\item {\it N} is the other dimension of the image
+		  		\item {\it M} is one height of the image		
+		  		\item {\it N} is the width of the image
 		  		\item {\it L} is the number of color levels used (in most cases, 256)
 			\end{itemize}
 	\end{itemize}
