@@ -53,7 +53,7 @@ int getcdfMin(int * valueshisto){
 }
 
 int * generateHistogramValues(char * title, gray* graymap){
-	printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
+	//printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
 
 	int * valueshisto=(int *) malloc(256*sizeof(int));
 	int value;
@@ -70,7 +70,7 @@ int * generateHistogramValues(char * title, gray* graymap){
 		}
 
 	//printing the values of the Histogram
-	printArray(title, valueshisto);
+	//printArray(title, valueshisto);
 
 	return valueshisto;
 }
@@ -108,7 +108,7 @@ void equalizingHistogram(char * title, gray* graymap, int* valueshisto){
 	//acumulating the histogram
 	for(int i=1;i<256;i++)
 		valueshisto[i]=valueshisto[i]+valueshisto[i-1];
-	printArray("\n\nCumulative distribution function\n\n",valueshisto);
+	//printArray("\n\nCumulative distribution function\n\n",valueshisto);
 
 
 	double cdfMin=(double) getcdfMin(valueshisto); //cdf=cumulative distribution function
@@ -580,11 +580,11 @@ int main(int argc, char* argv[]){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
 		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
 	}else{
-		printf("Usage: cmd -i [fsin|h|e|s]\n");	
+		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
 		printf("OPTIONS: \n");	
+		printf("-i S: input file\n");	
 		printf("-f [median|binomial]: chooser the filter\n");	
 		printf("-s N: size of the kernel\n");	
-		printf("-i S: input file\n");	
 		printf("-n N: number of times that the filter will be applyed\n");	
 		printf("-h: Histogram\n");	
 		printf("-e: Equalization\n");	
