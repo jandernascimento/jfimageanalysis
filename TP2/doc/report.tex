@@ -11,7 +11,7 @@
 
 \begin{document}
 
-\title{Image Analysis - TP2}
+\title{Image Analysis - TP2 - Local Filtering and Histograms}
 
 \author{Jander Nascimento, 
 \and Raquel Oliveira}
@@ -44,13 +44,69 @@
 
 \section{Histogram}
 
+	The histogram is an important tool when dealing with image analysis. It shows the color distribution of a certain image regarding to its color spectrum. The 		histogram is represented in a Cartesian, where x axis is the color spectrum and y represents the number of pixels that have such intensity.
+
+	In this pratical work, we wrote a function in c that computes the intensity histogram. The function has the following steps:
+	\begin{itemize}
+  		\item take from the main argument the name of the file that will be analised.
+  		\item create a matrix (with the dimensions of the image) to store the pixels' intensity of the image
+  		\item go through such matrix and count the number of pixels in each intensity at the spectrum of the color (from 0 to 255)
+  		\item store that in an array of 256 positions.
+  		\item display such array on the standard output device (screen)
+	\end{itemize}
+
 	\subsection{Stretching}
 
-		DO
+	The histogram stretching is a technique by which the color histogram is used to evaluate and possibly change the color intensity range. This enhances the 		detail level of some images that might appear too dark or too bright. This is done by spreading the pixels to use the entire color spectrum.
+	
+	To apply the stretching, the only variables we must know is the minimum and maximum color in the current histogram, and minimum and maximum color in the 		enhanced histogram, or we may translate as a new position for the minimum and maximum colors. 
+
+	In this pratical work, we wrote a function in c that transforms an image with the histogram stretching. The function has the following steps:
+	\begin{itemize}
+  		\item take from the main argument the name of the file that will be analised.
+  		\item create a matrix (with the dimensions of the image) to store the pixels' intenxity of the image
+  		\item in the matrix, find the current range minimum of the image({\it $current_{min}$}), which is the mininum intensity of the spectrum of the color 			that is used in the image
+  		\item find also the current range maximum of the image({\it $current_{max}$}), which is the maximum intensity of the spectrum of the color that is 			used in the image
+  		\item for each pixel of the image, calculate its new intensity based on the stretching's formula:
+		\begin{equation}
+			y[n]=new_{min}+\frac{new_{max}-new_{min}}{current_{max}-current_{min}}*(x[n]-current_{min})
+			\label{eq:stretching}
+		\end{equation}
+	
+		where: 
+			\begin{itemize}
+	  			\item {\it n} is the pixel		
+	  			\item {\it $new_{min}$} is 0;
+	  			\item {\it $new_{max}$} is 255; 
+	  			\item {\it x[n]} is the current intensity of the pixel.
+			\end{itemize}
+	\end{itemize}
 
 	\subsection{Equalization}
 
-		DO
+	Histogram equalization is a method in image processing of contrast adjustment using the image's histogram. This method usually increases the global contrast 		of many images, especially when the usable data of the image is represented by close contrast values. Through this adjustment, the intensities can be better 		distributed on the histogram. This allows for areas of lower local contrast to gain a higher contrast. Histogram equalization accomplishes this by 		effectively spreading out the most frequent intensity values.
+
+	In this pratical work, we wrote a function in c that transforms an image with the histogram equalization. The function has the following steps:
+	\begin{itemize}
+  		\item compute the histogram of the image (following the steps of the question before)
+  		\item create an array to store the cumulative distribution function of the histogram, which is the values of the histogram in a cumulative way.
+  		\item in such array, find the minimun value at all the spectrum of the color (cdfmin)
+  		\item for each pixel of the image, calculate its new intensity based on the equalization formula:
+			\begin{equation}
+				h[v]= round \left( \frac{cdf(v)-cdf_{min}}{(M * N) - cdf_{min}} * (L-1) \right) 
+			\label{eq:equalization}
+			\end{equation}
+			
+			where:		
+			\begin{itemize}
+	  			\item {\it v} is the current intensity of the pixel		
+		  		\item {\it cdf(v)} is the value of such intensity in the array that stores the acumulated values of the histogram
+		  		\item {\it M} is one dimension of the image		
+		  		\item {\it N} is the other dimension of the image
+		  		\item {\it L} is the number of color levels used (in most cases, 256)
+			\end{itemize}
+	\end{itemize}
+
 
 \end{document}
 
