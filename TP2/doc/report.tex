@@ -82,6 +82,14 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
   		\item display such array on the standard output device (screen)
 	\end{itemize}
 
+	\begin{figure}[H]
+	\centering
+	\subfloat[Image]{\label{fig:image}\includegraphics[width=0.4\textwidth]{../image/amelie}}                
+	\subfloat[Histogram]{\label{fig:histogram}\includegraphics[width=0.4\textwidth]{../image/histogram}}
+	\caption{Histrogram of an image}
+	\label{fig:equalizing}
+	\end{figure}
+
 	\subsection{Stretching}
 
 	The histogram stretching is a technique by which the color histogram is used to evaluate and possibly change the color intensity range. This enhances the 		detail level of some images that might appear too dark or too bright. This is done by spreading the pixels to use the entire color intensity.
@@ -111,6 +119,7 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 	\centering
 	\subfloat[Original Image]{\label{fig:original}\includegraphics[width=0.4\textwidth]{../image/amelie}}                
 	\subfloat[Stretched Image]{\label{fig:stretched}\includegraphics[width=0.4\textwidth]{../image/amelie_stretched}}
+	\subfloat[Stretched Histogram]{\label{fig:histogram_s}\includegraphics[width=0.4\textwidth]{../image/histogram_stretching}}
 	\caption{Stretching Transformation}
 	\label{fig:stretching}
 	\end{figure}
@@ -142,10 +151,11 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 	\begin{figure}[H]
 	\centering
-	\subfloat[Original Image]{\label{fig:original}\includegraphics[width=0.4\textwidth]{../image/amelie}}                
-	\subfloat[Stretched Image]{\label{fig:stretched}\includegraphics[width=0.4\textwidth]{../image/amelie_equalized}}
+	\subfloat[Original Image]{\label{fig:original2}\includegraphics[width=0.4\textwidth]{../image/amelie}}                
+	\subfloat[Equalized Image]{\label{fig:equalized}\includegraphics[width=0.4\textwidth]{../image/amelie_equalized}}
+	\subfloat[Equalized Histogram]{\label{fig:histogram_e}\includegraphics[width=0.4\textwidth]{../image/histogram_equalized}}
 	\caption{Equalization Transformation}
-	\label{fig:stretching}
+	\label{fig:equalizing}
 	\end{figure}
 
 
