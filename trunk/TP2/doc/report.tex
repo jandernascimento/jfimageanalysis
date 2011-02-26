@@ -23,7 +23,6 @@
 	\subsection{Binomial}
 
 		Binomial filter uses pascal's triangle to create a filter. This filter has the blurry effect with some differences.
-
 One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}.
 
 \begin{figure}[H]
@@ -40,6 +39,10 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
   \end{center}
   \caption{3 x 3 Binomial filter\label{3x3binomial}}\end{figure}
 
+		To apply this kernel to the image, it is necessary to perform the convolution in the original image with this kernel.
+
+		This kernel is used to remove the noise in image, but it do not preserves the edges of the image. 
+		
 	\subsection{Median}
 
 		With a purpose of noise reduction, in certain situations it can preserve the edges while reduce the noise of the image.
@@ -56,8 +59,8 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 		\begin{figure}[H]
 		  \centering
-		  \subfloat[Binomial]{\label{fig:binomial}\includegraphics[width=0.4\textwidth]{../church_binomial}}                
-		  \subfloat[Median]{\label{fig:median}\includegraphics[width=0.4\textwidth]{../church_median}}
+		  \subfloat[Binomial]{\label{fig:binomial}\includegraphics[width=0.4\textwidth]{../image/church_binomial}}                
+		  \subfloat[Median]{\label{fig:median}\includegraphics[width=0.4\textwidth]{../image/church_median}}
 		  \caption{Removing noise}
 		  \label{fig:removingnoise}
 		\end{figure}		
