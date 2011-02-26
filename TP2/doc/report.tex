@@ -49,9 +49,9 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 		For this reason this kind of filter is regularly used as a pre-treatment for edge detection.
 
-		The Median filtering differ from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analyzed to generate a new kernel.
+		The Median filtering differs from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analyzed to generate a new kernel.
 
-		Median kernel is copy a certain sector of the image analyzed and change the value of the central pixel in the original image. 
+		Median kernel copies a certain sector of the image analyzed and change the value of the central pixel in the original image. 
 
 		The central pixel in the original image receives the median value of the kernel. It is possible to do it by simply sorting the content of the kernel and assign the value in the middle (central position of the kernel) to the original image. 
 
@@ -86,8 +86,6 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 	The histogram stretching is a technique by which the color histogram is used to evaluate and possibly change the color intensity range. This enhances the 		detail level of some images that might appear too dark or too bright. This is done by spreading the pixels to use the entire color spectrum.
 	
-	To apply the stretching, the only variables we must know is the minimum and maximum color in the current histogram, and minimum and maximum color in the 		enhanced histogram, or we may translate as a new position for the minimum and maximum colors. 
-
 	In this practical work, we wrote a function in c that transforms an image with the histogram stretching. The function has the following steps:
 	\begin{itemize}
   		\item take from the main argument the name of the file that will be analyzed.
