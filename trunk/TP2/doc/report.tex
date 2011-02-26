@@ -125,7 +125,7 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 	\begin{itemize}
   		\item compute the histogram of the image (following the steps of the question before)
   		\item create an array to store the cumulative distribution function of the histogram, which is the values of the histogram in a cumulative way.
-  		\item in such array, find the minimum value at all the spectrum of the color (cdfmin)
+  		\item in such array, find the minimum value at all the spectrum of the color ($cdf_{min}$)
   		\item for each pixel of the image, calculate its new intensity based on the equalization formula:
 			\begin{equation}
 				h[v]= round \left( \frac{cdf(v)-cdf_{min}}{(M * N) - cdf_{min}} * (L-1) \right) 
