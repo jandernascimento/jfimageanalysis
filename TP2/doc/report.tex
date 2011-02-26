@@ -148,5 +148,33 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 	\label{fig:stretching}
 	\end{figure}
 
+
+	\subsection{Where to find the source code?}
+
+	The code is hosted at \url{https://jfimageanalysis.googlecode.com/svn/trunk/TP2/}. 
+	To download the code execute this command:
+	
+	svn checkout https://jfimageanalysis.googlecode.com/svn/trunk/TP2/
+	\\Remark: you {\bf must} have installed subversion. 
+	
+	\subsection{How to execute?}
+	First compile the source (using {\it make}). The application name is {\it imagetransform} 
+	
+	Here are some examples:
+	
+	Apply binomial filter to an image:
+	\begin{lstlisting}	
+		imagetransform -f binomial -i image_in.pgm > image_out.pgm
+	\end{lstlisting}
+	You still can combine this command to specify the size of the kernel (-s) or the number of times that the filter should be applied (-n)	
+	
+	Apply median filter to an image:
+	\begin{lstlisting}	
+		imagetransform -f median -i image_in.pgm > image_out.pgm
+	\end{lstlisting}	
+
+	And of course you can always type {\it imagetransform --help} to check for more options. 
+
 \end{document}
+
 
