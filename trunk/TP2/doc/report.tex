@@ -25,6 +25,13 @@
 		Binomial filter uses Pascal's triangle to create a filter. This filter has the blurry effect with some differences.
 One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}.
 
+The values for this kernel can be obtained from binomial coefficient definition, presented in equation \ref{equa:bc}.
+
+\begin{equation}
+\frac{n!}{(n-k)!k!}={n \choose k}
+\label{equa:bc}
+\end{equation}
+
 \begin{figure}[H]
   \begin{center}
   \begin{tabular}{ | c | c | c | }
@@ -49,7 +56,7 @@ One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}
 
 		For this reason this kind of filter is regularly used as a pre-treatment for edge detection.
 
-		The Median filtering differs from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analyzed to generate a new kernel.
+		The Median filtering differs from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analyzed to calculate the new pixel intensities.
 
 		Median kernel copies a certain sector of the image analyzed and change the value of the central pixel in the original image. 
 
