@@ -22,10 +22,11 @@
 	
 	\subsection{Binomial}
 
-		Binomial filter uses Pascal's triangle to create a filter. This filter has the blurry effect with some differences.
+		Binomial filter uses Pascal's triangle to create a filter. This filter has the blurry effect with some differences in preserving objects in the image.
+
 One example of a 3x3 Binomial filter can be seen in the Figure \ref{3x3binomial}.
 
-The values for this kernel can be obtained from binomial coefficient definition, presented in equation \ref{equa:bc}.
+The values for this kernel can be obtained from binomial coefficient definition, presented in Equation \ref{equa:bc}.
 
 \begin{equation}
 \frac{n!}{(n-k)!k!}={n \choose k}
@@ -46,7 +47,7 @@ The values for this kernel can be obtained from binomial coefficient definition,
   \end{center}
   \caption{3 x 3 Binomial filter\label{3x3binomial}}\end{figure}
 
-		To apply this kernel to the image, it is necessary to perform the convolution in the original image with this kernel.
+		To apply this kernel to the image, it is necessary to perform the convolution in the original image with this kernel, the convolution is not part of this present report.
 
 		This kernel is used to remove the noise in image, but it do not preserves the edges of the image. 
 		
@@ -56,7 +57,7 @@ The values for this kernel can be obtained from binomial coefficient definition,
 
 		For this reason this kind of filter is regularly used as a pre-treatment for edge detection.
 
-		The Median filtering differs from others filters in the way it is applied to the image. While other filters are defined by kernels, the Median filter depends on each sector of the image analyzed to calculate the new pixel intensities.
+		The Median filtering differs from others filters in the way it is applied to the image. While other filters are defined by kernels as the aproximation of its derivation, the median filter depends on each sector of the image analyzed to calculate the new pixel intensities.
 
 		Median kernel copies a certain sector of the image analyzed and change the value of the central pixel in the original image. 
 
@@ -73,8 +74,8 @@ The values for this kernel can be obtained from binomial coefficient definition,
 		\end{figure}		
 
 	In the Figure \ref{fig:removingnoise} we applied Binomial and Median filter separately. 
-	Median preserves the edges better than the Binomial, although the Binomial preserves some central details in the image. 
-	This behavior can be seen in the window at the chapel, in the Binomial is possible to see the borders of the line, while in the Median this detail is not displayed. 
+	Median preserves the edges better than the Binomial, although the Binomial preserves some central details in the image that the Binomial do not. 
+	This behavior can be seen in the window at the chapel, in the Binomial is possible to see the borders of the window more clearly, while in the Median this detail is not displayed at all. 
 
 \section{Histogram}
 
