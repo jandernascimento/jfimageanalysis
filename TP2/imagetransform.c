@@ -52,7 +52,7 @@ int getcdfMin(int * valueshisto){
 	return 0;
 }
 
-int * generateHistogramValues(char * title, gray* graymap){
+int * generateHistogramValues(char * title, gray* graymap, int print){
 	//printf("\n\ndimensions: rows:%d columns:%d\n",rows,cols);
 
 	int * valueshisto=(int *) malloc(256*sizeof(int));
@@ -70,7 +70,8 @@ int * generateHistogramValues(char * title, gray* graymap){
 		}
 
 	//printing the values of the Histogram
-	//printArray(title, valueshisto);
+	if (print)
+		printArray(title, valueshisto);
 
 	return valueshisto;
 }
@@ -78,7 +79,7 @@ int * generateHistogramValues(char * title, gray* graymap){
 void stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gray* graymap){
 	double actualRangeMin=(double) getMin(graymap);
 	double actualRangeMax=(double) getMax(graymap);
-	printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f\n",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
+	//printf("\nactualmax:%f actualmin:%f newRangeMax:%f newRangeMin:%f\n",actualRangeMax,actualRangeMin,newRangeMax,newRangeMin);
 
 	double constant = ( (newRangeMax-newRangeMin) / (actualRangeMax-actualRangeMin) );
 
@@ -93,7 +94,7 @@ void stretchingHistogram(char * title,double newRangeMin, double newRangeMax, gr
 		}
 
 	//generate histogram of the new image
-	generateHistogramValues(title, graymap_strechted);
+	generateHistogramValues(title, graymap_strechted,0);
 	
 	//write the image on the screen
 	displayImageFile(graymap_strechted);
@@ -123,7 +124,7 @@ void equalizingHistogram(char * title, gray* graymap, int* valueshisto){
 
 
 	//generate histogram of the new image
-	generateHistogramValues(title, graymap_equalized);
+	generateHistogramValues(title, graymap_equalized,0);
 
 
 	//write the image on the screen
@@ -331,6 +332,7 @@ void windowSort(double *window,int dim){
    }
 }
 
+/*
 double* ApplyMedian(int dim, double* image, int width, int height){
 
   int edgex=dim/2;
@@ -370,6 +372,7 @@ double* ApplyMedian(int dim, double* image, int width, int height){
   return newimage;
   
 }
+*/
 
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW){
        int j;  // row    index of the current image
@@ -517,8 +520,8 @@ void medianFilter(double * image, double * result, int N, int M){
 			//Pick up window elements
 			int k = 0;
 			double window[9]; //9 is the size of the kernel
-			for (int j = m - 1; j < m + 2; ++j)
-				for (int i = n - 1; i < n + 2; ++i)
+			for (int j = m - 1; j <= m + 1; ++j)
+				for (int i = n - 1; i <= n + 1; ++i)
 					window[k++] = image[j * N + i];
 
 			//Order elements
@@ -559,25 +562,32 @@ int main(int argc, char* argv[]){
 			printimage(image,lcols,lrows,lmaxval);
 				
 		}else if(strcmp(method,"median")==0){
-			char *filepath=getStrParam(argc,argv,"-i","");
-			image=readimage(filepath);
+  			image=readimage(filepath);
 			double *nn;
 			nn=(double *)malloc(sizeof(double)*lcols*lrows);
-			
-			 for(int x=0;x<lcols;x++)
+
+			for(int x=0;x<nr;x++){			
+
+				for(int x=0;x<lcols;x++)
 				for(int y=0;y<lrows;y++)
 					nn[y*lcols+x]=image[y*lcols+x];
 
+				medianFilter(image,nn, lcols,lrows);
 
-			medianFilter(image,nn, lcols,lrows);//ApplyMedian(3,image,lcols,lrows);
+				for(int x=0;x<lcols;x++)
+				for(int y=0;y<lrows;y++)
+					image[y*lcols+x]=nn[y*lcols+x];
+
+			}
+
 			printimage(nn,lcols,lrows,lmaxval);
 		}	
 	}else if(ishist){
-		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
+		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,1);
 	}else if(isstretch){
 		stretchingHistogram("\nStretched Histogram's values\n\n", 0,255,image_int);
 	}else if(isequa){
-		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int);
+		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,0);
 		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
 	}else{
 		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
