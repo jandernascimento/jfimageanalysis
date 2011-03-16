@@ -376,9 +376,22 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
        return tmpImage;
 }
 
+double* sobelfilterH(int val){
+	// First way
+	double kernel[9]={-1, -2, -1,
+			   0,  0,  0,
+			   1,  2,  1};
+	return kernel;
 
-double* sobelfilter(int val){
+}
 	printf("\n applying sobel \n");
+
+double* sobelfilterV(int val){
+	// First way
+	double kernel[9]={-1, 0, 1,
+			  -2, 0, 2,
+			  -1, 2, 1};
+	return kernel;
 
 }
 
@@ -474,6 +487,14 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 
     return res[0]=='-'?-1*val:val;
 }
+
+void sobelFilter(double * image, double * result, int height, int width){
+
+double* imageSobel=ApplyConvolution(3, sobelfilterH(3), image, height, width);
+
+
+}
+
 
 void medianFilter(double * image, double * result, int N, int M){
 	//Move window through all elements of the image
