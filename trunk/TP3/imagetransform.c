@@ -419,6 +419,18 @@ double* sobelfilterV(int val){
 
 }
 
+double * normGradient(double *gx, double *gy, int dim){
+	double * g = (double *) malloc(sizeof(double)*dim*dim);
+	for (int i=0;i<dim;i++)
+		for (int j=0;j<dim;j++){
+			int val1 = pow(gx[j*dim+i], 2);
+			int val2 = pow(gy[j*dim+i], 2);
+			g[j*dim+i] = sqrt( val1 + val2);
+		}
+
+	return g;
+}
+
 double* binomialfilter(int val)
 {
 	double *kernel = (double*)malloc(sizeof(double)*val*val);
@@ -533,25 +545,24 @@ void medianFilter(double * image, double * result, int N, int M){
 
 int main(int argc, char* argv[]){
 	double* image;
-	double *kernel;
+	double *kernel,*kernel2;
 	
 	int isfilter=getBoolParam(argc,argv,"-f");
 	int ishist=getBoolParam(argc,argv,"-h");
 	int isstretch=getBoolParam(argc,argv,"-s");
 	int isequa=getBoolParam(argc,argv,"-e");
 	
-	char *intfilepath=getStrParam(argc,argv,"-i","");
+	char *filepath=getStrParam(argc,argv,"-i","");
 
 	int * valueshisto;
 	gray * image_int;
 
-	if(ishist|isstretch|isequa) image_int=readimage_int(intfilepath);
+	if(ishist|isstretch|isequa) image_int=readimage_int(filepath);
 
 	if(isfilter){
 		int bin=getIntParam(argc,argv,"-s","0");
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *method=getStrParam(argc,argv,"-f","binomial");
-		char *filepath=getStrParam(argc,argv,"-i","");
 		image=readimage(filepath);
 		if(strcmp(method,"binomial")==0){
 			kernel=binomialfilter(bin);
@@ -601,14 +612,34 @@ int main(int argc, char* argv[]){
 			//}
 			printimage(resultImage,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"gradientxy")==0){
-			//kernel=sobelfilterV(3);
-			//double *resultImage;
-			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
-			//for(int x=0;x<nr;x++){
-			//	resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
-			//}
-			//printimage(resultImage,lcols,lrows,lmaxval);				
+			kernel=sobelfilterV(3);
+			kernel2=sobelfilterH(3);
+			double *gx, *gy, *resultImage;
+			gx=ApplyConvolution(3, kernel, image, lrows, lcols);
+			gy=ApplyConvolution(3, kernel2, image, lrows, lcols);
+
+			//temp code
+			/*double* tmpImage = (double*)(malloc(sizeof(double)*9));
+			kernel[0*3+0]=1;
+		kernel[0*3+1]=2;
+		kernel[0*3+2]=1;
+
+		kernel[1*3+0]=2;
+		kernel[1*3+1]=4;
+		kernel[1*3+2]=2;
+
+		kernel[2*3+0]=1;
+		kernel[2*3+1]=2;
+		kernel[2*3+2]=1;*/
+
+			//
+			resultImage=normGradient(gx, gy, 3);
+			printimage(resultImage,lcols,lrows,lmaxval);
+			free(gx);
+			free(gy);				
 		}
+	free(image);
+	free(kernel);
 	}else if(ishist){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,1);
 	}else if(isstretch){
@@ -620,7 +651,7 @@ int main(int argc, char* argv[]){
 		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
 		printf("OPTIONS: \n");	
 		printf("-i S: input file\n");	
-		printf("-f [median|binomial|gradient]: chooser the filter\n");	
+		printf("-f [median|binomial|gradientx|gradienty|gradientxy]: chooser the filter\n");	
 		printf("-s N: size of the kernel\n");	
 		printf("-n N: number of times that the filter will be applyed\n");	
 		printf("-h: Histogram\n");	
