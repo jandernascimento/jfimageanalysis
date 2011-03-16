@@ -664,10 +664,22 @@ int main(int argc, char* argv[]){
 			free(gx);
 			free(gy);				
 		}else if(strcmp(method,"harris")==0){
+			double *result;
+			result=malloc(sizeof(double)*lcols*lrows);
 			double *image_blurry=callbinomial(nr, bin, image, lcols, lrows);	
 			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
 			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
 			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
+			for(int x=0;x<lcols;x++)
+				for(int y=0;y<lrows;y++){
+					int pos=y*lcols+x;
+					double a=image_grad_x[pos];
+					double b=image_grad_y[pos];
+					double c=image_grad_xy[pos];
+					result[pos]=(a*b-pow(c,2))-2*pow(a+b,2);
+				}
+			printimage(result,lcols,lrows,lmaxval);
+
 		}
 	free(image);
 	free(kernel);
