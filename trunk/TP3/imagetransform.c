@@ -378,13 +378,29 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
 
 double* sobelfilterH(int val){
 	// First way
-	double kernel[9]={-1, -2, -1,
-			   0,  0,  0,
-			   1,  2,  1};
-	return kernel;
+	//double kernel[9]={-1, -2, -1,
+	//		   0,  0,  0,
+	//		   1,  2,  1};
+	double *kernel = (double*)malloc(sizeof(double)*val*val);
+	
+	if(val==3){
+		kernel[0*3+0]=-1;
+		kernel[0*3+1]=-2;
+		kernel[0*3+2]=-1;
+
+		kernel[1*3+0]=0;
+		kernel[1*3+1]=0;
+		kernel[1*3+2]=0;
+
+		kernel[2*3+0]=1;
+		kernel[2*3+1]=2;
+		kernel[2*3+2]=1;
+		return kernel;
+	}	
+	exit(-1);
+	//return kernel;
 
 }
-	printf("\n applying sobel \n");
 
 double* sobelfilterV(int val){
 	// First way
@@ -488,14 +504,6 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
     return res[0]=='-'?-1*val:val;
 }
 
-void sobelFilter(double * image, double * result, int height, int width){
-
-double* imageSobel=ApplyConvolution(3, sobelfilterH(3), image, height, width);
-
-
-}
-
-
 void medianFilter(double * image, double * result, int N, int M){
 	//Move window through all elements of the image
 	for (int m = 1; m < M - 1; ++m)
@@ -568,15 +576,30 @@ int main(int argc, char* argv[]){
 			}
 
 			printimage(nn,lcols,lrows,lmaxval);
-		}else if(strcmp(method,"gradient")==0){
-			kernel=sobelfilter(bin);
-
-			//applying the filter n times
-			for(int x=0;x<nr;x++){
-				//image=ApplyConvolution(bin, kernel, image, lrows, lcols);
-				printf("\n\n applying %d \n",x);
-			}
-			//printimage(image,lcols,lrows,lmaxval);				
+		}else if(strcmp(method,"gradienty")==0){
+			kernel=sobelfilterH(3);
+			double *resultImage;
+			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
+			//for(int x=0;x<nr;x++){
+				resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
+			//}
+			printimage(resultImage,lcols,lrows,lmaxval);				
+		}else if(strcmp(method,"gradientx")==0){
+			kernel=sobelfilterV(3);
+			double *resultImage;
+			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
+			//for(int x=0;x<nr;x++){
+				resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
+			//}
+			printimage(resultImage,lcols,lrows,lmaxval);				
+		}else if(strcmp(method,"gradientxy")==0){
+			//kernel=sobelfilterV(3);
+			//double *resultImage;
+			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
+			//for(int x=0;x<nr;x++){
+			//	resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
+			//}
+			//printimage(resultImage,lcols,lrows,lmaxval);				
 		}
 	}else if(ishist){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,1);
