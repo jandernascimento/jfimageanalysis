@@ -378,6 +378,7 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
 
 
 double* sobelfilter(int val){
+	printf("\n applying sobel \n");
 
 }
 
@@ -514,27 +515,31 @@ int main(int argc, char* argv[]){
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *method=getStrParam(argc,argv,"-f","binomial");
 		char *filepath=getStrParam(argc,argv,"-i","");
+		image=readimage(filepath);
 		if(strcmp(method,"binomial")==0){
 			kernel=binomialfilter(bin);
-			image=readimage(filepath);
+
+			//applying the filter n times
 			for(int x=0;x<nr;x++){
-				image=ApplyConvolution(3, kernel, image, lrows, lcols);
+				image=ApplyConvolution(bin, kernel, image, lrows, lcols);
 			}
 			printimage(image,lcols,lrows,lmaxval);
 				
 		}else if(strcmp(method,"median")==0){
-  			image=readimage(filepath);
 			double *nn;
 			nn=(double *)malloc(sizeof(double)*lcols*lrows);
 
+			//applying the filter n times
 			for(int x=0;x<nr;x++){			
 
+				//making a copy of the image
 				for(int x=0;x<lcols;x++)
 				for(int y=0;y<lrows;y++)
 					nn[y*lcols+x]=image[y*lcols+x];
 
 				medianFilter(image,nn, lcols,lrows);
 
+				//replacing the image
 				for(int x=0;x<lcols;x++)
 				for(int y=0;y<lrows;y++)
 					image[y*lcols+x]=nn[y*lcols+x];
@@ -542,7 +547,16 @@ int main(int argc, char* argv[]){
 			}
 
 			printimage(nn,lcols,lrows,lmaxval);
-		}	
+		}else if(strcmp(method,"gradient")==0){
+			kernel=sobelfilter(bin);
+
+			//applying the filter n times
+			for(int x=0;x<nr;x++){
+				//image=ApplyConvolution(bin, kernel, image, lrows, lcols);
+				printf("\n\n applying %d \n",x);
+			}
+			//printimage(image,lcols,lrows,lmaxval);				
+		}
 	}else if(ishist){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,1);
 	}else if(isstretch){
@@ -554,7 +568,7 @@ int main(int argc, char* argv[]){
 		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
 		printf("OPTIONS: \n");	
 		printf("-i S: input file\n");	
-		printf("-f [median|binomial]: chooser the filter\n");	
+		printf("-f [median|binomial|gradient]: chooser the filter\n");	
 		printf("-s N: size of the kernel\n");	
 		printf("-n N: number of times that the filter will be applyed\n");	
 		printf("-h: Histogram\n");	
