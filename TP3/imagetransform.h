@@ -10,3 +10,4 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols);
 int getBoolParam(int argc,char* argv[],char* param);
 int getIntParam(int argc,char* argv[],char* param,char* def);
 double *ApplyHarris(double *img1, double *img2, int height, int width);
+double *callbinomial(int times, int kernelsize, double *img, int height, int width);

@@ -553,9 +553,24 @@ double *ApplyHarris(double *img1, double *img2, int height, int width){
 			tmpImage[y*width+x]=img1[y*width+x]+img2[y*width+x];	
 		}
 	}
-
 	return tmpImage;	
 
+}
+
+double *callbinomial(int times, int kernelsize, double *img, int height, int width){
+	double *image=(double *)malloc(sizeof(double)*height*width);
+	double *kernel=binomialfilter(kernelsize);
+
+	//making a copy of the image
+	for(int x=0;x<lcols;x++)
+		for(int y=0;y<lrows;y++)
+			image[y*lcols+x]=img[y*lcols+x];
+
+	for(int x=0;x<times;x++){
+		image=ApplyConvolution(kernelsize, kernel, image, width, height);
+	}
+
+	return image;
 }
 
 int main(int argc, char* argv[]){
@@ -575,7 +590,7 @@ int main(int argc, char* argv[]){
 	if(ishist|isstretch|isequa) image_int=readimage_int(filepath);
 
 	if(isfilter){
-		int bin=getIntParam(argc,argv,"-s","0");
+		int bin=getIntParam(argc,argv,"-s","1");
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *method=getStrParam(argc,argv,"-f","binomial");
 		image=readimage(filepath);
@@ -583,9 +598,8 @@ int main(int argc, char* argv[]){
 			kernel=binomialfilter(bin);
 
 			//applying the filter n times
-			for(int x=0;x<nr;x++){
-				image=ApplyConvolution(bin, kernel, image, lrows, lcols);
-			}
+			image=callbinomial(nr, bin, image, lcols, lrows);
+			
 			printimage(image,lcols,lrows,lmaxval);
 				
 		}else if(strcmp(method,"median")==0){
@@ -637,6 +651,8 @@ int main(int argc, char* argv[]){
 			printimage(resultImage,lcols,lrows,lmaxval);
 			free(gx);
 			free(gy);				
+		}else if(strcmp(method,"harris")==0){
+			double *image_blurry=callbinomial(nr, bin, image, lcols, lrows);	
 		}
 	free(image);
 	free(kernel);
