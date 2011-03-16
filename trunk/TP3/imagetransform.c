@@ -557,6 +557,18 @@ double *ApplyHarris(double *img1, double *img2, int height, int width){
 
 }
 
+double *callgradx(int times, int kernelsize, double *img, int height, int width){
+	// DO ME
+}
+
+double *callgrady(int times, int kernelsize, double *img, int height, int width){
+	// DO ME
+}
+
+double *callgradxy(int times, int kernelsize, double *img, int height, int width){
+	// DO ME
+}
+
 double *callbinomial(int times, int kernelsize, double *img, int height, int width){
 	double *image=(double *)malloc(sizeof(double)*height*width);
 	double *kernel=binomialfilter(kernelsize);
@@ -653,6 +665,9 @@ int main(int argc, char* argv[]){
 			free(gy);				
 		}else if(strcmp(method,"harris")==0){
 			double *image_blurry=callbinomial(nr, bin, image, lcols, lrows);	
+			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
+			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
+			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
 		}
 	free(image);
 	free(kernel);
