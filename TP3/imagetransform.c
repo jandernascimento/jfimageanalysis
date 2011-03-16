@@ -543,6 +543,21 @@ void medianFilter(double * image, double * result, int N, int M){
 		}
 }
 
+double *ApplyHarris(double *img1, double *img2, int height, int width){
+       
+	double* tmpImage = (double*)(malloc(sizeof(double)*width*height));
+
+	for(int y=0;y<height;y++){
+		for(int x=0;x<width;x++){
+			//tmpImage[y*width+x]=pow(img1[y*width+x],2)+pow(img2[y*width+x],2);	
+			tmpImage[y*width+x]=img1[y*width+x]+img2[y*width+x];	
+		}
+	}
+
+	return tmpImage;	
+
+}
+
 int main(int argc, char* argv[]){
 	double* image;
 	double *kernel,*kernel2;
