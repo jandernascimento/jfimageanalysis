@@ -558,15 +558,32 @@ double *ApplyHarris(double *img1, double *img2, int height, int width){
 }
 
 double *callgradx(int times, int kernelsize, double *img, int height, int width){
-	// DO ME
+	double *kernel=sobelfilterH(3);
+	double *resultImage;
+	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
+	free(kernel);
+	return resultImage;
 }
 
 double *callgrady(int times, int kernelsize, double *img, int height, int width){
-	// DO ME
+	double *kernel=sobelfilterV(3);
+	double *resultImage;
+	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
+	free(kernel);
+	return resultImage;
 }
 
 double *callgradxy(int times, int kernelsize, double *img, int height, int width){
-	// DO ME
+	double * kernel=sobelfilterV(3);
+	double * kernel2=sobelfilterH(3);
+	double * gx=ApplyConvolution(3, kernel, img, lrows, lcols);
+	double * gy=ApplyConvolution(3, kernel2, img, lrows, lcols);
+	double *resultImage=normGradient(gx, gy, lrows, lcols);
+	free(gx);
+	free(gy);	
+	free(kernel2);
+	free(kernel);	
+	return resultImage;			
 }
 
 double *callbinomial(int times, int kernelsize, double *img, int height, int width){
@@ -574,20 +591,43 @@ double *callbinomial(int times, int kernelsize, double *img, int height, int wid
 	double *kernel=binomialfilter(kernelsize);
 
 	//making a copy of the image
-	for(int x=0;x<lcols;x++)
-		for(int y=0;y<lrows;y++)
-			image[y*lcols+x]=img[y*lcols+x];
+	for(int x=0;x<width;x++)
+		for(int y=0;y<height;y++)
+			image[y*width+x]=img[y*width+x];
 
 	for(int x=0;x<times;x++){
-		image=ApplyConvolution(kernelsize, kernel, image, width, height);
+		image=ApplyConvolution(kernelsize, kernel, image, height, width);
 	}
 
+	free(kernel);
 	return image;
 }
 
+double * callMedian(int times, int kernelsize, double *img, int height, int width){
+	double *nn=(double *)malloc(sizeof(double)*lcols*width);
+
+	//applying the filter n times
+	for(int x=0;x<times;x++){			
+
+		//making a copy of the image
+		for(int x=0;x<width;x++)
+			for(int y=0;y<height;y++)
+				nn[y*width+x]=img[y*width+x];
+
+		medianFilter(img,nn, width,height);
+
+		//replacing the image
+		for(int x=0;x<width;x++)
+			for(int y=0;y<height;y++)
+				img[y*width+x]=nn[y*width+x];
+	}
+
+	return nn;
+}
+
+
 int main(int argc, char* argv[]){
 	double* image;
-	double *kernel,*kernel2;
 	
 	int isfilter=getBoolParam(argc,argv,"-f");
 	int ishist=getBoolParam(argc,argv,"-h");
@@ -607,62 +647,20 @@ int main(int argc, char* argv[]){
 		char *method=getStrParam(argc,argv,"-f","binomial");
 		image=readimage(filepath);
 		if(strcmp(method,"binomial")==0){
-			kernel=binomialfilter(bin);
-
-			//applying the filter n times
-			image=callbinomial(nr, bin, image, lcols, lrows);
-			
-			printimage(image,lcols,lrows,lmaxval);
-				
+			image=callbinomial(nr, bin, image, lrows, lcols);			
+			printimage(image,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"median")==0){
-			double *nn;
-			nn=(double *)malloc(sizeof(double)*lcols*lrows);
-
-			//applying the filter n times
-			for(int x=0;x<nr;x++){			
-
-				//making a copy of the image
-				for(int x=0;x<lcols;x++)
-				for(int y=0;y<lrows;y++)
-					nn[y*lcols+x]=image[y*lcols+x];
-
-				medianFilter(image,nn, lcols,lrows);
-
-				//replacing the image
-				for(int x=0;x<lcols;x++)
-				for(int y=0;y<lrows;y++)
-					image[y*lcols+x]=nn[y*lcols+x];
-
-			}
-
-			printimage(nn,lcols,lrows,lmaxval);
+			image=callMedian(nr, bin, image, lrows, lcols);
+			printimage(image,lcols,lrows,lmaxval);
 		}else if(strcmp(method,"gradienty")==0){
-			kernel=sobelfilterH(3);
-			double *resultImage;
-			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
-			//for(int x=0;x<nr;x++){
-				resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
-			//}
-			printimage(resultImage,lcols,lrows,lmaxval);				
+			image=callgradx(nr, bin, image, lrows, lcols);
+			printimage(image,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"gradientx")==0){
-			kernel=sobelfilterV(3);
-			double *resultImage;
-			//resultImage=(double *)malloc(sizeof(double)*lcols*lrows);
-			//for(int x=0;x<nr;x++){
-				resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
-			//}
-			printimage(resultImage,lcols,lrows,lmaxval);				
+			image=callgrady(nr, bin, image, lrows, lcols);
+			printimage(image,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"gradientxy")==0){
-			kernel=sobelfilterV(3);
-			kernel2=sobelfilterH(3);
-			double *gx, *gy, *resultImage;
-			gx=ApplyConvolution(3, kernel, image, lrows, lcols);
-			gy=ApplyConvolution(3, kernel2, image, lrows, lcols);
-
-			resultImage=normGradient(gx, gy, lrows, lcols);
-			printimage(resultImage,lcols,lrows,lmaxval);
-			free(gx);
-			free(gy);				
+			image=callgradxy(nr, bin, image, lrows, lcols);
+			printimage(image,lcols,lrows,lmaxval);
 		}else if(strcmp(method,"harris")==0){
 			double *result;
 			result=malloc(sizeof(double)*lcols*lrows);
@@ -670,6 +668,7 @@ int main(int argc, char* argv[]){
 			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
 			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
 			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
+
 			for(int x=0;x<lcols;x++)
 				for(int y=0;y<lrows;y++){
 					int pos=y*lcols+x;
@@ -682,7 +681,6 @@ int main(int argc, char* argv[]){
 
 		}
 	free(image);
-	free(kernel);
 	}else if(ishist){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,1);
 	}else if(isstretch){
