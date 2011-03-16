@@ -332,48 +332,6 @@ void windowSort(double *window,int dim){
    }
 }
 
-/*
-double* ApplyMedian(int dim, double* image, int width, int height){
-
-  int edgex=dim/2;
-  int edgey=dim/2;
-
-  double *newimage;
-  newimage=(double *)malloc(sizeof(double)*width*height);
-
-  for(int x=0;x<width;x++)
-	for(int y=0;y<height;y++)
-		newimage[y*width+x]=0;
-
-  for(int x=(0+edgex);x<(width-edgex);x++){
-    for(int y=(0+edgey);y<(height-edgey);y++){
-      double* window;
-      window=(double *)malloc(sizeof(double)*dim*dim);
-      for(int wx=0;wx<dim;wx++){
-        for(int wy=0;wy<dim;wy++){
-	  int convx=x+wx-edgex;
-	  int convy=y+wy-edgey;
-	  //printf("acessing x:%i, y:%i / x:%i, y:%i \n",x,y,convx,convy);//convx,convy);
-        //  if(!(convx<width&&convy<height)||convx<0||convy<0){
-	//  	window[wy*dim+wx]=1;
-	//	continue; //printf("acessing x:%i, y:%i\n",convx,convy);
-	//  }
-	  window[wy*dim+wx]=image[dim*convy+convx];
-        }
-      }
-      //free(window);
-      windowSort(window,dim);
-      //printf("******** FOR x:%i, y:%i ************\n",x,y);
-      //printkernel(3,window);
-      newimage[y*width+x]=window[5];//window[edgey*dim+edgex];
-    }
-  }
-
-  return newimage;
-  
-}
-*/
-
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW){
        int j;  // row    index of the current image
        int i;  // column index of the current image
@@ -418,6 +376,10 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
        return tmpImage;
 }
 
+
+double* sobelfilter(int val){
+
+}
 
 double* binomialfilter(int val)
 {
@@ -469,7 +431,6 @@ double* binomialfilter(int val)
 		return kernel;
 	}
 	exit(-1);
-	//return kernel;
 }
 
 /** Code for filtering:end **/
