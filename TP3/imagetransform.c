@@ -377,10 +377,6 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
 }
 
 double* sobelfilterH(int val){
-	// First way
-	//double kernel[9]={-1, -2, -1,
-	//		   0,  0,  0,
-	//		   1,  2,  1};
 	double *kernel = (double*)malloc(sizeof(double)*val*val);
 	
 	if(val==3){
@@ -403,11 +399,23 @@ double* sobelfilterH(int val){
 }
 
 double* sobelfilterV(int val){
-	// First way
-	double kernel[9]={-1, 0, 1,
-			  -2, 0, 2,
-			  -1, 2, 1};
-	return kernel;
+	double *kernel = (double*)malloc(sizeof(double)*val*val);
+	
+	if(val==3){
+		kernel[0*3+0]=-1;
+		kernel[0*3+1]=0;
+		kernel[0*3+2]=1;
+
+		kernel[1*3+0]=-2;
+		kernel[1*3+1]=0;
+		kernel[1*3+2]=2;
+
+		kernel[2*3+0]=-1;
+		kernel[2*3+1]=0;
+		kernel[2*3+2]=1;
+		return kernel;
+	}	
+	exit(-1);
 
 }
 
