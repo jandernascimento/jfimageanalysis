@@ -419,13 +419,13 @@ double* sobelfilterV(int val){
 
 }
 
-double * normGradient(double *gx, double *gy, int dim){
-	double * g = (double *) malloc(sizeof(double)*dim*dim);
-	for (int i=0;i<dim;i++)
-		for (int j=0;j<dim;j++){
-			int val1 = pow(gx[j*dim+i], 2);
-			int val2 = pow(gy[j*dim+i], 2);
-			g[j*dim+i] = sqrt( val1 + val2);
+double * normGradient(double *gx, double *gy, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			int val1 = pow(gx[y*lcols+x], 2);
+			int val2 = pow(gy[y*lcols+x], 2);
+			g[y*lcols+x] = sqrt( val1 + val2);
 		}
 
 	return g;
@@ -618,22 +618,7 @@ int main(int argc, char* argv[]){
 			gx=ApplyConvolution(3, kernel, image, lrows, lcols);
 			gy=ApplyConvolution(3, kernel2, image, lrows, lcols);
 
-			//temp code
-			/*double* tmpImage = (double*)(malloc(sizeof(double)*9));
-			kernel[0*3+0]=1;
-		kernel[0*3+1]=2;
-		kernel[0*3+2]=1;
-
-		kernel[1*3+0]=2;
-		kernel[1*3+1]=4;
-		kernel[1*3+2]=2;
-
-		kernel[2*3+0]=1;
-		kernel[2*3+1]=2;
-		kernel[2*3+2]=1;*/
-
-			//
-			resultImage=normGradient(gx, gy, 3);
+			resultImage=normGradient(gx, gy, lrows, lcols);
 			printimage(resultImage,lcols,lrows,lmaxval);
 			free(gx);
 			free(gy);				
