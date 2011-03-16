@@ -1,0 +1,12 @@
+int getMin(gray* graymap);
+int getMax(gray* graymap);
+int getcdfMin(int * valueshisto);
+int * generateHistogramValues(char * title, gray* graymap, int print);
+int getPixel(char *image,int width, int height, int x,int y);
+double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW);
+double* sobelfilterH(int val);
+double* sobelfilterV(int val);
+double * normGradient(double *gx, double *gy, int lrows, int lcols);
+int getBoolParam(int argc,char* argv[],char* param);
+int getIntParam(int argc,char* argv[],char* param,char* def);
+double *ApplyHarris(double *img1, double *img2, int height, int width);
