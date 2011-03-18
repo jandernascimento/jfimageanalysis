@@ -668,15 +668,18 @@ int main(int argc, char* argv[]){
 			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
 			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
 			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
-			for(int x=0;x<lcols;x++)
-				for(int y=0;y<lrows;y++){
-					int pos=y*lcols+x;
+			for(int y=0;y<lrows;y++){
+				for(int x=0;x<lcols;x++){
+					int pos;
+					double part=0;
+					pos=y*lcols+x;
 					double a=image_grad_x[pos];
 					double b=image_grad_y[pos];
 					double c=image_grad_xy[pos];
-					double part=(a*b-c*c)-2*pow(a+b,2);
-					result[pos]=part<0?255:0;
+					part=(a*b-c*c)-0.04*pow(a+b,2);
+					result[pos]=part<-18000?255:0;
 				}
+			}
 			printimage(result,lcols,lrows,lmaxval);
 
 		}
