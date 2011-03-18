@@ -642,7 +642,7 @@ int main(int argc, char* argv[]){
 	if(ishist|isstretch|isequa) image_int=readimage_int(filepath);
 
 	if(isfilter){
-		int bin=getIntParam(argc,argv,"-s","1");
+		int bin=getIntParam(argc,argv,"-s","3");
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *method=getStrParam(argc,argv,"-f","binomial");
 		image=readimage(filepath);
@@ -663,19 +663,19 @@ int main(int argc, char* argv[]){
 			printimage(image,lcols,lrows,lmaxval);
 		}else if(strcmp(method,"harris")==0){
 			double *result;
-			result=malloc(sizeof(double)*lcols*lrows);
+			result=(double *)malloc(sizeof(double)*lcols*lrows);
 			double *image_blurry=callbinomial(nr, bin, image, lcols, lrows);	
 			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
 			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
 			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
-
 			for(int x=0;x<lcols;x++)
 				for(int y=0;y<lrows;y++){
 					int pos=y*lcols+x;
 					double a=image_grad_x[pos];
 					double b=image_grad_y[pos];
 					double c=image_grad_xy[pos];
-					result[pos]=(a*b-pow(c,2))-2*pow(a+b,2);
+					double part=(a*b-c*c)-2*pow(a+b,2);
+					result[pos]=part<0?255:0;
 				}
 			printimage(result,lcols,lrows,lmaxval);
 
