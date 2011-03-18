@@ -558,14 +558,6 @@ double *ApplyHarris(double *img1, double *img2, int height, int width){
 }
 
 double *callgradx(int times, int kernelsize, double *img, int height, int width){
-	double *kernel=sobelfilterH(3);
-	double *resultImage;
-	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
-	free(kernel);
-	return resultImage;
-}
-
-double *callgrady(int times, int kernelsize, double *img, int height, int width){
 	double *kernel=sobelfilterV(3);
 	double *resultImage;
 	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
@@ -573,16 +565,24 @@ double *callgrady(int times, int kernelsize, double *img, int height, int width)
 	return resultImage;
 }
 
+double *callgrady(int times, int kernelsize, double *img, int height, int width){
+	double *kernel=sobelfilterH(3);
+	double *resultImage;
+	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
+	free(kernel);
+	return resultImage;
+}
+
 double *callgradxy(int times, int kernelsize, double *img, int height, int width){
-	double * kernel=sobelfilterV(3);
-	double * kernel2=sobelfilterH(3);
-	double * gx=ApplyConvolution(3, kernel, img, lrows, lcols);
-	double * gy=ApplyConvolution(3, kernel2, img, lrows, lcols);
+	double * kernelV=sobelfilterV(3);
+	double * kernelH=sobelfilterH(3);
+	double * gx=ApplyConvolution(3, kernelV, img, lrows, lcols);
+	double * gy=ApplyConvolution(3, kernelH, img, lrows, lcols);
 	double *resultImage=normGradient(gx, gy, lrows, lcols);
 	free(gx);
 	free(gy);	
-	free(kernel2);
-	free(kernel);	
+	free(kernelV);
+	free(kernelH);	
 	return resultImage;			
 }
 
@@ -653,10 +653,10 @@ int main(int argc, char* argv[]){
 			image=callMedian(nr, bin, image, lrows, lcols);
 			printimage(image,lcols,lrows,lmaxval);
 		}else if(strcmp(method,"gradienty")==0){
-			image=callgradx(nr, bin, image, lrows, lcols);
+			image=callgrady(nr, bin, image, lrows, lcols);
 			printimage(image,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"gradientx")==0){
-			image=callgrady(nr, bin, image, lrows, lcols);
+			image=callgradx(nr, bin, image, lrows, lcols);
 			printimage(image,lcols,lrows,lmaxval);				
 		}else if(strcmp(method,"gradientxy")==0){
 			image=callgradxy(nr, bin, image, lrows, lcols);
