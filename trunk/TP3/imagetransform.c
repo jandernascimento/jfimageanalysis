@@ -275,7 +275,7 @@ double* readimage(char* filepath)
 */
     ifp = fopen(filepath/*argv[1]*/,"r");
     if (ifp == NULL) {
-      printf("erreur d'ouverture du fichier %s\n", filepath);
+      fprintf(stderr,"Error openning the file, check if you specified -i. Path: %s\n", filepath);
       exit(1);
     }
 
@@ -676,8 +676,8 @@ int main(int argc, char* argv[]){
 					double a=image_grad_x[pos];
 					double b=image_grad_y[pos];
 					double c=image_grad_xy[pos];
-					part=(a*b-c*c)-0.04*pow(a+b,2);
-					result[pos]=part<-18000?255:0;
+					part=(a*b-c*c)-0.01*pow(a+b,2);
+					result[pos]=part<0?255:0;
 				}
 			}
 			printimage(result,lcols,lrows,lmaxval);
