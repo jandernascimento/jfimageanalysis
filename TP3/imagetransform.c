@@ -421,11 +421,14 @@ double* sobelfilterV(int val){
 
 double * normGradient(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
-	for (int x=0;x<lcols;x++)
-		for (int y=0;y<lrows;y++){
-			int val1 = pow(gx[y*lcols+x], 2);
-			int val2 = pow(gy[y*lcols+x], 2);
-			g[y*lcols+x] = sqrt( val1 + val2);
+	for (int x=0;x<lrows;x++)
+		for (int y=0;y<lcols;y++){
+			int val1 = gx[x*lcols+y];
+			int val2 = gy[x*lcols+y];
+			//g[x*lcols+y] = val2;//abs(val1-val2);
+			//int val1 = pow(gx[y*lcols+x], 2);
+			//int val2 = pow(gy[y*lcols+x], 2);
+			g[x*lcols+y] = sqrt( pow(val1,2) + pow(val2,2));
 		}
 
 	return g;
@@ -677,7 +680,7 @@ int main(int argc, char* argv[]){
 					double b=image_grad_y[pos];
 					double c=image_grad_xy[pos];
 					part=(a*b-c*c)-0.01*pow(a+b,2);
-					result[pos]=part<0?255:0;
+					result[pos]=part<0?0:255;
 				}
 			}
 			printimage(result,lcols,lrows,lmaxval);
