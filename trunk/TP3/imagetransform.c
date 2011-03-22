@@ -421,16 +421,46 @@ double* sobelfilterV(int val){
 
 double * normGradient(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
-	for (int x=0;x<lrows;x++)
-		for (int y=0;y<lcols;y++){
-			int val1 = gx[x*lcols+y];
-			int val2 = gy[x*lcols+y];
-			g[x*lcols+y] = sqrt( pow(val1,2) + pow(val2,2));
-			//g[x*lcols+y] = abs(val1-val2);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			int val1 = gx[y*lcols+x] * gx[y*lcols+x];
+			int val2 = gy[y*lcols+x] * gy[y*lcols+x];
+			g[y*lcols+x] = sqrt( val1 + val2);
 		}
 
 	return g;
 }
+
+double * calc_xx(double *gx, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gx[y*lcols+x] * gx[y*lcols+x];
+		}
+
+	return g;
+}
+
+double * calc_yy(double *gy, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gy[y*lcols+x] * gy[y*lcols+x];
+		}
+
+	return g;
+}
+
+double * calc_xy(double *gx, double *gy, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gx[y*lcols+x] * gy[y*lcols+x];
+		}
+
+	return g;
+}
+
 
 double* binomialfilter(int val)
 {
@@ -627,9 +657,7 @@ double * callMedian(int times, int kernelsize, double *img, int height, int widt
 }
 
 
-int main(int argc, char* argv[]){
-	double* image;
-	
+int main(int argc, char* argv[]){	
 	int isfilter=getBoolParam(argc,argv,"-f");
 	int ishist=getBoolParam(argc,argv,"-h");
 	int isstretch=getBoolParam(argc,argv,"-s");
@@ -643,6 +671,7 @@ int main(int argc, char* argv[]){
 	if(ishist|isstretch|isequa) image_int=readimage_int(filepath);
 
 	if(isfilter){
+		double* image;
 		int bin=getIntParam(argc,argv,"-s","3");
 		int nr=getIntParam(argc,argv,"-n","1");
 		char *method=getStrParam(argc,argv,"-f","binomial");
@@ -665,10 +694,17 @@ int main(int argc, char* argv[]){
 		}else if(strcmp(method,"harris")==0){
 			double *result;
 			result=(double *)malloc(sizeof(double)*lcols*lrows);
-			double *image_blurry=callbinomial(nr, bin, image, lcols, lrows);	
+	
 			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
-			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);	
-			double *image_grad_xy=callgradxy(nr, bin, image, lcols, lrows);	
+			image_grad_x=calc_xx(image_grad_x, lcols, lrows);
+			image_grad_x=callbinomial(2, 3, image_grad_x, lcols, lrows);	//smothing
+
+			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);
+			image_grad_y=calc_yy(image_grad_y, lcols, lrows);
+			image_grad_y=callbinomial(2, 3, image_grad_y, lcols, lrows);  //smothing
+
+			double *image_grad_xy=calc_xy(image_grad_x, image_grad_y, lcols, lrows);
+			image_grad_xy=callbinomial(2, 3, image_grad_xy, lcols, lrows);  //smothing		
 			for(int y=0;y<lrows;y++){
 				for(int x=0;x<lcols;x++){
 					int pos;
@@ -677,8 +713,11 @@ int main(int argc, char* argv[]){
 					double a=image_grad_x[pos];
 					double b=image_grad_y[pos];
 					double c=image_grad_xy[pos];
-					part=(a*b-c*c)-0.01*pow(a+b,2);
-					result[pos]=part<0?255:0;
+
+					part=((a*b)-(c*c))-(0.04*pow(a+b,2));
+					//result[pos]=part<-18000?255:0;
+					result[pos]=part<0?0:255;
+					//result[pos]=part;//<255?0:255;
 				}
 			}
 			printimage(result,lcols,lrows,lmaxval);
@@ -707,5 +746,6 @@ int main(int argc, char* argv[]){
 
 
         if(ishist|isstretch|isequa) free(image_int);
+	if(ishist|isequa) free(valueshisto);
 	return 0;
 }
