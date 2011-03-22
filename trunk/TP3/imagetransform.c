@@ -425,8 +425,8 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols){
 		for (int y=0;y<lcols;y++){
 			int val1 = gx[x*lcols+y];
 			int val2 = gy[x*lcols+y];
-			//g[x*lcols+y] = sqrt( pow(val1,2) + pow(val2,2));
-			g[x*lcols+y] = abs(val1-val2);
+			g[x*lcols+y] = sqrt( pow(val1,2) + pow(val2,2));
+			//g[x*lcols+y] = abs(val1-val2);
 		}
 
 	return g;
