@@ -33,7 +33,7 @@
 \label{eq:gradient}
 \end{equation}
 
-The gradient can be reached in several manners, the performance and accuracy contraints may dictate which method best fits. 
+The gradient can be reached in several manners, the performance and accuracy constraints may dictate which method best fits. 
 
 For this specific project, the method adopted was a kernel convolution with the sobel operator, that is an approximation of the integral. 
 
@@ -63,9 +63,9 @@ The both sobel operators, horizontal and vertical, can be seen in the the Table 
 
 There exist several filters that can be used to find the gradient. e.g: sobel and prewitt. Here was used the sobel operator to reach the results.
 
-The sobel operator is a pair of kernels (one for vertical and one horizontal edges detection) which can be convoluted which the image to obtain their respective gradient.
+The sobel operator is a pair of kernels (one for vertical and one horizontal detection) which can be convolved with the source image to obtain its gradient.
 
-In the Figure \ref{fig:gradient} we can see the result of the horizontal and vertical gradient.
+In the Figure \ref{fig:gradient} we can see the result of the horizontal and vertical gradients.
 
 	\begin{figure}[H]
 	\centering
@@ -79,9 +79,9 @@ In the Figure \ref{fig:gradient} we can see the result of the horizontal and ver
 
 \section{Gradient Norm}
 
-Gradient norm is the mathematical representation of the vector. This can be reached through one of the two Equations \ref{equa:norm1} or \ref{equa:norm2}.
+Gradient Norm is the representation of the gradient normal vector. This can be reached through one of the two Equations \ref{equa:norm1} or \ref{equa:norm2}.
 
-The result of the Gradient norm can be seen in the Figure \ref{fig:norm_gradient}. 
+The result of the Gradient Norm can be seen in the Figure \ref{fig:norm_gradient}. 
 
 \begin{figure}[H]
 	\centering
@@ -111,7 +111,7 @@ Both Equations are valid, but once more the computational costs differs from one
 
 \section{Corner Detection}
 	
-	Feature detection is an approach in Image Analysis that can extract interest points from the image. An interest point is a point in an image which has a well-defined position and can be robustly detected. Interest points can be corners, T-junctions or points with high texture variations. A large amount of interest points detectors has been already proposed in the litterature. In practice, most so-called corner detection methods detect interest points in general, rather than corners in particular. However, most of these works assume that key points are equivalent to points characterized by a significant gradient amount in more than one direction.
+	Feature detection is an approach in Image Analysis that can extract interest points from the image. An interest point is a point in an image which has a well-defined position and can be robustly detected. Interest points can be corners, T-junctions or points with high texture variations. A large amount of interest points detectors has been already proposed in the literature. In practice, most so-called corner detection methods detect interest points in general, rather than corners in particular. However, most of these works assume that key points are equivalent to points characterized by a significant gradient amount in more than one direction.
 
 	The one of the earliest corner detector was Moravec. This operator computes the average change in image intensity, \textit{E(x,y)} when a window \textit{W} is shifted around a pixel \textit{(x,y)} in several directions. In an homogeneous region, \textit{E} is small for any displacement. When located on an edge pixel, the minimum value of \textit{E} is related to the edge direction and so is also small. But for corner pixel or a more complicated junction, any displacement results in a non zero value for \textit{E}.
 	
@@ -123,7 +123,7 @@ Both Equations are valid, but once more the computational costs differs from one
 
 	where \textit{I} is the input image and \textit{w} is the local window.
 	\\\\
-	The main problem with Moravec detector is that it considers only a small set of possible shifts, which means that if an edge is present that is not in the direction of the neighbours, then it will not be detected as an interest point. This problem was solved in the Harris corner detector (Harris and Stephens, 1988) by extending this measure to any directions using a Taylor expansion about the shift origin, i.e. for small shifts (x,y):
+	The main problem with Moravec detector is that it considers only a small set of possible shifts, which means that if an edge is present that is not in the direction of the neighbors, then it will not be detected as an interest point. This problem was solved in the Harris corner detector (Harris and Stephens, 1988) by extending this measure to any directions using a Taylor expansion about the shift origin, i.e. for small shifts (x,y):
 
 	\begin{equation}
 	E(x,y) = \sum_{u,v} w_{u,v}   |x \frac{\partial I}{\partial x} + y \frac{\partial I}{\partial y} + O(x^2,y^2)|^2
@@ -149,7 +149,7 @@ Both Equations are valid, but once more the computational costs differs from one
 
 	and  * means the convolution product.
 	\\\\
-	If a circular window (or circularly weighted window, such as a Gaussian) is used, then the response will be isotropic, which means that even if an edge is present that is not in the direction of the neighbours, it will be detected as an interest point.
+	If a circular window (or circularly weighted window, such as a Gaussian) is used, then the response will be isotropic, which means that even if an edge is present that is not in the direction of the neighbors, it will be detected as an interest point.
 
 	The Equation can be rewritten as:
 
