@@ -423,9 +423,15 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
 		for (int y=0;y<lrows;y++){
+			/*/sqrt (val1*val1 + val2*val2)
 			int val1 = gx[y*lcols+x] * gx[y*lcols+x];
 			int val2 = gy[y*lcols+x] * gy[y*lcols+x];
-			g[y*lcols+x] = sqrt( val1 + val2);
+			g[y*lcols+x] = sqrt( val1 + val2);//*/
+
+			//mod(val1)+mod(val2)
+			int val1 = gx[y*lcols+x];
+			int val2 = gy[y*lcols+x];
+			g[y*lcols+x] = abs( val1 + val2);//*/
 		}
 
 	return g;
@@ -591,7 +597,7 @@ double *ApplyHarris(double *img1, double *img2, int height, int width){
 double *callgradx(int times, int kernelsize, double *img, int height, int width){
 	double *kernel=sobelfilterV(3);
 	double *resultImage;
-	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
+	resultImage=ApplyConvolution(3, kernel, img, height, width);
 	free(kernel);
 	return resultImage;
 }
@@ -599,7 +605,7 @@ double *callgradx(int times, int kernelsize, double *img, int height, int width)
 double *callgrady(int times, int kernelsize, double *img, int height, int width){
 	double *kernel=sobelfilterH(3);
 	double *resultImage;
-	resultImage=ApplyConvolution(3, kernel, img, lrows, lcols);
+	resultImage=ApplyConvolution(3, kernel, img, height, width);
 	free(kernel);
 	return resultImage;
 }
@@ -607,9 +613,9 @@ double *callgrady(int times, int kernelsize, double *img, int height, int width)
 double *callgradxy(int times, int kernelsize, double *img, int height, int width){
 	double * kernelV=sobelfilterV(3);
 	double * kernelH=sobelfilterH(3);
-	double * gx=ApplyConvolution(3, kernelV, img, lrows, lcols);
-	double * gy=ApplyConvolution(3, kernelH, img, lrows, lcols);
-	double *resultImage=normGradient(gx, gy, lrows, lcols);
+	double * gx=ApplyConvolution(3, kernelV, img, height, width);
+	double * gy=ApplyConvolution(3, kernelH, img, height, width);
+	double *resultImage=normGradient(gx, gy, height, width);
 	free(gx);
 	free(gy);	
 	free(kernelV);
@@ -635,7 +641,7 @@ double *callbinomial(int times, int kernelsize, double *img, int height, int wid
 }
 
 double * callMedian(int times, int kernelsize, double *img, int height, int width){
-	double *nn=(double *)malloc(sizeof(double)*lcols*width);
+	double *nn=(double *)malloc(sizeof(double)*height*width);
 
 	//applying the filter n times
 	for(int x=0;x<times;x++){			
@@ -695,29 +701,27 @@ int main(int argc, char* argv[]){
 			double *result;
 			result=(double *)malloc(sizeof(double)*lcols*lrows);
 	
-			double *image_grad_x=callgradx(nr, bin, image, lcols, lrows);	
-			image_grad_x=calc_xx(image_grad_x, lcols, lrows);
-			image_grad_x=callbinomial(2, 3, image_grad_x, lcols, lrows);	//smothing
+			double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
+			double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
+			double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
 
-			double *image_grad_y=callgrady(nr, bin, image, lcols, lrows);
-			image_grad_y=calc_yy(image_grad_y, lcols, lrows);
-			image_grad_y=callbinomial(2, 3, image_grad_y, lcols, lrows);  //smothing
+			image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
+			image_grad_x2=callbinomial(1, 3, image_grad_x2, lrows, lcols);	//smothing
+			image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
+			image_grad_y2=callbinomial(1, 3, image_grad_y2, lrows, lcols);  //smothing
+			image_grad_xy=callbinomial(1, 3, image_grad_xy, lrows, lcols);  //smothing		
 
-			double *image_grad_xy=calc_xy(image_grad_x, image_grad_y, lcols, lrows);
-			image_grad_xy=callbinomial(2, 3, image_grad_xy, lcols, lrows);  //smothing		
 			for(int y=0;y<lrows;y++){
 				for(int x=0;x<lcols;x++){
 					int pos;
 					double part=0;
 					pos=y*lcols+x;
-					double a=image_grad_x[pos];
-					double b=image_grad_y[pos];
+					double a=image_grad_x2[pos];
+					double b=image_grad_y2[pos];
 					double c=image_grad_xy[pos];
 
-					part=((a*b)-(c*c))-(0.04*pow(a+b,2));
-					//result[pos]=part<-18000?255:0;
+					part=((a*b)-(c*c))-(0.00001*pow(a+b,2));
 					result[pos]=part<0?0:255;
-					//result[pos]=part;//<255?0:255;
 				}
 			}
 			printimage(result,lcols,lrows,lmaxval);
@@ -735,7 +739,7 @@ int main(int argc, char* argv[]){
 		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
 		printf("OPTIONS: \n");	
 		printf("-i S: input file\n");	
-		printf("-f [median|binomial|gradientx|gradienty|gradientxy]: chooser the filter\n");	
+		printf("-f [median|binomial|gradientx|gradienty|gradientxy|harris]: chooser the filter\n");	
 		printf("-s N: size of the kernel\n");	
 		printf("-n N: number of times that the filter will be applyed\n");	
 		printf("-h: Histogram\n");	
