@@ -423,15 +423,15 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
 		for (int y=0;y<lrows;y++){
-			/*/sqrt (val1*val1 + val2*val2)
+			//sqrt (val1*val1 + val2*val2)
 			int val1 = gx[y*lcols+x] * gx[y*lcols+x];
 			int val2 = gy[y*lcols+x] * gy[y*lcols+x];
 			g[y*lcols+x] = sqrt( val1 + val2);//*/
 
-			//mod(val1)+mod(val2)
+			/*/mod(val1)+mod(val2)
 			int val1 = gx[y*lcols+x];
 			int val2 = gy[y*lcols+x];
-			g[y*lcols+x] = abs( val1 + val2);//*/
+			g[y*lcols+x] = abs( val1 - val2);//*/
 		}
 
 	return g;
@@ -720,7 +720,7 @@ int main(int argc, char* argv[]){
 					double b=image_grad_y2[pos];
 					double c=image_grad_xy[pos];
 
-					part=((a*b)-(c*c))-(0.00001*pow(a+b,2));
+					part=((a*b)-(c*c))-(0.00004*pow(a+b,2));
 					result[pos]=part<0?0:255;
 				}
 			}
