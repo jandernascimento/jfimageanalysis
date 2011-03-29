@@ -698,6 +698,8 @@ int main(int argc, char* argv[]){
 			image=callgradxy(nr, bin, image, lrows, lcols);
 			printimage(image,lcols,lrows,lmaxval);
 		}else if(strcmp(method,"harris")==0){
+			char *alphastr=getStrParam(argc,argv,"-a","0.01");
+			float alpha=strtof(alphastr,NULL);
 			double *result;
 			result=(double *)malloc(sizeof(double)*lcols*lrows);
 	
@@ -720,7 +722,7 @@ int main(int argc, char* argv[]){
 					double b=image_grad_y2[pos];
 					double c=image_grad_xy[pos];
 
-					part=((a*b)-(c*c))-(0.00004*pow(a+b,2));
+					part=((a*b)-(c*c))-(alpha*pow(a+b,2));
 					result[pos]=part<0?0:255;
 				}
 			}
@@ -736,6 +738,7 @@ int main(int argc, char* argv[]){
 		valueshisto=generateHistogramValues("\nHistogram's values\n\n",image_int,0);
 		equalizingHistogram("\nEqualized Histogram's values\n\n",image_int,valueshisto);
 	}else{
+
 		printf("Usage: cmd -i -[fsn|h|e|s]\n");	
 		printf("OPTIONS: \n");	
 		printf("-i S: input file\n");	
@@ -745,6 +748,7 @@ int main(int argc, char* argv[]){
 		printf("-h: Histogram\n");	
 		printf("-e: Equalization\n");	
 		printf("-s: Stretching\n");
+		printf("-a: alpha for harris(works just with -f harris\n");
 		exit(0);	
 	}
 
