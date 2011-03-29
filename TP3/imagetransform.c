@@ -748,7 +748,7 @@ int main(int argc, char* argv[]){
 		printf("-h: Histogram\n");	
 		printf("-e: Equalization\n");	
 		printf("-s: Stretching\n");
-		printf("-a: alpha for harris(works just with -f harris\n");
+		printf("-a: alpha for harris(works just with -f harris)\n");
 		exit(0);	
 	}
 
