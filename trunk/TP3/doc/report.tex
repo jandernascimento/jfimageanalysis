@@ -174,15 +174,23 @@ Both Equations are valid, but once more the computational costs differs from one
 
 	with: \textit{det(M) = AB-$C^2$} and \textit{trace(M) = A+B}
 	\\\\
-	The number of detected corners (local positive maxima of H) highly depends on the value of the parameter \textit{$\alpha$}. As greater \textit{$\alpha$} is, as greater the number of corner are detected.
-	
-	In Figure \ref{fig:harris} we can see one example of the Harris Detector applied in an image.
+	The number of detected corners (local positive maxima of H) highly depends on the value of the parameter \textit{$\alpha$}. As smaller \textit{$\alpha$} is, as greater the number of corner are detected. In Figure \ref{fig:harris} we can see one example of the Harris Detector applied in an image with different values for \textit{$\alpha$}.
 
 	\begin{figure}[H]
 	\centering
-	\includegraphics[width=0.3\textwidth]{../img/lennaharris}
-	\caption{Harris Operator}
+	\includegraphics[width=0.5\textwidth]{../img/grenoble}
+	\caption{Original Image}
 	\label{fig:harris}
+	\end{figure}
+
+	\begin{figure}[H]
+	\centering
+	\subfloat[$\alpha$=0.8]{\includegraphics[width=0.3\textwidth]{../img/final_08}}            
+	\hspace{0.1cm}
+	\subfloat[$\alpha$=0.4]{\includegraphics[width=0.3\textwidth]{../img/final_04}}            
+	\hspace{0.1cm}
+	\subfloat[$\alpha$=0.1]{\includegraphics[width=0.3\textwidth]{../img/final_01}}            
+	\caption{Harris Detector}
 	\end{figure}
 	
 	\subsection{How to run?}
@@ -200,7 +208,7 @@ Both Equations are valid, but once more the computational costs differs from one
 
 	\begin{itemize}
 		\item Harris corner detection:
-		\subitem ./imagetransform -f harris -i image\_in.pgm $>$ image\_out.pgm
+		\subitem ./imagetransform -i image\_in.pgm -f harris -a 0.4 $>$ image\_out.pgm
 	\end{itemize}
 
 	You can always type {\it ./imagetransform --help} to check for more options. 
