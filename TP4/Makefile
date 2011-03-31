@@ -20,8 +20,9 @@ showregion : showregion.o Util.o
 
 #pgmtopgm : pgmtopgm.o Util.o
 
-clean :
+clean : .PHONY
 	@rm -f *.o
+	@rm showregion
 
 cleanall : clean
 	@rm -f $(PROG)
