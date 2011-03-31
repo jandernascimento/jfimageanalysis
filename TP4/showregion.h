@@ -1,4 +1,5 @@
 #include "Util.h"
+#define DPC 3 //data per cell information
 // STRUCTURE
 
 typedef struct tpixel {
@@ -19,6 +20,7 @@ typedef struct timage {
 // METHODS
 pimage_type readimage(char* filepath);
 void printimage(pimage_type image);
-pixel_type get_pixel(pimage_type image,int x, int y);
+ppixel_type get_pixel(pimage_type image,int x, int y);
 int pixel_distance(pimage_type image,pixel_type p1,pixel_type p2);
-pixel_type pixel_middle(pixel_type p1,pixel_type p2);
+ppixel_type pixel_middle(ppixel_type p1,ppixel_type p2);
+void assign_to_group(pimage_type image, ppixel_type keys, int size);
