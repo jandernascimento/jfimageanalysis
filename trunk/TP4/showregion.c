@@ -65,7 +65,6 @@ gray* readimage(char* filepath)
     /* Lecture */
     for(int i=0; i < rows; i++){
       for(int j=0; j < cols ; j++){
-	fprintf(stderr,"Indo..");
 	imagemap[DPC* i * cols + DPC*j + 0] = pm_getint(ifp);
 	imagemap[DPC* i * cols + DPC*j + 1] = pm_getint(ifp);
 	imagemap[DPC* i * cols + DPC*j + 2] = pm_getint(ifp);
