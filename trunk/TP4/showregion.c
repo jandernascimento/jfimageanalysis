@@ -3,6 +3,69 @@
 #include "showregion.h"
 #define DPC 3 //data per cell information
 
+//Finds the position in between the two pixels (euclidian in 3d space)
+//DO ME
+pixel_type pixel_middle(pixel_type p1,pixel_type p2){
+
+  pixel_type p;
+
+  return p;
+}
+
+void find_groups(pimage_type image,ppixel_type pixels,int size){
+
+	//pixel_type pixels_k[size];
+
+	for(int y;y<image->rows;y++){
+
+		for(int x;x<image->cols;x++){
+			
+			for(int j=0;j<size;j++){
+
+				pixel_type k=pixels[j];
+				pixel_type pix=get_pixel(image,x,y);
+			
+				pixel_type middle=pixel_middle(k,pix);			
+
+			}
+		}
+
+	}
+
+
+
+}
+
+//Computes the distance between two pixels with euclidian
+//DO ME
+int pixel_distance(pimage_type image,pixel_type p1,pixel_type p2){
+
+  return 0;
+
+}
+
+pixel_type get_pixel(pimage_type image,int x, int y){
+
+  pixel_type pixel;
+  pixel.r=image->stream[DPC*y * image->cols + DPC*x+0];
+  pixel.g=image->stream[DPC*y * image->cols + DPC*x+1];
+  pixel.b=image->stream[DPC*y * image->cols + DPC*x+2];
+  pixel.x=x;
+  pixel.y=y;
+  return pixel;
+
+}
+
+
+void set_pixel(pimage_type image,int x, int y, pixel_type pixel ){
+
+  image->stream[DPC*y * image->cols + DPC*x+0]=pixel.r;
+  image->stream[DPC*y * image->cols + DPC*x+1]=pixel.g;
+  image->stream[DPC*y * image->cols + DPC*x+2]=pixel.b;
+
+
+}
+
 void printimage(pimage_type image){
 
     printf("P3\n");
@@ -11,9 +74,13 @@ void printimage(pimage_type image){
 
     for(int i=0; i < image->rows; i++)
       for(int j=0; j < image->cols ; j++){
-	printf("%u ",image->stream[DPC*i * image->cols + DPC*j+0] );
-	printf("%u ",image->stream[DPC*i * image->cols + DPC*j+1] );
-	printf("%u \n",image->stream[DPC*i * image->cols + DPC*j+2] );
+	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+0] );
+	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+1] );
+	//printf("%u \n",image->stream[DPC*i * image->cols + DPC*j+2] );
+	printf("%u ",get_pixel(image,j,i).r);
+	printf("%u ",get_pixel(image,j,i).g);
+	printf("%u \n",get_pixel(image,j,i).b);
+        
       }
 
 }
@@ -53,17 +120,22 @@ pimage_type readimage(char* filepath)
 
     /* Allocation memoire  */
     imagemap = (gray *) malloc(3 * image->cols * image->rows * sizeof(gray));
+    image->stream=imagemap;
 
     /* Lecture */
     for(int i=0; i < image->rows; i++){
       for(int j=0; j < image->cols ; j++){
-	imagemap[DPC* i * image->cols + DPC*j + 0] = pm_getint(ifp);
-	imagemap[DPC* i * image->cols + DPC*j + 1] = pm_getint(ifp);
-	imagemap[DPC* i * image->cols + DPC*j + 2] = pm_getint(ifp);
+	//imagemap[DPC* i * image->cols + DPC*j + 0] = pm_getint(ifp);
+	//imagemap[DPC* i * image->cols + DPC*j + 1] = pm_getint(ifp);
+	//imagemap[DPC* i * image->cols + DPC*j + 2] = pm_getint(ifp);
+	pixel_type pixel;
+	pixel.r=pm_getint(ifp);
+	pixel.g=pm_getint(ifp);
+	pixel.b=pm_getint(ifp);
+	set_pixel(image,j,i,pixel);
 	}
      }
 
-     image->stream=imagemap;
 
       /* fermeture */
       fclose(ifp);
