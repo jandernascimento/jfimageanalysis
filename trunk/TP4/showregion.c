@@ -1,17 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "showregion.h"
-#define DPC 3 //data per cell information
 
 //Finds the position in between the two pixels (euclidian in 3d space)
 //DO ME
-pixel_type pixel_middle(pixel_type p1,pixel_type p2){
+ppixel_type pixel_middle(ppixel_type p1,ppixel_type p2){
 
-  pixel_type p;
+  ppixel_type p;
 
   return p;
 }
 
+//Assign the color of the pixel as the same color as the closest key (list of k's)
+//DO ME
+void assign_to_group(pimage_type image, ppixel_type keys, int size){
+
+}
+
+//Calculates what is the middle pixel (final k)
 void find_groups(pimage_type image,ppixel_type pixels,int size){
 
 	//pixel_type pixels_k[size];
@@ -22,10 +28,10 @@ void find_groups(pimage_type image,ppixel_type pixels,int size){
 			
 			for(int j=0;j<size;j++){
 
-				pixel_type k=pixels[j];
-				pixel_type pix=get_pixel(image,x,y);
+				ppixel_type k=pixels;
+				ppixel_type pix=get_pixel(image,x,y);
 			
-				pixel_type middle=pixel_middle(k,pix);			
+				//pixels[j]=pixel_middle(k,pix);			
 
 			}
 		}
@@ -44,7 +50,7 @@ int pixel_distance(pimage_type image,pixel_type p1,pixel_type p2){
 
 }
 
-pixel_type get_pixel(pimage_type image,int x, int y){
+ppixel_type get_pixel(pimage_type image,int x, int y){
 
   pixel_type pixel;
   pixel.r=image->stream[DPC*y * image->cols + DPC*x+0];
@@ -52,7 +58,7 @@ pixel_type get_pixel(pimage_type image,int x, int y){
   pixel.b=image->stream[DPC*y * image->cols + DPC*x+2];
   pixel.x=x;
   pixel.y=y;
-  return pixel;
+  return &pixel;
 
 }
 
@@ -77,9 +83,9 @@ void printimage(pimage_type image){
 	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+0] );
 	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+1] );
 	//printf("%u \n",image->stream[DPC*i * image->cols + DPC*j+2] );
-	printf("%u ",get_pixel(image,j,i).r);
-	printf("%u ",get_pixel(image,j,i).g);
-	printf("%u \n",get_pixel(image,j,i).b);
+	printf("%u ",get_pixel(image,j,i)->r);
+	printf("%u ",get_pixel(image,j,i)->g);
+	printf("%u \n",get_pixel(image,j,i)->b);
         
       }
 
