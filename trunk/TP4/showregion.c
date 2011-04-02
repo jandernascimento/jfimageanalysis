@@ -14,36 +14,42 @@ pixel_type *pixel_middle(pixel_type *p1,pixel_type *p2){
 
 //Assign the color of the pixel as the same color as the closest key (list of k's)
 //DO ME
-void assign_to_group(pimage_type image, pixel_type *keys, int size){
+pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 
+	pimage_type image2=readimage(image->path);
 	//fprintf(stderr,"got here\n");
 	for(int y=0;y<image->rows;y++){
 		//fprintf(stderr,"got here\n");
 		for(int x=0;x<image->cols;x++){
-			fprintf(stderr,"begin:checking pixel\n");
+			//fprintf(stderr,"begin:checking pixel\n");
 			//pixel_type *k=keys;
 			pixel_type *chosen=keys;
 			pixel_type *taken=keys;
 			int lowest_distance=999999999;
-			fprintf(stderr,"\tbegin:checking distance\n");
+			//fprintf(stderr,"begin:checking distance\n");
 			for(int j=0;j<size;j++){
 				pixel_type *image_pixel=get_pixel(image,x,y);
 				
-				chosen=(keys+j);
-				fprintf(stderr,"\tnew->chosen %i,%i\n",chosen->x,chosen->y);
+				chosen=(keys+sizeof(pixel_type*)*j);
+				chosen=get_pixel(image,chosen->x,chosen->y);
+				//fprintf(stderr,"\tnew->chosen %i,%i color(%i,%i,%i)\n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
 				int di=pixel_distance(image,chosen,image_pixel);			
-				if(di<lowest_distance) taken=(keys+j); 
+				//fprintf(stderr,"\tdistance %i\n",di);
+				if(di<lowest_distance)  { taken=(keys+j); lowest_distance=di; }
 			}
-			fprintf(stderr,"\tend:checking distance\n");
-  			
-			fprintf(stderr,"\t->chosen %i,%i\n",(*chosen).x,(*chosen).y);
+			//fprintf(stderr,"\tend:checking distance\n");
+			//fprintf(stderr,"\t->chosen %i,%i\n",(*taken).x,(*taken).y);
 			pixel_type *tp=get_pixel(image,(*taken).x,(*taken).y);	
-			fprintf(stderr,"\t->result setting (%i,%i,%i)\n",tp->r,tp->g,tp->b);
-			fprintf(stderr,"end:checking pixel\n");
-			set_pixel(image,x,y,tp);
+			//fprintf(stderr,"\t->result setting (%i,%i,%i)\n",tp->r,tp->g,tp->b);
+			//fprintf(stderr,"end:checking pixel\n");
+			set_pixel(image2,x,y,*tp);
 		}
 
 	}
+
+	return image2;
+	//printimage(image2);
+
 }
 
 //Calculates what is the middle pixel (final k)
@@ -142,6 +148,8 @@ pimage_type readimage(char* filepath)
       exit(1);
     }
 
+    image->path=filepath;
+
     /* Lecture du Magic number */
     ich1 = getc( ifp );
     if ( ich1 == EOF )
@@ -189,25 +197,17 @@ pimage_type readimage(char* filepath)
 
 int main(int argc, char* argv[]){
 
-	pimage_type image=readimage("image/clownplaintext.ppm");
+	pimage_type image=readimage("image/jander.ppm");
 
 	pixel_type* group=(pixel_type *)malloc(2*sizeof(pixel_type));
 
 	(group+sizeof(pixel_type)*1)->x=0;
 	(group+sizeof(pixel_type)*1)->y=0;
-	(group+sizeof(pixel_type)*1)->r=200;
-	(group+sizeof(pixel_type)*1)->g=0;
-	(group+sizeof(pixel_type)*1)->b=0;
 
-
-	(group+sizeof(pixel_type)*0)->x=100;
-	(group+sizeof(pixel_type)*0)->y=100;
-	(group+sizeof(pixel_type)*0)->r=0;
-	(group+sizeof(pixel_type)*0)->g=0;
-	(group+sizeof(pixel_type)*0)->b=0;
-
+	(group+sizeof(pixel_type)*0)->x=79;
+	(group+sizeof(pixel_type)*0)->y=96;
 	
-	assign_to_group(image, group,2);
+	pimage_type image_grouped=assign_to_group(image, group,2);
 	
-	printimage(image);
+	printimage(image_grouped);
 }
