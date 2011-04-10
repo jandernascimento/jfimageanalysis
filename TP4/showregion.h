@@ -29,4 +29,4 @@ pixel_type *get_pixel(pimage_type image,int x, int y);
 int pixel_distance(pimage_type image,pixel_type *p1,pixel_type *p2);
 pixel_type *pixel_middle(pixel_type *p1,pixel_type *p2);
 pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size);
-
+pixel_type *pixel_random_group(pimage_type image ,int size);

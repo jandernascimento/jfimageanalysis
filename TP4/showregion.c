@@ -4,7 +4,47 @@
 
 //Finds the position in between the two pixels (euclidian in 3d space)
 //Reminder: the 3d space is the color
-//DO ME
+pixel_type *pixel_random_group(pimage_type image,int size){
+
+	pixel_type* group=(pixel_type *)malloc(size*sizeof(pixel_type));
+
+	for(int x=0;x<size;x++){
+
+		int xpos=(rand()%255);
+		int ypos=(rand()%255);
+		(group+sizeof(pixel_type)*x)->x=xpos;
+		(group+sizeof(pixel_type)*x)->y=ypos;
+		(group+sizeof(pixel_type)*x)->k=x;
+		(group+sizeof(pixel_type)*x)->r=get_pixel(image,xpos,ypos)->r;
+		(group+sizeof(pixel_type)*x)->g=get_pixel(image,xpos,ypos)->g;
+		(group+sizeof(pixel_type)*x)->b=get_pixel(image,xpos,ypos)->b;
+		
+	//fprintf(stderr,"chosen %u,%u,%u\n",(group+sizeof(pixel_type)*x)->x,(group+sizeof(pixel_type)*x)->y,(group+sizeof(pixel_type)*x)->k);	
+
+	}
+
+	/*pixel_type *chosen=get_pixel(image,0,0);
+	(group+sizeof(pixel_type)*0)->x=chosen->x;
+	(group+sizeof(pixel_type)*0)->y=chosen->y;
+	(group+sizeof(pixel_type)*0)->r=chosen->r;
+	(group+sizeof(pixel_type)*0)->g=chosen->g;
+	(group+sizeof(pixel_type)*0)->b=chosen->b;
+	(group+sizeof(pixel_type)*0)->k=0;
+	
+	pixel_type *chosen2=get_pixel(image,255,255);
+	(group+sizeof(pixel_type)*1)->x=chosen2->x;
+	(group+sizeof(pixel_type)*1)->y=chosen2->y;
+	(group+sizeof(pixel_type)*1)->r=chosen2->r;
+	(group+sizeof(pixel_type)*1)->g=chosen2->g;
+	(group+sizeof(pixel_type)*1)->b=chosen2->b;
+	(group+sizeof(pixel_type)*1)->k=1;*/
+	
+	
+	return group;	
+}
+
+
+
 pixel_type *pixel_middle(pixel_type *p1,pixel_type *p2){
 
   pixel_type *p;
