@@ -200,13 +200,13 @@ int main(int argc, char* argv[]){
 	pimage_type image=readimage("image/jander.ppm");
 
 	pixel_type* group=(pixel_type *)malloc(2*sizeof(pixel_type));
-
-	(group+sizeof(pixel_type)*1)->x=0;
-	(group+sizeof(pixel_type)*1)->y=0;
-
+	
 	(group+sizeof(pixel_type)*0)->x=79;
 	(group+sizeof(pixel_type)*0)->y=96;
 	
+	(group+sizeof(pixel_type)*1)->x=0;
+	(group+sizeof(pixel_type)*1)->y=0;
+
 	pimage_type image_grouped=assign_to_group(image, group,2);
 	
 	printimage(image_grouped);
