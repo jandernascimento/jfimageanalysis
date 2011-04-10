@@ -19,36 +19,10 @@ pixel_type *pixel_random_group(pimage_type image,int size){
 		(group+sizeof(pixel_type)*m)->r=get_pixel(image,xpos,ypos)->r;
 		(group+sizeof(pixel_type)*m)->g=get_pixel(image,xpos,ypos)->g;
 		(group+sizeof(pixel_type)*m)->b=get_pixel(image,xpos,ypos)->b;
-	}
-
-	/*pixel_type *chosen=get_pixel(image,0,0);
-	(group+sizeof(pixel_type)*0)->x=chosen->x;
-	(group+sizeof(pixel_type)*0)->y=chosen->y;
-	(group+sizeof(pixel_type)*0)->r=chosen->r;
-	(group+sizeof(pixel_type)*0)->g=chosen->g;
-	(group+sizeof(pixel_type)*0)->b=chosen->b;
-	(group+sizeof(pixel_type)*0)->k=0;
-	
-	pixel_type *chosen2=get_pixel(image,255,255);
-	(group+sizeof(pixel_type)*1)->x=chosen2->x;
-	(group+sizeof(pixel_type)*1)->y=chosen2->y;
-	(group+sizeof(pixel_type)*1)->r=chosen2->r;
-	(group+sizeof(pixel_type)*1)->g=chosen2->g;
-	(group+sizeof(pixel_type)*1)->b=chosen2->b;
-	(group+sizeof(pixel_type)*1)->k=1;*/
-	
-	
+	}	
 	return group;	
 }
 
-
-
-pixel_type *pixel_middle(pixel_type *p1,pixel_type *p2){
-
-  pixel_type *p;
-
-  return p;
-}
 
 //Assign the color of the pixel as the same color as the closest key (list of k's)
 pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
@@ -79,7 +53,6 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 				//setting the group in the pixel
 				set_group(image2,x,y,nb_group);
 
-				//set_pixel(image2,x,y,*taken);
 			}
 		}
 		//recalculating the centroids (middle of the groups)
@@ -91,7 +64,7 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 	return image2;
 }
 
-update_color_pixels(pimage_type image, pixel_type *keys){
+void update_color_pixels(pimage_type image, pixel_type *keys){
 	pixel_type *pixel_key;
 	
 	for(int y=0;y<image->rows;y++)
@@ -160,34 +133,8 @@ int get_group(pimage_type image,int x, int y){
 	return image->stream[DPC*y * image->cols + DPC*x+K];
 }
 
-//Calculates what is the middle pixel (final k)
-//Reminder: the 3d space is the color
-void find_groups(pimage_type image,pixel_type *pixels,int size){
-
-	for(int y;y<image->rows;y++){
-
-		for(int x;x<image->cols;x++){
-			pixel_type *k=pixels;
-			for(int j=0;j<size;j++){
-
-				pixel_type *pix=get_pixel(image,x,y);
-			
-				pixels=pixel_middle(k,pix);			
-
-			}
-		}
-
-	}
-
-}
-/*
-void split_pixel_into_groups(pimage image, pixel_type *groups, int size){
-
-}
-*/
 
 //Computes the distance between two pixels with euclidian
-//DO ME
 //Reminder: the 3d space is the color
 int pixel_distance(pimage_type image,pixel_type *p1,pixel_type *p2){
 
@@ -298,28 +245,16 @@ void update_group(pixel_type *group, int index, int r, int g, int b){
 
 int main(int argc, char* argv[]){
 
-	pimage_type image=readimage("image/image1.ppm");
+	pimage_type image=readimage("image/zebre.ppm");
 
-	int nro_groups = 10;
+	int nro_groups = 2;
 
-	//pixel_type* group=(pixel_type *)malloc(nro_groups*sizeof(pixel_type));
+	//generating the first groups randomly
 	pixel_type* group=pixel_random_group(image,nro_groups);
-	
-	//group1	
-/*	pixel_type *chosen=get_pixel(image,79,96);
-	update_group(group, 0, chosen->r,chosen->g,chosen->b);
 
-	//group2
-	chosen=get_pixel(image,0,0);
-	update_group(group, 1, chosen->r,chosen->g,chosen->b);
-
-	//group3
-	chosen=get_pixel(image,15,15);
-	update_group(group, 2, chosen->r,chosen->g,chosen->b);
-
-	*/
-
+	//k-means algorith
 	pimage_type image_grouped=assign_to_group(image, group,nro_groups);
-	
+
+	//printing the result
 	printimage(image_grouped);
 }
