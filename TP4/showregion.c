@@ -28,11 +28,12 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 			int group=0;
 			for(int j=0;j<size;j++){
 				group=j;
-				chosen=(keys+sizeof(pixel_type*)*j);
-				chosen=get_pixel(image,chosen->x,chosen->y);
+				chosen=(keys+sizeof(pixel_type)*j);
+				//chosen=get_pixel(image,chosen->x,chosen->y);
+				//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
 				int di=pixel_distance(image,chosen,image_pixel);			
 				if(di<lowest_distance){ 
-					taken=(keys+sizeof(pixel_type*)*j); 
+					taken=(keys+sizeof(pixel_type)*j); 
 					lowest_distance=di; 
 				}
 			}
@@ -222,11 +223,24 @@ int main(int argc, char* argv[]){
 
 	pixel_type* group=(pixel_type *)malloc(nro_groups*sizeof(pixel_type));
 	
-	(group+sizeof(pixel_type)*0)->x=79;
-	(group+sizeof(pixel_type)*0)->y=96;
+	pixel_type *chosen=get_pixel(image,79,96);
+	(group+sizeof(pixel_type)*0)->x=chosen->x;
+	(group+sizeof(pixel_type)*0)->y=chosen->y;
+	(group+sizeof(pixel_type)*0)->r=chosen->r;
+	(group+sizeof(pixel_type)*0)->g=chosen->g;
+	(group+sizeof(pixel_type)*0)->b=chosen->b;
+	(group+sizeof(pixel_type)*0)->k=0;
+	//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
 	
-	(group+sizeof(pixel_type)*1)->x=0;
-	(group+sizeof(pixel_type)*1)->y=0;
+	pixel_type *chosen2=get_pixel(image,0,0);
+	(group+sizeof(pixel_type)*1)->x=chosen2->x;
+	(group+sizeof(pixel_type)*1)->y=chosen2->y;
+	(group+sizeof(pixel_type)*1)->r=chosen2->r;
+	(group+sizeof(pixel_type)*1)->g=chosen2->g;
+	(group+sizeof(pixel_type)*1)->b=chosen2->b;
+	(group+sizeof(pixel_type)*1)->k=1;
+	//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen2->x,chosen2->y,chosen2->r,chosen2->g,chosen2->b);
+
 
 	pimage_type image_grouped=assign_to_group(image, group,nro_groups);
 	
