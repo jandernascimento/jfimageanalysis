@@ -13,43 +13,78 @@ pixel_type *pixel_middle(pixel_type *p1,pixel_type *p2){
 }
 
 //Assign the color of the pixel as the same color as the closest key (list of k's)
-//DO ME
 pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
-
 	pimage_type image2=readimage(image->path);
-	//fprintf(stderr,"got here\n");
+
+	//associating each pixel to a group
 	for(int y=0;y<image->rows;y++){
-		//fprintf(stderr,"got here\n");
 		for(int x=0;x<image->cols;x++){
-			//fprintf(stderr,"begin:checking pixel\n");
-			//pixel_type *k=keys;
 			pixel_type *chosen=keys;
 			pixel_type *taken=keys;
 			int lowest_distance=999999999;
-			//fprintf(stderr,"begin:checking distance\n");
+			pixel_type *image_pixel=get_pixel(image,x,y);			
+
+			//Search in all groups in each one that a single pixel belongs to
+			int group=0;
 			for(int j=0;j<size;j++){
-				pixel_type *image_pixel=get_pixel(image,x,y);
-				
+				group=j;
 				chosen=(keys+sizeof(pixel_type*)*j);
 				chosen=get_pixel(image,chosen->x,chosen->y);
-				//fprintf(stderr,"\tnew->chosen %i,%i color(%i,%i,%i)\n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
 				int di=pixel_distance(image,chosen,image_pixel);			
-				//fprintf(stderr,"\tdistance %i\n",di);
-				if(di<lowest_distance)  { taken=(keys+j); lowest_distance=di; }
+				if(di<lowest_distance){ 
+					taken=(keys+sizeof(pixel_type*)*j); 
+					lowest_distance=di; 
+				}
 			}
-			//fprintf(stderr,"\tend:checking distance\n");
-			//fprintf(stderr,"\t->chosen %i,%i\n",(*taken).x,(*taken).y);
+			//setting the group in the pixel
+			//set_group(image2,x,y,group);
+			 
 			pixel_type *tp=get_pixel(image,(*taken).x,(*taken).y);	
-			//fprintf(stderr,"\t->result setting (%i,%i,%i)\n",tp->r,tp->g,tp->b);
-			//fprintf(stderr,"end:checking pixel\n");
 			set_pixel(image2,x,y,*tp);
 		}
-
 	}
+	//recalculating the centroids (middle of the groups)
+	
 
 	return image2;
-	//printimage(image2);
+}
 
+int recalc_centroids(pimage_type image, int nro_groups){
+	int something_changed = 0; //false
+	
+	int * sum_r_per_group        = (int*) malloc(sizeof(int) * nro_groups);
+	int * sum_g_per_group        = (int*) malloc(sizeof(int) * nro_groups);
+	int * sum_b_per_group        = (int*) malloc(sizeof(int) * nro_groups);
+	int * count_pixels_per_group = (int*) malloc(sizeof(int) * nro_groups);
+
+	initialize_array(sum_r_per_group,nro_groups);
+	initialize_array(sum_g_per_group,nro_groups);
+	initialize_array(sum_b_per_group,nro_groups);
+	initialize_array(count_pixels_per_group,nro_groups);
+
+	
+	for(int y=0;y<image->rows;y++){
+		for(int x=0;x<image->cols;x++){
+			pixel_type *image_pixel=get_pixel(image,x,y);
+
+			sum_r_per_group       [ image_pixel->k ] = sum_r_per_group[ image_pixel->k ] + image_pixel->r;
+			sum_g_per_group       [ image_pixel->k ] = sum_g_per_group[ image_pixel->k ] + image_pixel->g;
+			sum_b_per_group       [ image_pixel->k ] = sum_b_per_group[ image_pixel->k ] + image_pixel->b;
+			count_pixels_per_group[ image_pixel->k ] = count_pixels_per_group[ image_pixel->k ] ++;
+		}
+	}
+
+	return something_changed;
+}
+
+void initialize_array(int * vec, int n){
+	for(int i=0;i<n;i++)
+		vec[i]=0;
+}
+
+//put the group of the pixel in the image
+void set_group(pimage_type image,int x, int y,int group){
+	image->stream[DPC*y * image->cols + DPC*x+K]=group;
 }
 
 //Calculates what is the middle pixel (final k)
@@ -83,37 +118,33 @@ void split_pixel_into_groups(pimage image, pixel_type *groups, int size){
 //Reminder: the 3d space is the color
 int pixel_distance(pimage_type image,pixel_type *p1,pixel_type *p2){
 
-
   int value_r=(int)pow(p1->r-p2->r,2);
   int value_g=(int)pow(p1->g-p2->g,2);
   int value_b=(int)pow(p1->b-p2->b,2);
 
   int sqr=(int)sqrt(value_r+value_g+value_b);
-  fprintf(stderr,"\t\tpixel p1(at %i %i color %i,%i,%i) to p2(at %i %i color %i,%i,%i) is %i\n",p1->x,p1->y,p1->r,p1->g,p1->b,p2->x,p2->y,p2->r,p2->g,p2->b,sqr);
-  return sqr;
 
+  return sqr;
 }
 
 pixel_type *get_pixel(pimage_type image,int x, int y){
-
   pixel_type *pixel=(pixel_type*)malloc(sizeof(pixel_type));
-  pixel->r=image->stream[DPC*y * image->cols + DPC*x+0];
-  pixel->g=image->stream[DPC*y * image->cols + DPC*x+1];
-  pixel->b=image->stream[DPC*y * image->cols + DPC*x+2];
-  pixel->x=x;
-  pixel->y=y;
+  
+  pixel->r = image->stream[DPC*y * image->cols + DPC*x+RED];
+  pixel->g = image->stream[DPC*y * image->cols + DPC*x+GREEN];
+  pixel->b = image->stream[DPC*y * image->cols + DPC*x+BLUE];
+  pixel->k = image->stream[DPC*y * image->cols + DPC*x+K];
+  pixel->x = x;
+  pixel->y = y;
+  
   return pixel;
-
 }
 
 
 void set_pixel(pimage_type image,int x, int y, pixel_type pixel ){
-
-  image->stream[DPC*y * image->cols + DPC*x+0]=pixel.r;
-  image->stream[DPC*y * image->cols + DPC*x+1]=pixel.g;
-  image->stream[DPC*y * image->cols + DPC*x+2]=pixel.b;
-
-
+  image->stream[DPC*y * image->cols + DPC*x+RED]   = pixel.r;
+  image->stream[DPC*y * image->cols + DPC*x+GREEN] = pixel.g;
+  image->stream[DPC*y * image->cols + DPC*x+BLUE]  = pixel.b;
 }
 
 void printimage(pimage_type image){
@@ -124,19 +155,13 @@ void printimage(pimage_type image){
 
     for(int i=0; i < image->rows; i++)
       for(int j=0; j < image->cols ; j++){
-	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+0] );
-	//printf("%u ",image->stream[DPC*i * image->cols + DPC*j+1] );
-	//printf("%u \n",image->stream[DPC*i * image->cols + DPC*j+2] );
-	printf("%u ",get_pixel(image,j,i)->r);
-	printf("%u ",get_pixel(image,j,i)->g);
-	printf("%u \n",get_pixel(image,j,i)->b);
-        
+		printf("%u ",get_pixel(image,j,i)->r);
+		printf("%u ",get_pixel(image,j,i)->g);
+		printf("%u \n",get_pixel(image,j,i)->b);
       }
-
 }
 
-pimage_type readimage(char* filepath)
-    {
+pimage_type readimage(char* filepath){
     FILE* ifp;
     gray* imagemap;
     int ich1, ich2;
@@ -157,13 +182,10 @@ pimage_type readimage(char* filepath)
     ich2 = getc( ifp );
     if ( ich2 == EOF )
         pm_erreur( "EOF / erreur de lecture / nombre magique" );
-    //if(ich2 != '2' && ich2 != '5')
-    //    pm_erreur(" mauvais type de fichier ");
-    //else
-      if(ich2 != '3'){
-	fprintf(stderr,"Invalid file type");
+    if(ich2 != '3'){
+    	fprintf(stderr,"Invalid file type");
         exit(1);
-      }
+    }
 
     /* Lecture des dimensions */
     image->cols = pm_getint( ifp );
@@ -171,21 +193,18 @@ pimage_type readimage(char* filepath)
     image->maxval = pm_getint( ifp );
 
     /* Allocation memoire  */
-    imagemap = (gray *) malloc(3 * image->cols * image->rows * sizeof(gray));
+    imagemap = (gray *) malloc(DPC * image->cols * image->rows * sizeof(gray));
     image->stream=imagemap;
 
     /* Lecture */
     for(int i=0; i < image->rows; i++){
       for(int j=0; j < image->cols ; j++){
-	//imagemap[DPC* i * image->cols + DPC*j + 0] = pm_getint(ifp);
-	//imagemap[DPC* i * image->cols + DPC*j + 1] = pm_getint(ifp);
-	//imagemap[DPC* i * image->cols + DPC*j + 2] = pm_getint(ifp);
-	pixel_type pixel;
-	pixel.r=pm_getint(ifp);
-	pixel.g=pm_getint(ifp);
-	pixel.b=pm_getint(ifp);
-	set_pixel(image,j,i,pixel);
-	}
+		pixel_type pixel;
+		pixel.r=pm_getint(ifp);
+		pixel.g=pm_getint(ifp);
+		pixel.b=pm_getint(ifp);
+		set_pixel(image,j,i,pixel);
+	   }
      }
 
 
@@ -199,7 +218,9 @@ int main(int argc, char* argv[]){
 
 	pimage_type image=readimage("image/jander.ppm");
 
-	pixel_type* group=(pixel_type *)malloc(2*sizeof(pixel_type));
+	int nro_groups = 2;
+
+	pixel_type* group=(pixel_type *)malloc(nro_groups*sizeof(pixel_type));
 	
 	(group+sizeof(pixel_type)*0)->x=79;
 	(group+sizeof(pixel_type)*0)->y=96;
@@ -207,7 +228,7 @@ int main(int argc, char* argv[]){
 	(group+sizeof(pixel_type)*1)->x=0;
 	(group+sizeof(pixel_type)*1)->y=0;
 
-	pimage_type image_grouped=assign_to_group(image, group,2);
+	pimage_type image_grouped=assign_to_group(image, group,nro_groups);
 	
 	printimage(image_grouped);
 }
