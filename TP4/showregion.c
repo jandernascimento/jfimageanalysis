@@ -59,18 +59,16 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 	//associating each pixel to a group
 	for(int y=0;y<image->rows;y++){
 		for(int x=0;x<image->cols;x++){
-			pixel_type *chosen=keys;
-			pixel_type *taken=keys;
+			pixel_type *chosen;
+			pixel_type *taken;
 			int lowest_distance=999999999;
 			pixel_type *image_pixel=get_pixel(image,x,y);			
 
 			//Search in all groups in each one that a single pixel belongs to
-			int group=0;
+			int nb_group=0;
 			for(int j=0;j<size;j++){
-				group=j;
+				nb_group=j;
 				chosen=(keys+sizeof(pixel_type)*j);
-				//chosen=get_pixel(image,chosen->x,chosen->y);
-				//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
 				int di=pixel_distance(image,chosen,image_pixel);			
 				if(di<lowest_distance){ 
 					taken=(keys+sizeof(pixel_type)*j); 
@@ -78,10 +76,11 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 				}
 			}
 			//setting the group in the pixel
-			//set_group(image2,x,y,group);
+			//set_group(image2,x,y,nb_group);
 			 
-			pixel_type *tp=get_pixel(image,(*taken).x,(*taken).y);	
-			set_pixel(image2,x,y,*tp);
+			//pixel_type *tp=get_pixel(image,(*taken).x,(*taken).y);	
+			//set_pixel(image2,x,y,*tp);
+			set_pixel(image2,x,y,*taken);
 		}
 	}
 	//recalculating the centroids (middle of the groups)
@@ -102,7 +101,6 @@ int recalc_centroids(pimage_type image, int nro_groups){
 	initialize_array(sum_g_per_group,nro_groups);
 	initialize_array(sum_b_per_group,nro_groups);
 	initialize_array(count_pixels_per_group,nro_groups);
-
 	
 	for(int y=0;y<image->rows;y++){
 		for(int x=0;x<image->cols;x++){
@@ -114,6 +112,15 @@ int recalc_centroids(pimage_type image, int nro_groups){
 			count_pixels_per_group[ image_pixel->k ] = count_pixels_per_group[ image_pixel->k ] ++;
 		}
 	}
+
+	for(int j=0;j<nro_groups;j++){
+		int new_value_r = sum_r_per_group[j] / count_pixels_per_group[j]; 
+		int new_value_g = sum_g_per_group[j] / count_pixels_per_group[j];
+		int new_value_b = sum_b_per_group[j] / count_pixels_per_group[j];
+
+		//update_group(group, j, chosen->r,chosen->g,chosen->b);
+	}
+
 
 	return something_changed;
 }
@@ -254,6 +261,15 @@ pimage_type readimage(char* filepath){
       return image; //imagemap;
 }
 
+void update_group(pixel_type *group, int index, int r, int g, int b){
+	(group+sizeof(pixel_type)*index)->x=0;
+	(group+sizeof(pixel_type)*index)->y=0;
+	(group+sizeof(pixel_type)*index)->r=r;
+	(group+sizeof(pixel_type)*index)->g=g;
+	(group+sizeof(pixel_type)*index)->b=b;
+	(group+sizeof(pixel_type)*index)->k=index;
+}
+
 
 int main(int argc, char* argv[]){
 
@@ -263,24 +279,13 @@ int main(int argc, char* argv[]){
 
 	pixel_type* group=(pixel_type *)malloc(nro_groups*sizeof(pixel_type));
 	
+	//group1	
 	pixel_type *chosen=get_pixel(image,79,96);
-	(group+sizeof(pixel_type)*0)->x=chosen->x;
-	(group+sizeof(pixel_type)*0)->y=chosen->y;
-	(group+sizeof(pixel_type)*0)->r=chosen->r;
-	(group+sizeof(pixel_type)*0)->g=chosen->g;
-	(group+sizeof(pixel_type)*0)->b=chosen->b;
-	(group+sizeof(pixel_type)*0)->k=0;
-	//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen->x,chosen->y,chosen->r,chosen->g,chosen->b);
-	
-	pixel_type *chosen2=get_pixel(image,0,0);
-	(group+sizeof(pixel_type)*1)->x=chosen2->x;
-	(group+sizeof(pixel_type)*1)->y=chosen2->y;
-	(group+sizeof(pixel_type)*1)->r=chosen2->r;
-	(group+sizeof(pixel_type)*1)->g=chosen2->g;
-	(group+sizeof(pixel_type)*1)->b=chosen2->b;
-	(group+sizeof(pixel_type)*1)->k=1;
-	//printf("x:%u y:%u r:%u g:%u b:%u \n",chosen2->x,chosen2->y,chosen2->r,chosen2->g,chosen2->b);
+	update_group(group, 0, chosen->r,chosen->g,chosen->b);
 
+	//group2
+	pixel_type *chosen2=get_pixel(image,0,0);
+	update_group(group, 1, chosen2->r,chosen2->g,chosen2->b);
 
 	pimage_type image_grouped=assign_to_group(image, group,nro_groups);
 	
