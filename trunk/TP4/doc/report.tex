@@ -23,7 +23,7 @@
 
 \section{Initial concept}
 
-The \emph{k-means} split the image in k number of sets based in some parameters. Those parameters are heuritics to split the set. One common way to splits the sets is in a 3d dimensional space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
+The \emph{k-means} split the image in k number of sets based in some parameters. Those parameters are heuristics to split the set. One common way to splits the sets is in a 3d dimensional space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
 
 The algorithm is composed of the following steps:
 \begin{list}{\arabic{qcounter}:~}{\usecounter{qcounter}}
@@ -47,11 +47,11 @@ The selection of the initial values may be done by a random selection, since eac
 \section{Number of regions}
 
 As the \emph{K} represents the number of clusters that is going to be used in the segmentation process. 
-This information is fundamental to distinguish the number of regions in the image, so as bigger the \emph{K} is, more cluster are going to be used, thereforre more detailed the image will be.  
+This information is fundamental to distinguish the number of regions in the image, so as bigger the \emph{K} is, more cluster are going to be used, therefore more detailed the image will be.  
 
 In the current implementation we used the color intensity as the orthogonal space, with the axis(x,y,z) been represented by the color red, green and blue of the pixel.
 
-The differente can be seen in the image set \ref{fig:clusters}. The \ref{fig:k2} use only two distinct group, so the image presents two segments, which does not give too many details about the image.  In the \ref{fig:k3} with three groups, is possible to see more details than in the previous image. Using \ref{fig:k10} we can see that the details in the image increases dramatically.
+The difference can be seen in the image set \ref{fig:clusters}. The \ref{fig:k2} use only two distinct group, so the image presents two segments, which does not give too many details about the image.  In the \ref{fig:k3} with three groups, is possible to see more details than in the previous image. Using \ref{fig:k10} we can see that the details in the image increases dramatically.
 
 \begin{figure}[H]
 	\centering
@@ -75,7 +75,7 @@ Using the distance as a factor to determine the groups, allows to the image not 
 
 In the Figure \ref{fig:distance} it was used the same number of clusters (\emph{k}) for the tested image.
 
-It is clear that using the distance as an information, the edges of the objects are better defined. If we do not consider the distance some objects are simply merged based in how close the colors are from each other, which is not always the case. As shown in the Figure \ref{fig:nodist} the objects were almost completely marged because of the proximity to the green color.
+It is clear that using the distance as an information, the edges of the objects are better defined. If we do not consider the distance some objects are simply merged based in how close the colors are from each other, which is not always the case. As shown in the Figure \ref{fig:nodist} the objects were almost completely merged because of the proximity to the green color.
 
 
 \begin{figure}[H]
