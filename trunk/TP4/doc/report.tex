@@ -40,9 +40,9 @@ The algorithm is composed of the following steps:
 \label{fig:kmeans}
 \end{figure}
 
-\section{Initial values influent}
+\section{Initial \emph{k} influences}
 
-The results produced depend on the initial values for the means (centroids). The simplest way is to select these values randomly, although the better choice is to place them as much as possible far away from each other.
+The results produced depend on the initial values for the means (centroids). The simplest way is to select these values randomly, although the better choice is to place them far away as much as possible from each other.
 
 
 \section{Number of regions}
@@ -89,7 +89,7 @@ It is clear that using the distance as an information, the edges of the objects 
 	\label{fig:distance}
 \end{figure}
 
-This result can be achieved simply by adding the euclidian distance for the distance between the pixels. The Equation \ref{equa:diff} should be applied to the intensities red, green and blue and the euclidian distance between the pixel position.
+This result can be achieved simply by adding the Euclidean distance for the distance between the pixels. The Equation \ref{equa:diff} should be applied to the intensities red, green and blue and the Euclidean distance between the pixel position.
 \begin{equation}
  \operatorname{arg\,min}\sum_{i=1}^{K}\sum_{x_j \in S_i}^{} \|x_j-\mu_i\|
 \label{equa:diff}
