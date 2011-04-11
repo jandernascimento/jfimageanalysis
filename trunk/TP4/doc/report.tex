@@ -23,7 +23,7 @@
 
 \section{Initial concept}
 
-The \emph{k-means} split the image in k number of sets based in some parameters. Those parameters are heuristics to split the set. One common way to splits the sets is in a 3d dimensional space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
+The \emph{k-means} split the image in \emph{k} sets based in some parameters. Those parameters are heuristics to split the set. One common way to split the sets is in a 3d space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
 
 The algorithm is composed of the following steps:
 \begin{list}{\arabic{qcounter}:~}{\usecounter{qcounter}}
@@ -52,7 +52,7 @@ This information is fundamental to distinguish the number of regions in the imag
 
 In the current implementation we used the color intensity as the orthogonal space, with the axis(x,y,z) been represented by the color red, green and blue of the pixel.
 
-The difference can be seen in the image set \ref{fig:clusters}. The \ref{fig:k2} use only two distinct group, so the image presents two segments, which does not give too many details about the image.  In the \ref{fig:k3} with three groups, is possible to see more details than in the previous image. Using \ref{fig:k10} we can see that the details in the image increases dramatically.
+The difference can be seen in the image \ref{fig:clusters}. The \ref{fig:k2} use only two distinct group, so the image presents two segments, which does not give too many details about the image.  In the \ref{fig:k3} with three groups, is possible to see more details than in the previous image. Using \ref{fig:k10} we can see that the details in the image increases dramatically.
 
 \begin{figure}[H]
 	\centering
