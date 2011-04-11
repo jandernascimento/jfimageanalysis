@@ -65,9 +65,34 @@ The differente can be seen in the image set \ref{fig:clusters}. The \ref{fig:k2}
 	\hspace{0.1cm}
 	\caption{K-Means}
 	\label{fig:clusters}
-	\end{figure}
+\end{figure}
 
 \section{Other influences}
+
+\subsection{Including distance between pixels}
+
+Using the distance as a factor to determine the groups, allows to the image not only create groups based in the color space distance, but as well based in the distance between the group and the pixel. 
+
+In the Figure \ref{fig:distance} it was used the same number of clusters (\emph{k}) for the tested image.
+
+It is clear that using the distance as an information, the edges of the objects are better defined. If we do not consider the distance some objects are simply merged based in how close the colors are from each other, which is not always the case. As shown in the Figure \ref{fig:nodist} the objects were almost completely marged because of the proximity to the green color.
+
+
+\begin{figure}[H]
+	\centering
+	\subfloat[Original Image]{\label{fig:distori}\includegraphics[width=0.3\textwidth]{../image/Q4-original}}
+	\hspace{0.1cm}
+	\subfloat[Not considering distance]{\label{fig:nodist}\includegraphics[width=0.3\textwidth]{../image/Q4-nodistance}}
+	\hspace{0.1cm}
+	\subfloat[Considering distance]{\label{fig:dist}\includegraphics[width=0.3\textwidth]{../image/Q4}}
+	\caption{Using distance between pixels as an information}
+	\label{fig:distance}
+\end{figure}
+
+
+\subsection{Balancing distance and colors influence}
+
+Since the influence of the distance, as the color, are not the same for every image, is possible to increase or decrease its influence by using a contribution factor, so this adjustment can be done independently.
 
 \end{document}
 
