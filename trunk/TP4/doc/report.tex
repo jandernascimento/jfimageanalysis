@@ -78,7 +78,6 @@ In the Figure \ref{fig:distance} it was used the same number of clusters (\emph{
 
 It is clear that using the distance as an information, the edges of the objects are better defined. If we do not consider the distance some objects are simply merged based in how close the colors are from each other, which is not always the case. As shown in the Figure \ref{fig:nodist} the objects were almost completely merged because of the proximity to the green color.
 
-
 \begin{figure}[H]
 	\centering
 	\subfloat[Original Image]{\label{fig:distori}\includegraphics[width=0.3\textwidth]{../image/Q4-original}}
@@ -90,6 +89,19 @@ It is clear that using the distance as an information, the edges of the objects 
 	\label{fig:distance}
 \end{figure}
 
+This result can be achieved simply by adding the euclidian distance for the distance between the pixels. Given two pixels \emph{p1} and \emph{p2}, the distance between the pixels would be calculated with th
+
+\[
+distance1(p1,p2)=\|p1_r-p2_r\|+\|p1_g-p2_g\|+\|p1_b-p2_b\|
+\]
+
+\[
+distance2(p1,p2)=\|p1_x-p2_x\|+\|p1_y-p2_y\|
+\]
+
+\[
+\implies distance(p1,p2)=distance1(p1,p2)+distance2(p1,p2)
+\]
 
 \subsection{Balancing distance and colors influence}
 
