@@ -89,19 +89,11 @@ It is clear that using the distance as an information, the edges of the objects 
 	\label{fig:distance}
 \end{figure}
 
-This result can be achieved simply by adding the euclidian distance for the distance between the pixels. Given two pixels \emph{p1} and \emph{p2}, the distance between the pixels would be calculated with th
-
-\[
-distance1(p1,p2)=\|p1_r-p2_r\|+\|p1_g-p2_g\|+\|p1_b-p2_b\|
-\]
-
-\[
-distance2(p1,p2)=\|p1_x-p2_x\|+\|p1_y-p2_y\|
-\]
-
-\[
-\implies distance(p1,p2)=distance1(p1,p2)+distance2(p1,p2)
-\]
+This result can be achieved simply by adding the euclidian distance for the distance between the pixels. The Equation \ref{equa:diff} should be applied to the intensities red, green and blue and the euclidian distance between the pixel position.
+\begin{equation}
+ \operatorname{arg\,min}\sum_{i=1}^{K}\sum_{x_j \in S_i}^{} \|x_j-\mu_i\|
+\label{equa:diff}
+\end{equation}
 
 \subsection{Balancing distance and colors influence}
 
