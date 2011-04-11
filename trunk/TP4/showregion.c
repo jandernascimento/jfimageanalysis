@@ -242,12 +242,62 @@ void update_group(pixel_type *group, int index, int r, int g, int b){
 	(group+sizeof(pixel_type)*index)->k=index;
 }
 
+/** Parser method **/
+
+char* getStrParam(int argc,char* argv[],char* param,char* def){
+
+	for(int i=0;i<argc;i++){
+		if(strcmp(param,argv[i])==0){ 
+			if(argv[i+1][0]=='-') return def;
+			return argv[i+1];
+		}
+	}
+
+	return def;
+
+}
+
+int getBoolParam(int argc,char* argv[],char* param){
+
+	for(int i=0;i<argc;i++){
+		if(strcmp(param,argv[i])==0){ 
+			return 1;
+		}
+	}
+
+	return 0;
+
+}
+
+int getIntParam(int argc,char* argv[],char* param,char* def){
+    char* res=getStrParam(argc,argv,param,def);
+    
+    int val=0;
+ 
+    for(int i=0;i<strlen(res);i++){
+      	if(res[0]=='-') continue;
+	val+=pow(10,(strlen(res)-i-1))*(res[i]-'0'); 
+    }
+
+    return res[0]=='-'?-1*val:val;
+}
+/** end Parser method **/
 
 int main(int argc, char* argv[]){
 
-	pimage_type image=readimage("image/zebre.ppm");
+	char *filepath=getStrParam(argc,argv,"-i","");
+	int nro_groups=getIntParam(argc,argv,"-g","2");
+	int ishelp=getBoolParam(argc,argv,"--help");
 
-	int nro_groups = 2;
+	if(ishelp){
+		printf("Usage: showregion [OPTIONS]\n");	
+		fprintf(stderr,"OPTIONS: \n");	
+		fprintf(stderr,"-i: input file\n");	
+		fprintf(stderr,"-g: number of groups, default is 2\n");
+		exit(0);	
+	}
+
+	pimage_type image=readimage(filepath);
 
 	//generating the first groups randomly
 	pixel_type* group=pixel_random_group(image,nro_groups);
