@@ -29,7 +29,26 @@ The selection of the initial values may be done by a random selection, since eac
 
 \section{Number of regions}
 
-As the \emph{k} represents the number of sets, this determines the distinct number of regions that exists in the picture, so as more \emph{k} are chosen, more detailed the image will be.  
+As the \emph{K} represents the number of clusters that is going to be used in the segmentation process. 
+This information is fundamental to distinguish the number of regions in the image, so as bigger the \emph{K} is, more cluster are going to be used, thereforre more detailed the image will be.  
+
+In the current implementation we used the color intensity as the orthogonal space, with the axis(x,y,z) been represented by the color red, green and blue of the pixel.
+
+The differente can be seen in the image set \ref{fig:clusters}. The \ref{fig:k2} use only two distinct group, so the image presents two segments, which does not give too many details about the image.  In the \ref{fig:k3} with three groups, is possible to see more details than in the previous image. Using \ref{fig:k10} we can see that the details in the image increases dramatically.
+
+\begin{figure}[H]
+	\centering
+	\subfloat[Original Image]{\label{fig:original}\includegraphics[width=0.3\textwidth]{image/image2}}
+	\hspace{0.1cm}
+	\subfloat[K=2]{\label{fig:k2}\includegraphics[width=0.3\textwidth]{image/image2-2}}
+	\hspace{0.1cm}
+	\subfloat[K=3]{\label{fig:k3}\includegraphics[width=0.3\textwidth]{image/image2-3}}
+	\hspace{0.1cm}
+	\subfloat[K=10]{\label{fig:k10}\includegraphics[width=0.3\textwidth]{image/image2-10}}
+	\hspace{0.1cm}
+	\caption{K-Means}
+	\label{fig:clusters}
+	\end{figure}
 
 \section{Other influences}
 
