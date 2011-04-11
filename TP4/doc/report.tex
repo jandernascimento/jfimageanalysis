@@ -10,6 +10,8 @@
 \usepackage{url}
 \usepackage{amsmath}
 
+\newcounter{qcounter}
+
 \begin{document}
 
 \title{Image Analysis - TP4 - K Means}
@@ -21,7 +23,22 @@
 
 \section{Initial concept}
 
-The \emph{k-means} split the image in k number of sets based in some parameters. Those parameters are heuritics to split the set, one common way to splits the sets is in a 3d dimensional space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
+The \emph{k-means} split the image in k number of sets based in some parameters. Those parameters are heuritics to split the set. One common way to splits the sets is in a 3d dimensional space, in which the domain of the space is [0,255] and each axle is the color space RGB. 
+
+The algorithm is composed of the following steps:
+\begin{list}{\arabic{qcounter}:~}{\usecounter{qcounter}}
+\item Given a number of regions \emph{k}, randomly generate the initial values of the means $m_1, m_2, ..., m_k$, which are called \emph{centroids}.
+\item Assign each pixel to the group that has the closest centroid.
+\item When all pixels have been assigned, recalculate the $m_k$ values of the \emph{k} centroids.
+\item Repeat Steps 2 and 3 until the centroids no longer move. This produces a separation of the pixels into groups.
+\end{list}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{../image/ActivityDiagram.png}
+\caption{K-means steps}
+\label{fig:kmeans}
+\end{figure}
 
 \section{Initial values influent}
 
