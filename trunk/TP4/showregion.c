@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include "showregion.h"
 
-//Finds the position in between the two pixels (euclidian in 3d space)
-//Reminder: the 3d space is the color
+//generates groups randomly
 pixel_type *pixel_random_group(pimage_type image,int size){
 
 	pixel_type* group=(pixel_type *)malloc(size*sizeof(pixel_type));
@@ -13,13 +12,14 @@ pixel_type *pixel_random_group(pimage_type image,int size){
 		int xpos=(int)(rand()%255);
 		srand(m+1777);
 		int ypos=(int)(rand()%255);
+		
 		(group+sizeof(pixel_type)*m)->x=xpos;
 		(group+sizeof(pixel_type)*m)->y=ypos;
 		(group+sizeof(pixel_type)*m)->k=m;
 		(group+sizeof(pixel_type)*m)->r=get_pixel(image,xpos,ypos)->r;
 		(group+sizeof(pixel_type)*m)->g=get_pixel(image,xpos,ypos)->g;
-		(group+sizeof(pixel_type)*m)->b=get_pixel(image,xpos,ypos)->b;
-	}	
+		(group+sizeof(pixel_type)*m)->b=get_pixel(image,xpos,ypos)->b;		
+	}
 	return group;	
 }
 
@@ -52,7 +52,6 @@ pimage_type assign_to_group(pimage_type image, pixel_type *keys, int size){
 				}
 				//setting the group in the pixel
 				set_group(image2,x,y,nb_group);
-
 			}
 		}
 		//recalculating the centroids (middle of the groups)
@@ -142,7 +141,10 @@ int pixel_distance(pimage_type image,pixel_type *p1,pixel_type *p2){
   int value_g=(int)pow(p1->g-p2->g,2);
   int value_b=(int)pow(p1->b-p2->b,2);
 
-  int sqr=(int)sqrt(value_r+value_g+value_b);
+  int value_x=(int)pow(p1->x-p2->x,2);
+  int value_y=(int)pow(p1->y-p2->y,2);
+
+  int sqr=(int)sqrt(value_r+value_g+value_b+value_x+value_y);
 
   return sqr;
 }
@@ -296,6 +298,7 @@ int main(int argc, char* argv[]){
 		fprintf(stderr,"-g: number of groups, default is 2\n");
 		exit(0);	
 	}
+
 
 	pimage_type image=readimage(filepath);
 
