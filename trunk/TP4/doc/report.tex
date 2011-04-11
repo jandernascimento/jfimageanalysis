@@ -42,12 +42,13 @@ The algorithm is composed of the following steps:
 
 \section{Initial values influent}
 
-The selection of the initial values may be done by a random selection, since each of those k points will be re-arranged according to pixels assigned to that group, those initial k tend for the same direction independently of the initial values.
+The results produced depend on the initial values for the means (centroids). The simplest way is to select these values randomly, although the better choice is to place them as much as possible far away from each other.
+
 
 \section{Number of regions}
 
-As the \emph{K} represents the number of clusters that is going to be used in the segmentation process. 
-This information is fundamental to distinguish the number of regions in the image, so as bigger the \emph{K} is, more cluster are going to be used, therefore more detailed the image will be.  
+As \emph{k} represents the number of clusters that is going to be used in the segmentation process. 
+This information is fundamental to distinguish the number of regions in the image, so as bigger \emph{k} is, more cluster are going to be used, therefore more detailed the image will be.  
 
 In the current implementation we used the color intensity as the orthogonal space, with the axis(x,y,z) been represented by the color red, green and blue of the pixel.
 
