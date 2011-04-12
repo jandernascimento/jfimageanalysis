@@ -97,9 +97,9 @@ This result can be achieved simply by adding the Euclidean distance for the dist
 
 \subsection{Balancing distance and colors influence}
 
-Since the influence of the distance, as the color, are not the same for every image, is possible to increase or decrease its influence by using a contribution factor, so this adjustment can be done independently.
+Since the influence of the distance, as the color, are not the same for every image, it is possible to increase or decrease its influence by using a contribution factor, so this adjustment can be done independently.
 
-So, it's possible to improve the Equation \ref{equa:diff} by doing to changes in the Equation \ref{equa:diffw} where $w$ is the weight. The weight is going to be given for each possible parameter used to calculate the distance, the color intensities(red, green and blue) and the location of the pixel ($x$ and $y$ position).
+So, it's possible to improve the Equation \ref{equa:diff} by adding the weight, see Equation \ref{equa:diffw}, where $w$ is the weight. The weight is going to be given for each possible parameter used to calculate the distance, the color intensities(red, green and blue) and the location of the pixel ($x$ and $y$ position).
 
 \begin{equation}
  \operatorname{arg\,min}\sum_{i=1}^{K}\sum_{x_j \in S_i}^{} w*\|x_j-\mu_i\|
@@ -122,7 +122,7 @@ So, it's possible to improve the Equation \ref{equa:diff} by doing to changes in
 
 	\begin{itemize}
 		\item Create 3 clusters:
-		\subitem ./showregion -i image\_in.pgm -g 3 $>$ image\_out.pgm
+		\subitem ./showregion -i image\_in.ppm -g 3 $>$ image\_out.ppm
 	\end{itemize}
 
 	You can always type {\it ./imagetransform --help} to check for more options. 
