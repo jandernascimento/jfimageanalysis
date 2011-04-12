@@ -99,6 +99,14 @@ This result can be achieved simply by adding the Euclidean distance for the dist
 
 Since the influence of the distance, as the color, are not the same for every image, is possible to increase or decrease its influence by using a contribution factor, so this adjustment can be done independently.
 
+So, it's possible to improve the Equation \ref{equa:diff} by doing to changes in the Equation \ref{equa:diffw} where $w$ is the weight. The weight is going to be given for each possible parameter used to calculate the distance, the color intensities(red, green and blue) and the location of the pixel ($x$ and $y$ position).
+
+\begin{equation}
+ \operatorname{arg\,min}\sum_{i=1}^{K}\sum_{x_j \in S_i}^{} w*\|x_j-\mu_i\|
+\label{equa:diffw}
+\end{equation}
+
+
 	\subsection{How to run?}
 
 	Steps to compile the application:
