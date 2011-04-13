@@ -29,6 +29,9 @@ typedef struct timage {
 double* readimage(char* filepath);
 void printimage(double* image,int cols, int rows, int maxval);
 void set_pixel(pimage_type image,int x, int y, pixel_type pixel );
+
+double * crop_image(double *image, int x1, int y1, int xn, int xm);
+
 pixel_type *get_pixel(pimage_type image,int x, int y);
 
 double *callgradxy(int times, int kernelsize, double *img, int height, int width);

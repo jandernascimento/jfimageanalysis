@@ -363,6 +363,12 @@ void printimage(double* image,int cols, int rows, int maxval){
 	printf("%i ",(int)image[i * cols + j] );
 }
 
+//Crop an image
+double * crop_image(double *image, int x1, int y1, int xn, int xm){
+}
+
+
+
 
 int main(int argc, char* argv[]){	
 	double * image=readimage("taz_ascii.pgm");
