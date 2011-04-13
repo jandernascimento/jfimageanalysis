@@ -4,101 +4,6 @@
 
 int lcols, lrows, lmaxval;
 
-pixel_type *get_pixel(pimage_type image,int x, int y){
-  pixel_type *pixel=(pixel_type*)malloc(sizeof(pixel_type));
-  
-  //pixel->r = image->stream[DPC*y * image->cols + DPC*x+RED];
-  //pixel->g = image->stream[DPC*y * image->cols + DPC*x+GREEN];
-  pixel->g = image->stream[DPC*y * image->cols + DPC*x];
-  //pixel->b = image->stream[DPC*y * image->cols + DPC*x+BLUE];
-  //pixel->k = image->stream[DPC*y * image->cols + DPC*x+K];
-  pixel->x = x;
-  pixel->y = y;
-  
-  return pixel;
-}
-
-
-void set_pixel(pimage_type image,int x, int y, pixel_type pixel ){
-  //image->stream[DPC*y * image->cols + DPC*x+RED]   = pixel.r;
-  //image->stream[DPC*y * image->cols + DPC*x+GREEN] = pixel.g;
-  image->stream[DPC*y * image->cols + DPC*x] = pixel.g;
-  //image->stream[DPC*y * image->cols + DPC*x+BLUE]  = pixel.b;
-}
-
-/* prints the image in the structure format
-void printimage(pimage_type image){
-
-    printf("P5\n");
-    printf("%d %d \n", image->cols, image->rows);
-    printf("%d\n",image->maxval);
-
-    for(int i=0; i < image->rows; i++){
-      for(int j=0; j < image->cols ; j++){
-		//printf("%u ",get_pixel(image,j,i)->r);
-		//printf("%u ",get_pixel(image,j,i)->g);
-		printf("%c",get_pixel(image,j,i)->g);
-		//printf("%u \n",get_pixel(image,j,i)->b);
-      }
-      //printf("\n");
-    }
-}
-*/
-
-/* reads the image in the structure format
-pimage_type readimage(char* filepath){
-    FILE* ifp;
-    gray* imagemap;
-    int ich1, ich2;
-    pimage_type image=(pimage_type)malloc(sizeof(image_type));  
- 
-    ifp = fopen(filepath,"r");
-    if (ifp == NULL) {
-      fprintf(stderr,"Error openning the file, check if you specified -i. Path: %s\n", filepath);
-      exit(1);
-    }
-
-    image->path=filepath;
-
-    // Lecture du Magic number 
-    ich1 = getc( ifp );
-    if ( ich1 == EOF )
-        pm_erreur( "EOF / erreur de lecture / nombre magique" );
-    ich2 = getc( ifp );
-    if ( ich2 == EOF )
-        pm_erreur( "EOF / erreur de lecture / nombre magique" );
-    if(ich2 != '5'){
-    	fprintf(stderr,"Invalid file type");
-        exit(1);
-    }
-
-    // Lecture des dimensions 
-    image->cols = pm_getint( ifp );
-    image->rows = pm_getint( ifp );
-    image->maxval = pm_getint( ifp );
-
-    // Allocation memoire  
-    imagemap = (gray *) malloc(DPC * image->cols * image->rows * sizeof(gray));
-    image->stream=imagemap;
-
-    // Lecture 
-    for(int i=0; i < image->rows; i++){
-      for(int j=0; j < image->cols ; j++){
-		pixel_type pixel;
-		//pixel.r=pm_getint(ifp);
-		//pixel.g=pm_getint(ifp);
-		pixel.g=pm_getrawbyte(ifp);
-		//pixel.b=pm_getint(ifp);
-		set_pixel(image,j,i,pixel);
-	   }
-     }
-
-      // fermeture 
-      fclose(ifp);
-      return image; //imagemap;
-}
-*/
-
 /** Parser method **
 
 char* getStrParam(int argc,char* argv[],char* param,char* def){
@@ -367,14 +272,92 @@ void printimage(double* image,int cols, int rows, int maxval){
 double * crop_image(double *image, int x1, int y1, int xn, int xm){
 }
 
+double* matrixinverse(double* matrix,int dim){
+
+	double * res = (double *)malloc(sizeof(double)*dim*dim);
+
+	double diag1=matrix[dim*0+0]*matrix[dim*1+1];
+	double diag2=(-1*matrix[dim*1+0]*matrix[dim*0+1]);
+
+	double det=diag1+diag2;
+
+	res[dim*0+0]=(1/det)*matrix[dim*1+1];
+	res[dim*0+1]=(1/det)*-1*matrix[dim*0+1];
+	res[dim*1+0]=(1/det)*-1*matrix[dim*1+0];
+	res[dim*1+1]=(1/det)*matrix[dim*0+0];
+
+	return res;
+}
+
+void matrixprint(double* matrix,int dim){
+
+	for(int i=0;i<dim;i++){
+		for(int j=0;j<dim;j++){		
+			printf(" %0.2f ",matrix[i*dim+j]);	
+		}
+		printf("\n");
+	}
+
+}
+
+void matrixtest(){
+
+	double * kernel = (double *)malloc(sizeof(double)*2*2);
+
+	kernel[0*2+0]=1;
+	kernel[0*2+1]=2;
+
+	kernel[1*2+0]=3;
+	kernel[1*2+1]=4;
+
+	matrixprint(kernel,2);	
+	printf("----\n");
+	matrixprint(matrixinverse(kernel,2),2);	
+
+}
+
+double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym){
+
+	double* newimage=(double*)malloc(sizeof(double)*xn*ym);
+
+	for(int row=y;row<lrows;row++){
+		for(int col=x;col<lcols;col++){
+			//make sure that the dimension is right
+			if(((ym<=row))||((xn<=col))) break;
+			newimage[(row-y)*xn+col-x]=image[row*lcols+col];	
+		}
+	}
+
+	return newimage;
+
+}
+
+//the values here may end up negative, due to the subtraction without norm
+double *imagediff(double *image1,double *image2,int cols,int rows){
+
+	double* newimage=(double*)malloc(sizeof(double)*cols*rows);
+
+	for(int y=0;y<rows;y++){
+		for(int x=0;x<cols;x++){
+			newimage[y*cols+x]=image1[y*cols+x]-image2[y*cols+x];
+		}
+	}
+}
 
 
+void imageextracttest(){
+	double * image=readimage("image/tazplain/taz001.pgm");
+	double *resultImage=imageextract(image,lcols,lrows,0,0,200,200);
+	resultImage=callgradxy(1, 3, image, lrows, lcols);
+	printimage(resultImage,lrows,lcols,lmaxval);
+}
 
-int main(int argc, char* argv[]){	
-	double * image=readimage("taz_ascii.pgm");
-
+int main(int argc, char* argv[]){
+	//matrixtest();
+	imageextracttest();	
+	/*double * image=readimage("taz_ascii.pgm");
 	double * kernel = (double *)malloc(sizeof(double)*3*3);
-
+	
 	kernel[0*3+0]=-1;
 	kernel[0*3+1]=0;
 	kernel[0*3+2]=1;
@@ -386,8 +369,11 @@ int main(int argc, char* argv[]){
 	kernel[2*3+0]=-1;
 	kernel[2*3+1]=0;
 	kernel[2*3+2]=1;
-		
+	matrixprint(kernel,3);	
+	printf("------------\n");
 	double *resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
 
 	printimage(resultImage,lcols,lrows,lmaxval);
+	*/
+
 }
