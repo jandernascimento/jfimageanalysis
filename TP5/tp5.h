@@ -6,6 +6,9 @@
 #define K 3     //index of the group k in DPC
 
 // STRUCTURE
+
+typedef gray istream, *pistream;
+
 typedef struct tpixel {
 
   int r,g,b;
@@ -23,7 +26,19 @@ typedef struct timage {
 } image_type, *pimage_type;
 
 // METHODS
-pimage_type readimage(char* filepath);
-void printimage(pimage_type image);
+double* readimage(char* filepath);
+void printimage(double* image,int cols, int rows, int maxval);
 void set_pixel(pimage_type image,int x, int y, pixel_type pixel );
 pixel_type *get_pixel(pimage_type image,int x, int y);
+
+double *callgradxy(int times, int kernelsize, double *img, int height, int width);
+double *callgrady(int times, int kernelsize, double *img, int height, int width);
+double *callgradx(int times, int kernelsize, double *img, int height, int width);
+double * normGradient(double *gx, double *gy, int lrows, int lcols);
+double* sobelfilterV(int val);
+double* sobelfilterH(int val);
+double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW);
+int findMax(double* array, int len);
+int findMin(double* array, int len);
+void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len);
+
