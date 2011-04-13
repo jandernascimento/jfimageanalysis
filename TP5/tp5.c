@@ -383,8 +383,62 @@ void imageextracttest(){
 }
 
 
+//********************************************* INTERPOLATION ********************************************/
+void initialize_array(double * vec, int n, int vldef){
+	for(int i=0;i<n;i++)
+		vec[i]=vldef;
+}
+
+double * interpolate_image(double *image, int rows, int cols, double delta_x, double delta_y){
+	double * image_w = (double *)malloc(sizeof(double)*rows*cols);
+
+	int delta_e_x     = (int) delta_x;
+	double delta_f_x;
+	int delta_e_y     = (int) delta_y;
+	double delta_f_y;
+
+	if (delta_x < 0)	delta_f_x = (double) (-1)*delta_x + delta_e_x; 
+	else				delta_f_x = (double)      delta_x - delta_e_x; 
+	if (delta_y < 0)	delta_f_y = (double) (-1)*delta_y + delta_e_y; 
+	else				delta_f_y = (double)      delta_y - delta_e_y; 
+	fprintf(stderr,"delta_x:%f delta_e_x:%i delta_f_x:%f delta_y:%f delta_e_y:%i delta_f_y:%f,\n",delta_x,delta_e_x,delta_f_x,delta_y,delta_e_y,delta_f_y);
+
+	//initializing the array with zeros
+	initialize_array(image_w,rows*cols,0);
+
+	//interpolating
+	for(int y=0;y<rows;y++)
+		for(int x=0;x<cols;x++){
+			//point 1
+			if ( ( ((y+delta_e_y) * rows) + (x+delta_e_x)) < (rows*cols))
+				image_w[((y+delta_e_y) * rows) + (x+delta_e_x)] += ( (1.0-delta_f_x) * (1.0-delta_f_y) * (image[y*rows+x]) );
+
+			//point 2
+			if ( ( ((y+delta_e_y) * rows) + (x+delta_e_x+1)) < (rows*cols))
+				image_w[((y+delta_e_y) * rows) + (x+delta_e_x+1)] += ( (delta_f_x) * (1.0-delta_f_y) * (image[y*rows+x]) );
+
+			//point 3
+			if ( ( ((y+delta_e_y+1) * rows) + (x+delta_e_x)) < (rows*cols))
+				image_w[((y+delta_e_y+1) * rows) + (x+delta_e_x)] += ( (1.0-delta_f_x) * (delta_f_y) * (image[y*rows+x]) );
+
+			//point 4
+			if ( ( ((y+delta_e_y+1) * rows) + (x+delta_e_x+1)) < (rows*cols))
+				image_w[((y+delta_e_y+1) * rows) + (x+delta_e_x+1)] += ( (delta_f_x) * (delta_f_y) * (image[y*rows+x]) );
+		}
+
+	return image_w;	
+}
+//********************************************************************************************************/
+
 
 int main(int argc, char* argv[]){
+	double * image=readimage("taz_ascii.pgm");
+	//interpolation
+	double *resultImage=interpolate_image(image, lrows, lcols, 5, 5);
+	//
+	printimage(resultImage,lcols,lrows,lmaxval);
+	
+
 	//matrixtest();
 	//imageextracttest();	
 	/*double * image=readimage("taz_ascii.pgm");

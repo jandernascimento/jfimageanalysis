@@ -45,3 +45,6 @@ int findMax(double* array, int len);
 int findMin(double* array, int len);
 void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len);
 
+//interpolation
+double * interpolate_image(double *image, int rows, int cols, double delta_x, double delta_y);
+//
