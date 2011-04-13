@@ -205,6 +205,36 @@ double *callgradxy(int times, int kernelsize, double *img, int height, int width
 	return resultImage;			
 }
 
+double * calc_xx(double *gx, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gx[y*lcols+x] * gx[y*lcols+x];
+		}
+
+	return g;
+}
+
+double * calc_yy(double *gy, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gy[y*lcols+x] * gy[y*lcols+x];
+		}
+
+	return g;
+}
+
+double * calc_xy(double *gx, double *gy, int lrows, int lcols){
+	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
+	for (int x=0;x<lcols;x++)
+		for (int y=0;y<lrows;y++){
+			g[y*lcols+x] = gx[y*lcols+x] * gy[y*lcols+x];
+		}
+
+	return g;
+}
+
 /*************************************************************************************************/
 
 double* readimage(char* filepath){
@@ -352,9 +382,11 @@ void imageextracttest(){
 	printimage(resultImage,lrows,lcols,lmaxval);
 }
 
+
+
 int main(int argc, char* argv[]){
 	//matrixtest();
-	imageextracttest();	
+	//imageextracttest();	
 	/*double * image=readimage("taz_ascii.pgm");
 	double * kernel = (double *)malloc(sizeof(double)*3*3);
 	
@@ -375,5 +407,35 @@ int main(int argc, char* argv[]){
 
 	printimage(resultImage,lcols,lrows,lmaxval);
 	*/
+/*
+		double *result=(double *)malloc(sizeof(double)*lcols*lrows);
+		double* image;
+		int nr=1;
+		int bin=3;
+		image=readimage("image/tazplain/taz001.pgm");
+			double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
+			double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
+			double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
 
+			image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
+			image_grad_x2=callbinomial(1, 3, image_grad_x2, lrows, lcols);	//smothing
+			image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
+			image_grad_y2=callbinomial(1, 3, image_grad_y2, lrows, lcols);  //smothing
+			image_grad_xy=callbinomial(1, 3, image_grad_xy, lrows, lcols);  //smothing		
+
+			for(int y=0;y<lrows;y++){
+				for(int x=0;x<lcols;x++){
+					int pos;
+					double part=0;
+					pos=y*lcols+x;
+					double a=image_grad_x2[pos];
+					double b=image_grad_y2[pos];
+					double c=image_grad_xy[pos];
+
+					part=((a*b)-(c*c));
+					result[pos]=part<0?0:255;
+				}
+			}
+
+*/
 }
