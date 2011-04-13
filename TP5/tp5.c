@@ -405,6 +405,9 @@ void initialize_array(double * vec, int n, int vldef){
 }
 
 
+/**
+** interpolate the image
+*/
 double * interpolate_image(double *image, int rows, int cols, double delta_i, double delta_j){
 	double * image_w = (double *)malloc(sizeof(double)*rows*cols);
 
@@ -527,6 +530,15 @@ double sum_matrices_values(double *matrix,int dim){
 
 
 }
+
+/**
+** estimating the displacement alog i and j (equation 1 of the TP5)
+*/
+
+double * calc_displacements(){
+
+}
+
 
 /**
 ** MAIN 
