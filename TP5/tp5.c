@@ -382,6 +382,8 @@ double *imagediff(double *image1,double *image2,int cols,int rows){
 			newimage[y*cols+x]=image1[y*cols+x]-image2[y*cols+x];
 		}
 	}
+
+	return newimage;
 }
 
 
@@ -549,7 +551,7 @@ void exercise3(int iteration){
 
 	for(int x=0;x<iteration;x++){
 		
-		double *displacement=calc_displacements();
+		double *displacement=calc_displacements(t,image1,lrows,lcols);
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
@@ -561,9 +563,34 @@ void exercise3(int iteration){
 
 /**
 ** estimating the displacement alog i and j (equation 1 of the TP5)
+** the input are the images Io(i,j) and T(i,j)
+** returns a matrix 2x1
 */
-double * calc_displacements(){
+double * calc_displacements(double * T, double * Io, int rows, int cols){
+	//part1 of the equation
+	double * mat1=harrispart(Io, rows, cols);	
+	mat1 = matrixinverse(mat1,2);
 
+
+	//part2  of the equation
+	double * mat_diff=imagediff(T,Io,cols,rows);
+		//(0,0)
+	double * gradientI = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
+	double * mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	double value = sum_matrices_values(mat_temp,cols);
+	double * mat2=(double *)malloc(sizeof(double)*2*1);
+	mat2[0]= value;
+		//(1,0)
+	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
+	mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	value = sum_matrices_values(mat_temp,cols);
+	mat2[1]=value;
+
+
+	//part1 * part2
+	double * displ=mult_matrices(mat1, mat2);
+
+	return displ;	
 }
 
 
