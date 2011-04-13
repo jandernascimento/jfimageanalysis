@@ -556,7 +556,7 @@ void exercise3(int iteration){
 		
 		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);
 	}
-
+	printimage(tw,lcols,lrows,lmaxval);
 }
 
 /**
