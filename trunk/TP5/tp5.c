@@ -479,6 +479,20 @@ double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	return result;
 }
 
+//sum all the values of a matrix
+double sum_matrices_values(double *matrix,int dim){
+
+	double total=0;
+
+	for(int y=0;y<dim;y++)
+	  for(int x=0;x<dim;x++)	
+		total+= matrix[y*dim+x];
+
+	return total;
+
+
+}
+
 int main(int argc, char* argv[]){
 	double * image=readimage("taz_ascii.pgm");
 	//interpolation
