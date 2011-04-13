@@ -404,44 +404,42 @@ void initialize_array(double * vec, int n, int vldef){
 		vec[i]=vldef;
 }
 
-/**
-** interpolate the image 
-*/
-double * interpolate_image(double *image, int rows, int cols, double delta_x, double delta_y){
+
+double * interpolate_image(double *image, int rows, int cols, double delta_i, double delta_j){
 	double * image_w = (double *)malloc(sizeof(double)*rows*cols);
 
-	int delta_e_x     = (int) delta_x;
-	double delta_f_x;
-	int delta_e_y     = (int) delta_y;
-	double delta_f_y;
+	int delta_e_i     = (int) delta_i;
+	double delta_f_i;
+	int delta_e_j     = (int) delta_j;
+	double delta_f_j;
 
-	if (delta_x < 0)	delta_f_x = (double) (-1)*delta_x + delta_e_x; 
-	else				delta_f_x = (double)      delta_x - delta_e_x; 
-	if (delta_y < 0)	delta_f_y = (double) (-1)*delta_y + delta_e_y; 
-	else				delta_f_y = (double)      delta_y - delta_e_y; 
-	fprintf(stderr,"delta_x:%f delta_e_x:%i delta_f_x:%f delta_y:%f delta_e_y:%i delta_f_y:%f,\n",delta_x,delta_e_x,delta_f_x,delta_y,delta_e_y,delta_f_y);
+	if (delta_i < 0)	delta_f_i = (double) (-1)*delta_i + delta_e_i; 
+	else				delta_f_i = (double)      delta_i - delta_e_i; 
+	if (delta_j < 0)	delta_f_j = (double) (-1)*delta_j + delta_e_j; 
+	else				delta_f_j = (double)      delta_j - delta_e_j; 
+	fprintf(stderr,"delta_i:%f delta_e_i:%i delta_f_i:%f delta_j:%f delta_e_j:%i delta_f_j:%f,\n",delta_i,delta_e_i,delta_f_i,delta_j,delta_e_j,delta_f_j);
 
 	//initializing the array with zeros
 	initialize_array(image_w,rows*cols,0);
 
 	//interpolating
-	for(int y=0;y<rows;y++)
-		for(int x=0;x<cols;x++){
+	for(int i=0;i<rows;i++)
+		for(int j=0;j<cols;j++){
 			//point 1
-			if ( ( ((y+delta_e_y) * rows) + (x+delta_e_x)) < (rows*cols))
-				image_w[((y+delta_e_y) * rows) + (x+delta_e_x)] += ( (1.0-delta_f_x) * (1.0-delta_f_y) * (image[y*rows+x]) );
+			if ( ( ((i+delta_e_i) * rows) + (j+delta_e_j)) < (rows*cols))
+				image_w[((i+delta_e_i) * rows) + (j+delta_e_j)] += ( (1.0-delta_f_i) * (1.0-delta_f_j) * (image[i*rows+j]) );
 
 			//point 2
-			if ( ( ((y+delta_e_y) * rows) + (x+delta_e_x+1)) < (rows*cols))
-				image_w[((y+delta_e_y) * rows) + (x+delta_e_x+1)] += ( (delta_f_x) * (1.0-delta_f_y) * (image[y*rows+x]) );
+			if ( ( ((i+delta_e_i) * rows) + (j+delta_e_j+1)) < (rows*cols))
+				image_w[((i+delta_e_i) * rows) + (j+delta_e_j+1)] += ( (delta_f_i) * (1.0-delta_f_j) * (image[i*rows+j]) );
 
 			//point 3
-			if ( ( ((y+delta_e_y+1) * rows) + (x+delta_e_x)) < (rows*cols))
-				image_w[((y+delta_e_y+1) * rows) + (x+delta_e_x)] += ( (1.0-delta_f_x) * (delta_f_y) * (image[y*rows+x]) );
+			if ( ( ((i+delta_e_i+1) * rows) + (j+delta_e_j)) < (rows*cols))
+				image_w[((i+delta_e_i+1) * rows) + (j+delta_e_j)] += ( (1.0-delta_f_i) * (delta_f_j) * (image[i*rows+j]) );
 
 			//point 4
-			if ( ( ((y+delta_e_y+1) * rows) + (x+delta_e_x+1)) < (rows*cols))
-				image_w[((y+delta_e_y+1) * rows) + (x+delta_e_x+1)] += ( (delta_f_x) * (delta_f_y) * (image[y*rows+x]) );
+			if ( ( ((i+delta_e_i+1) * rows) + (j+delta_e_j+1)) < (rows*cols))
+				image_w[((i+delta_e_i+1) * rows) + (j+delta_e_j+1)] += ( (delta_f_i) * (delta_f_j) * (image[i*rows+j]) );
 		}
 
 	return image_w;	

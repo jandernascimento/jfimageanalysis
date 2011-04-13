@@ -37,7 +37,7 @@ double *callgrady(int times, int kernelsize, double *img, int height, int width)
 double *harrispart(double *image,int rows, int cols);
 double *imagediff(double *image1,double *image2,int cols,int rows);
 double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym);
-double * interpolate_image(double *image, int rows, int cols, double delta_x, double delta_y);
+double * interpolate_image(double *image, int rows, int cols, double delta_i, double delta_j);
 double* matrixinverse(double* matrix,int dim);
 double * mult_matrices(double *mat1, double *mat2);
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols);
