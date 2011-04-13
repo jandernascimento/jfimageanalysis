@@ -534,7 +534,6 @@ double sum_matrices_values(double *matrix,int dim){
 /**
 ** estimating the displacement alog i and j (equation 1 of the TP5)
 */
-
 double * calc_displacements(){
 
 }
