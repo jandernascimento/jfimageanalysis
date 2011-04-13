@@ -4,49 +4,9 @@
 
 int lcols, lrows, lmaxval;
 
-/** Parser method **
-
-char* getStrParam(int argc,char* argv[],char* param,char* def){
-
-	for(int i=0;i<argc;i++){
-		if(strcmp(param,argv[i])==0){ 
-			if(argv[i+1][0]=='-') return def;
-			return argv[i+1];
-		}
-	}
-
-	return def;
-
-}
-
-int getBoolParam(int argc,char* argv[],char* param){
-
-	for(int i=0;i<argc;i++){
-		if(strcmp(param,argv[i])==0){ 
-			return 1;
-		}
-	}
-
-	return 0;
-
-}
-
-int getIntParam(int argc,char* argv[],char* param,char* def){
-    char* res=getStrParam(argc,argv,param,def);
-    
-    int val=0;
- 
-    for(int i=0;i<strlen(res);i++){
-      	if(res[0]=='-') continue;
-	val+=pow(10,(strlen(res)-i-1))*(res[i]-'0'); 
-    }
-
-    return res[0]=='-'?-1*val:val;
-}
-** end Parser method **/
-
-
-/*************************** GRADIENT *************************************************************/
+/**
+** find the max
+*/
 int findMax(double* array, int len){
     int max = array[0];
     for (int i=1;i<len; ++i)
@@ -55,6 +15,10 @@ int findMax(double* array, int len){
     return max;
 }
 
+
+/**
+** find the minimum
+*/
 int findMin(double* array, int len){
     int min = array[0];
     for (int i=1;i<len; ++i)
@@ -63,6 +27,9 @@ int findMin(double* array, int len){
     return min;
 }
 
+/**
+** equalize
+*/
 void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len){
     double tmp;
     for (int i=0;i<len; ++i)
@@ -72,6 +39,9 @@ void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int 
     }
 }
 
+/**
+** performs the convolution
+*/
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW){
        int j;  // row    index of the current image
        int i;  // column index of the current image
@@ -116,6 +86,9 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
        return tmpImage;
 }
 
+/**
+** horizontal sobel filter
+*/
 double* sobelfilterH(int val){
 	double *kernel = (double*)malloc(sizeof(double)*val*val);
 	
@@ -136,6 +109,9 @@ double* sobelfilterH(int val){
 	exit(-1);
 }
 
+/**
+** vertical sobel filter
+*/
 double* sobelfilterV(int val){
 	double *kernel = (double*)malloc(sizeof(double)*val*val);
 	
@@ -156,6 +132,9 @@ double* sobelfilterV(int val){
 	exit(-1);
 }
 
+/**
+** apply the norm of the gradient
+*/
 double * normGradient(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
@@ -168,11 +147,15 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols){
 			/*/mod(val1)+mod(val2)
 			int val1 = gx[y*lcols+x];
 			int val2 = gy[y*lcols+x];
-			g[y*lcols+x] = abs( val1 - val2);//*/
+			g[y*lcols+x] = abs( val1 - val2);*/
 		}
 
 	return g;
 }
+
+/**
+** gradient in x
+*/
 double *callgradx(int times, int kernelsize, double *img, int height, int width){
 	double *kernel=sobelfilterV(3);
 	double *resultImage;
@@ -181,6 +164,9 @@ double *callgradx(int times, int kernelsize, double *img, int height, int width)
 	return resultImage;
 }
 
+/**
+** gradient in y 
+*/
 double *callgrady(int times, int kernelsize, double *img, int height, int width){
 	double *kernel=sobelfilterH(3);
 	double *resultImage;
@@ -189,6 +175,9 @@ double *callgrady(int times, int kernelsize, double *img, int height, int width)
 	return resultImage;
 }
 
+/**
+** gradient in xy
+*/
 double *callgradxy(int times, int kernelsize, double *img, int height, int width){
 	double * kernelV=sobelfilterV(3);
 	double * kernelH=sobelfilterH(3);
@@ -202,6 +191,9 @@ double *callgradxy(int times, int kernelsize, double *img, int height, int width
 	return resultImage;			
 }
 
+/**
+** gradient in x^2 
+*/
 double * calc_xx(double *gx, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
@@ -212,6 +204,9 @@ double * calc_xx(double *gx, int lrows, int lcols){
 	return g;
 }
 
+/**
+** gradient in y^2 
+*/
 double * calc_yy(double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
@@ -222,6 +217,9 @@ double * calc_yy(double *gy, int lrows, int lcols){
 	return g;
 }
 
+/**
+** calculates the c term of harris 
+*/
 double * calc_xy(double *gx, double *gy, int lrows, int lcols){
 	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
 	for (int x=0;x<lcols;x++)
@@ -232,8 +230,10 @@ double * calc_xy(double *gx, double *gy, int lrows, int lcols){
 	return g;
 }
 
-/*************************************************************************************************/
 
+/**
+** reads the image 
+*/
 double* readimage(char* filepath){
     FILE* ifp;
     double* imagemap;
@@ -285,6 +285,9 @@ double* readimage(char* filepath){
       return imagemap;
 }
 
+/**
+** prints the image
+*/
 void printimage(double* image,int cols, int rows, int maxval){
 	printf("P2\n");
     printf("%d %d \n", cols, rows);
@@ -295,10 +298,9 @@ void printimage(double* image,int cols, int rows, int maxval){
 	printf("%i ",(int)image[i * cols + j] );
 }
 
-//Crop an image
-double * crop_image(double *image, int x1, int y1, int xn, int xm){
-}
-
+/**
+** calculates the inverse 
+*/
 double* matrixinverse(double* matrix,int dim){
 
 	double * res = (double *)malloc(sizeof(double)*dim*dim);
@@ -316,6 +318,9 @@ double* matrixinverse(double* matrix,int dim){
 	return res;
 }
 
+/**
+** prints the matrix
+*/
 void matrixprint(double* matrix,int dim){
 
 	for(int i=0;i<dim;i++){
@@ -327,6 +332,9 @@ void matrixprint(double* matrix,int dim){
 
 }
 
+/**
+** test the matrix
+*/
 void matrixtest(){
 
 	double * kernel = (double *)malloc(sizeof(double)*2*2);
@@ -343,6 +351,9 @@ void matrixtest(){
 
 }
 
+/**
+** performs the crop 
+*/
 double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym){
 
 	double* newimage=(double*)malloc(sizeof(double)*xn*ym);
@@ -359,7 +370,9 @@ double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int 
 
 }
 
-//the values here may end up negative, due to the subtraction without norm
+/**
+** make the diff between images 
+*/
 double *imagediff(double *image1,double *image2,int cols,int rows){
 
 	double* newimage=(double*)malloc(sizeof(double)*cols*rows);
@@ -372,6 +385,9 @@ double *imagediff(double *image1,double *image2,int cols,int rows){
 }
 
 
+/**
+** test the extract 
+*/
 void imageextracttest(){
 	double * image=readimage("image/tazplain/taz001.pgm");
 	double *resultImage=imageextract(image,lcols,lrows,0,0,200,200);
@@ -380,12 +396,17 @@ void imageextracttest(){
 }
 
 
-//********************************************* INTERPOLATION ********************************************/
+/**
+** initialize the array 
+*/
 void initialize_array(double * vec, int n, int vldef){
 	for(int i=0;i<n;i++)
 		vec[i]=vldef;
 }
 
+/**
+** interpolate the image 
+*/
 double * interpolate_image(double *image, int rows, int cols, double delta_x, double delta_y){
 	double * image_w = (double *)malloc(sizeof(double)*rows*cols);
 
@@ -425,9 +446,11 @@ double * interpolate_image(double *image, int rows, int cols, double delta_x, do
 
 	return image_w;	
 }
-//********************************************************************************************************/
 
 
+/**
+** creates first term of the harris 
+*/
 double *harrispart(double *image,int rows, int cols){
 			//image=readimage("image/tazplain/taz001.pgm");
 			int nr=1;
@@ -468,7 +491,9 @@ double *harrispart(double *image,int rows, int cols){
 }
 
 
-//multiplies two matrices, taking each pixel and multiply each other
+/**
+** multiply matrices 
+*/
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	double * result = (double *)malloc(sizeof(double)*rows*cols);
 
@@ -479,8 +504,9 @@ double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	return result;
 }
 
-//multiplies two matrices, in the formal way
-//it considers only these dimensions: 2x2 times 2x1
+/**
+** multiply mathematically matrices 
+*/
 double * mult_matrices(double *mat1, double *mat2){
 	double * result = (double *)malloc(sizeof(double)*2*1);
 
@@ -490,7 +516,9 @@ double * mult_matrices(double *mat1, double *mat2){
 	return result;
 }
 
-//sum all the values of a matrix
+/**
+** sum the values of a matrix 
+*/
 double sum_matrices_values(double *matrix,int dim){
 	double total=0;
         for(int y=0;y<dim;y++)
@@ -502,6 +530,9 @@ double sum_matrices_values(double *matrix,int dim){
 
 }
 
+/**
+** MAIN 
+*/
 int main(int argc, char* argv[]){
 	double * image=readimage("taz_ascii.pgm");
 	//interpolation
