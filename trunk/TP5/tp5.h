@@ -50,6 +50,7 @@ int findMax(double* array, int len);
 int findMin(double* array, int len);
 int lcols, lrows, lmaxval;
 int main(int argc, char* argv[]);
+void exercise3();
 void imageextracttest();
 void initialize_array(double * vec, int n, int vldef);
 void matrixprint(double* matrix,int dim);
