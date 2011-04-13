@@ -535,14 +535,27 @@ double sum_matrices_values(double *matrix,int dim){
 */
 void exercise3(int iteration){
 
-	double *image1,*image2;
+	double *image1,*t;
 
 	image1=readimage("images/tazplain/taz001.pgm");
 		
 	image1=imageextract(image1,lcols,lrows,130, 50, 100, 84);
 
-	image2=readimage("images/tazplain/taz.pgm");
-	
+	t=readimage("images/tazplain/taz.pgm");
+
+	//initialize
+	int deltai=0,deltaj=0;
+	double* tw=t;
+
+	for(int x=0;x<iteration;x++){
+		
+		double *displacement=calc_displacements();
+
+		deltai-=displacement[0];
+		deltaj-=displacement[1];
+		
+		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);
+	}
 
 }
 
