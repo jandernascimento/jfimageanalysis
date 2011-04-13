@@ -479,12 +479,21 @@ double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	return result;
 }
 
+//multiplies two matrices, in the formal way
+//it considers only these dimensions: 2x2 times 2x1
+double * mult_matrices(double *mat1, double *mat2){
+	double * result = (double *)malloc(sizeof(double)*2*1);
+
+	result[0] = (mat1[0] * mat2[0]) + (mat1[1] * mat2[1]);
+	result[1] = (mat1[2] * mat2[0]) + (mat1[3] * mat2[1]);
+
+	return result;
+}
+
 //sum all the values of a matrix
 double sum_matrices_values(double *matrix,int dim){
-
 	double total=0;
-
-	for(int y=0;y<dim;y++)
+        for(int y=0;y<dim;y++)
 	  for(int x=0;x<dim;x++)	
 		total+= matrix[y*dim+x];
 
