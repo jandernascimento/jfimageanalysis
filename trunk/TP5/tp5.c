@@ -134,8 +134,6 @@ double* sobelfilterH(int val){
 		return kernel;
 	}	
 	exit(-1);
-	//return kernel;
-
 }
 
 double* sobelfilterV(int val){
@@ -156,7 +154,6 @@ double* sobelfilterV(int val){
 		return kernel;
 	}	
 	exit(-1);
-
 }
 
 double * normGradient(double *gx, double *gy, int lrows, int lcols){
@@ -429,6 +426,18 @@ double * interpolate_image(double *image, int rows, int cols, double delta_x, do
 	return image_w;	
 }
 //********************************************************************************************************/
+
+//multiplies two matrices, taking each pixel and multiply each other
+double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
+	double * result = (double *)malloc(sizeof(double)*rows*cols);
+
+	for(int y=0;y<rows;y++)
+		for(int x=0;x<cols;x++)	
+			result[y*rows+x] = mat1[y*rows+x] * mat2[y*rows+x];
+
+	return result;
+}
+
 
 
 int main(int argc, char* argv[]){
