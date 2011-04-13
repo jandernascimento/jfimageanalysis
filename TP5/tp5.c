@@ -404,7 +404,6 @@ void initialize_array(double * vec, int n, int vldef){
 		vec[i]=vldef;
 }
 
-
 /**
 ** interpolate the image
 */
@@ -528,6 +527,22 @@ double sum_matrices_values(double *matrix,int dim){
 
 	return total;
 
+
+}
+
+/**
+** run the ex3
+*/
+void exercise3(int iteration){
+
+	double *image1,*image2;
+
+	image1=readimage("images/tazplain/taz001.pgm");
+		
+	image1=imageextract(image1,lcols,lrows,130, 50, 100, 84);
+
+	image2=readimage("images/tazplain/taz.pgm");
+	
 
 }
 
