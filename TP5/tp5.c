@@ -427,6 +427,47 @@ double * interpolate_image(double *image, int rows, int cols, double delta_x, do
 }
 //********************************************************************************************************/
 
+
+double *harrispart(double *image,int rows, int cols){
+			//image=readimage("image/tazplain/taz001.pgm");
+			int nr=1;
+			int bin=3;
+			double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
+			double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
+			double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
+
+			image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
+			//image_grad_x2=callbinomial(1, 3, image_grad_x2, lrows, lcols);	//smothing
+			image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
+			//image_grad_y2=callbinomial(1, 3, image_grad_y2, lrows, lcols);  //smothing
+			//image_grad_xy=callbinomial(1, 3, image_grad_xy, lrows, lcols);  //smothing		
+
+			double a=0;
+			double b=0;
+			double c=0;
+
+			for(int y=0;y<lrows;y++){
+				for(int x=0;x<lcols;x++){
+					int pos;
+					double part=0;
+					pos=y*lcols+x;
+					a+=image_grad_x2[pos];
+					b+=image_grad_y2[pos];
+					c+=image_grad_xy[pos];
+				}
+			}
+
+
+			double *result=(double *)malloc(sizeof(double)*4);
+			result[0*4+0]=a;
+			result[0*4+1]=c;
+			result[1*4+0]=c;
+			result[1*4+1]=b;
+			
+			return result;
+}
+
+
 //multiplies two matrices, taking each pixel and multiply each other
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	double * result = (double *)malloc(sizeof(double)*rows*cols);
@@ -438,15 +479,11 @@ double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
 	return result;
 }
 
-
-
 int main(int argc, char* argv[]){
 	double * image=readimage("taz_ascii.pgm");
 	//interpolation
 	double *resultImage=interpolate_image(image, lrows, lcols, 5, 5);
-	//
 	printimage(resultImage,lcols,lrows,lmaxval);
-	
 
 	//matrixtest();
 	//imageextracttest();	
@@ -470,35 +507,4 @@ int main(int argc, char* argv[]){
 
 	printimage(resultImage,lcols,lrows,lmaxval);
 	*/
-/*
-		double *result=(double *)malloc(sizeof(double)*lcols*lrows);
-		double* image;
-		int nr=1;
-		int bin=3;
-		image=readimage("image/tazplain/taz001.pgm");
-			double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
-			double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
-			double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
-
-			image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
-			image_grad_x2=callbinomial(1, 3, image_grad_x2, lrows, lcols);	//smothing
-			image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
-			image_grad_y2=callbinomial(1, 3, image_grad_y2, lrows, lcols);  //smothing
-			image_grad_xy=callbinomial(1, 3, image_grad_xy, lrows, lcols);  //smothing		
-
-			for(int y=0;y<lrows;y++){
-				for(int x=0;x<lcols;x++){
-					int pos;
-					double part=0;
-					pos=y*lcols+x;
-					double a=image_grad_x2[pos];
-					double b=image_grad_y2[pos];
-					double c=image_grad_xy[pos];
-
-					part=((a*b)-(c*c));
-					result[pos]=part<0?0:255;
-				}
-			}
-
-*/
 }
