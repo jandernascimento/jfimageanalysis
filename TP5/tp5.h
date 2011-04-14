@@ -6,7 +6,6 @@
 #define K 3     //index of the group k in DPC
 
 // STRUCTURE
-
 typedef gray istream, *pistream;
 
 typedef struct tpixel {

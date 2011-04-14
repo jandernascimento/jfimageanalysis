@@ -303,19 +303,25 @@ void printimage(double* image,int cols, int rows, int maxval){
 */
 double* matrixinverse(double* matrix,int dim){
 
-	double * res = (double *)malloc(sizeof(double)*dim*dim);
+	fprintf(stderr,"antes maloc. dimensao:%i\n",dim);
+	
+	double * result;
+	result = (double *)malloc(sizeof(double)*dim*dim);
+
+	fprintf(stderr,"depois maloc");
 
 	double diag1=matrix[dim*0+0]*matrix[dim*1+1];
 	double diag2=(-1*matrix[dim*1+0]*matrix[dim*0+1]);
 
 	double det=diag1+diag2;
+	fprintf(stderr,"determinante:%f",det);
 
-	res[dim*0+0]=(1/det)*matrix[dim*1+1];
-	res[dim*0+1]=(1/det)*-1*matrix[dim*0+1];
-	res[dim*1+0]=(1/det)*-1*matrix[dim*1+0];
-	res[dim*1+1]=(1/det)*matrix[dim*0+0];
+	result[dim*0+0]=(1/det)*matrix[dim*1+1];
+	result[dim*0+1]=(1/det)*-1*matrix[dim*0+1];
+	result[dim*1+0]=(1/det)*-1*matrix[dim*1+0];
+	result[dim*1+1]=(1/det)*matrix[dim*0+0];
 
-	return res;
+	return result;
 }
 
 /**
@@ -339,11 +345,11 @@ void matrixtest(){
 
 	double * kernel = (double *)malloc(sizeof(double)*2*2);
 
-	kernel[0*2+0]=1;
-	kernel[0*2+1]=2;
+	kernel[0*2+0]= -91;
+	kernel[0*2+1]= 200;
 
-	kernel[1*2+0]=3;
-	kernel[1*2+1]=4;
+	kernel[1*2+0]= 3.5;
+	kernel[1*2+1]= -4.7;
 
 	matrixprint(kernel,2);	
 	printf("----\n");
@@ -367,7 +373,6 @@ double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int 
 	}
 
 	return newimage;
-
 }
 
 /**
@@ -488,6 +493,10 @@ double *harrispart(double *image,int rows, int cols){
 			result[0*4+1]=c;
 			result[1*4+0]=c;
 			result[1*4+1]=b;
+
+			free(image_grad_x2);
+			free(image_grad_y2);
+			free(image_grad_xy);
 			
 			return result;
 }
@@ -539,26 +548,32 @@ void exercise3(int iteration){
 
 	double *image1,*t;
 
-	image1=readimage("images/tazplain/taz001.pgm");
+	image1=readimage("image/tazplain/taz001.pgm");
 		
 	image1=imageextract(image1,lcols,lrows,130, 50, 100, 84);
 
-	t=readimage("images/tazplain/taz.pgm");
+	t=readimage("image/tazplain/taz.pgm");
 
 	//initialize
 	int deltai=0,deltaj=0;
 	double* tw=t;
 
+	double *displacement;
 	for(int x=0;x<iteration;x++){
 		
-		double *displacement=calc_displacements(t,image1,lrows,lcols);
+/*		displacement=calc_displacements(t,image1,lrows,lcols);
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
 		
-		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);
+		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);*/
 	}
 	printimage(tw,lcols,lrows,lmaxval);
+
+	free(image1);
+	free(t);
+	free(tw);
+	free(displacement);
 }
 
 /**
@@ -568,29 +583,33 @@ void exercise3(int iteration){
 */
 double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 of the equation
-	double * mat1=harrispart(Io, rows, cols);	
-	mat1 = matrixinverse(mat1,2);
+	double * mat1;//=harrispart(Io, rows, cols);	
+	//mat1 = matrixinverse(mat1,2);
 
 
 	//part2  of the equation
-	double * mat_diff=imagediff(T,Io,cols,rows);
+	double * mat_diff=mat1;//imagediff(T,Io,cols,rows);
 		//(0,0)
-	double * gradientI = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
-	double * mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
-	double value = sum_matrices_values(mat_temp,cols);
+	double * gradientI;// = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
+	double * mat_temp;// = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	double value;// = sum_matrices_values(mat_temp,cols);
 	double * mat2=(double *)malloc(sizeof(double)*2*1);
 	mat2[0]= value;
 		//(1,0)
-	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
-	mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
-	value = sum_matrices_values(mat_temp,cols);
+	//gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
+	//mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	//value = sum_matrices_values(mat_temp,cols);
 	mat2[1]=value;
 
 
 	//part1 * part2
-	double * displ=mult_matrices(mat1, mat2);
+	double * displ=(double *)malloc(sizeof(double)*2*1);//=mult_matrices(mat1, mat2);
+
+	free(mat1);
 
 	return displ;	
+
+
 }
 
 
@@ -599,30 +618,8 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 */
 int main(int argc, char* argv[]){
 	double * image=readimage("taz_ascii.pgm");
-	//interpolation
-	double *resultImage=interpolate_image(image, lrows, lcols, 5, 5);
-	printimage(resultImage,lcols,lrows,lmaxval);
 
-	//matrixtest();
-	//imageextracttest();	
-	/*double * image=readimage("taz_ascii.pgm");
-	double * kernel = (double *)malloc(sizeof(double)*3*3);
-	
-	kernel[0*3+0]=-1;
-	kernel[0*3+1]=0;
-	kernel[0*3+2]=1;
+	exercise3(1); //<param> is the number of iterations
 
-	kernel[1*3+0]=-2;
-	kernel[1*3+1]=0;
-	kernel[1*3+2]=2;
-
-	kernel[2*3+0]=-1;
-	kernel[2*3+1]=0;
-	kernel[2*3+2]=1;
-	matrixprint(kernel,3);	
-	printf("------------\n");
-	double *resultImage=ApplyConvolution(3, kernel, image, lrows, lcols);
-
-	printimage(resultImage,lcols,lrows,lmaxval);
-	*/
+	free(image);
 }
