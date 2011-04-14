@@ -303,18 +303,15 @@ void printimage(double* image,int cols, int rows, int maxval){
 */
 double* matrixinverse(double* matrix,int dim){
 
-	fprintf(stderr,"antes maloc. dimensao:%i\n",dim);
 	
 	double * result;
 	result = (double *)malloc(sizeof(double)*dim*dim);
-
-	fprintf(stderr,"depois maloc");
 
 	double diag1=matrix[dim*0+0]*matrix[dim*1+1];
 	double diag2=(-1*matrix[dim*1+0]*matrix[dim*0+1]);
 
 	double det=diag1+diag2;
-	fprintf(stderr,"determinante:%f",det);
+	//fprintf(stderr,"determinante:%f",det);
 
 	result[dim*0+0]=(1/det)*matrix[dim*1+1];
 	result[dim*0+1]=(1/det)*-1*matrix[dim*0+1];
@@ -418,7 +415,8 @@ double * interpolate_image(double *image, int rows, int cols, double delta_i, do
 	else				delta_f_i = (double)      delta_i - delta_e_i; 
 	if (delta_j < 0)	delta_f_j = (double) (-1)*delta_j + delta_e_j; 
 	else				delta_f_j = (double)      delta_j - delta_e_j; 
-	fprintf(stderr,"delta_i:%f delta_e_i:%i delta_f_i:%f delta_j:%f delta_e_j:%i delta_f_j:%f,\n",delta_i,delta_e_i,delta_f_i,delta_j,delta_e_j,delta_f_j);
+	//fprintf(stderr,"delta_i:%f delta_e_i:%i delta_f_i:%f delta_j:%f delta_e_j:%i delta_f_j:%f,\n",delta_i,delta_e_i,delta_f_i,delta_j,delta_e_j,delta_f_j);
+	fprintf(stderr," delta_i:%f\n delta_j:%f\n",delta_i,delta_j);
 
 	//initializing the array with zeros
 	initialize_array(image_w,rows*cols,0);
@@ -565,22 +563,25 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 
 
 	//part2  of the equation
+	double * mat2=(double *)malloc(sizeof(double)*2*1);
 	double * mat_diff=imagediff(T,Io,cols,rows);
 		//(0,0)
 	double * gradientI = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
 	double * mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
 	double value = sum_matrices_values(mat_temp,cols);
-	double * mat2=(double *)malloc(sizeof(double)*2*1);
 	mat2[0]= value;
+
+	free(gradientI);
+	free(mat_temp);
+
 		//(1,0)
 	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
-	mat_temp = (double *)malloc(sizeof(double)*2*1);//=mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
 	value = sum_matrices_values(mat_temp,cols);
 	mat2[1]=value;
 
-
 	//part1 * part2
-	double * displ=(double *)malloc(sizeof(double)*2*1);//=mult_matrices(mat1, mat2);
+	double * displ=mult_matrices(mat1, mat2);
 
 	return displ;	
 }
