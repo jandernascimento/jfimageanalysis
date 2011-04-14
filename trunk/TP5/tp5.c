@@ -488,17 +488,17 @@ double *harrispart(double *image,int rows, int cols){
 			}
 
 
-			double *result=(double *)malloc(sizeof(double)*4);
-			result[0*4+0]=a;
-			result[0*4+1]=c;
-			result[1*4+0]=c;
-			result[1*4+1]=b;
+			double *harris=(double *)malloc(sizeof(double)*4);
+			harris[0*2+0]=a;
+			harris[0*2+1]=c;
+			harris[1*2+0]=c;
+			harris[1*2+1]=b;
 
-			free(image_grad_x2);
-			free(image_grad_y2);
-			free(image_grad_xy);
+			//free(image_grad_x2);
+			//free(image_grad_y2);
+			//free(image_grad_xy);
 			
-			return result;
+			return harris;
 }
 
 
@@ -561,19 +561,20 @@ void exercise3(int iteration){
 	double *displacement;
 	for(int x=0;x<iteration;x++){
 		
-/*		displacement=calc_displacements(t,image1,lrows,lcols);
+		displacement=calc_displacements(t,image1,lrows,lcols);
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
 		
-		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);*/
+		tw=interpolate_image(t, lrows, lcols, deltaj, deltai);
+
 	}
 	printimage(tw,lcols,lrows,lmaxval);
 
-	free(image1);
-	free(t);
-	free(tw);
-	free(displacement);
+	//free(image1);
+	//free(t);
+	//free(tw);
+	//free(displacement);
 }
 
 /**
@@ -583,20 +584,20 @@ void exercise3(int iteration){
 */
 double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 of the equation
-	double * mat1;//=harrispart(Io, rows, cols);	
-	//mat1 = matrixinverse(mat1,2);
+	double * mat1=harrispart(Io, rows, cols);	
+	mat1 = matrixinverse(mat1,2);
 
 
 	//part2  of the equation
-	double * mat_diff=mat1;//imagediff(T,Io,cols,rows);
+	double * mat_diff=imagediff(T,Io,cols,rows);
 		//(0,0)
-	double * gradientI;// = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
-	double * mat_temp;// = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
-	double value;// = sum_matrices_values(mat_temp,cols);
+	double * gradientI = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
+	double * mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
+	double value = sum_matrices_values(mat_temp,cols);
 	double * mat2=(double *)malloc(sizeof(double)*2*1);
 	mat2[0]= value;
 		//(1,0)
-	//gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
+	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
 	//mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
 	//value = sum_matrices_values(mat_temp,cols);
 	mat2[1]=value;
@@ -605,7 +606,7 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 * part2
 	double * displ=(double *)malloc(sizeof(double)*2*1);//=mult_matrices(mat1, mat2);
 
-	free(mat1);
+	//free(mat1);
 
 	return displ;	
 
@@ -617,9 +618,9 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	double * image=readimage("taz_ascii.pgm");
+	//double * image=readimage("taz_ascii.pgm");
 
 	exercise3(1); //<param> is the number of iterations
 
-	free(image);
+	//free(image);
 }
