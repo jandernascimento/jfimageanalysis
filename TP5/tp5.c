@@ -200,21 +200,6 @@ double* sobelfilterV(int val){
 	exit(-1);
 }
 
-/**
-** apply the norm of the gradient
-*/
-double * normGradient(double *gx, double *gy, int lrows, int lcols){
-	double * g = (double *) malloc(sizeof(double)*lrows*lcols);
-	for (int x=0;x<lcols;x++)
-		for (int y=0;y<lrows;y++){
-			//sqrt (val1*val1 + val2*val2)
-			int val1 = gx[y*lcols+x] * gx[y*lcols+x];
-			int val2 = gy[y*lcols+x] * gy[y*lcols+x];
-			g[y*lcols+x] = sqrt( val1 + val2);
-		}
-
-	return g;
-}
 
 /**
 ** gradient in x
@@ -236,22 +221,6 @@ double *callgrady(int times, int kernelsize, double *img, int height, int width)
 	resultImage=ApplyConvolution(3, kernel, img, height, width);
 	free(kernel);
 	return resultImage;
-}
-
-/**
-** gradient in xy
-*/
-double *callgradxy(int times, int kernelsize, double *img, int height, int width){
-	double * kernelV=sobelfilterV(3);
-	double * kernelH=sobelfilterH(3);
-	double * gx=ApplyConvolution(3, kernelV, img, height, width);
-	double * gy=ApplyConvolution(3, kernelH, img, height, width);
-	double *resultImage=normGradient(gx, gy, height, width);
-	free(gx);
-	free(gy);	
-	free(kernelV);
-	free(kernelH);	
-	return resultImage;			
 }
 
 /**
@@ -415,18 +384,19 @@ void matrixtest(){
 */
 double *imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym){
 	double* newimage=(double*)malloc(sizeof(double)*xn*ym);
-	int newx=0,newy=0;
+	int new_x=0;
+	int new_y=0;
 	for(int row=y;row<lrows;row++){
-		for(int col=x,newx=0;col<lcols;col++){
+		for(int col=x,new_x=0;col<lcols;col++){
 			//make sure that the dimension is right
 			//if ( ((ym+y)<=row) || ((xn+x)<=col) ) break;
 			//if(((ym<=row))||((xn<=col))) break;
 			//newimage[(row-y)*xn+col-x]=image[row*lcols+col];	
-			if (newx>=xn || newy>=ym) break;
-			newimage[newy*xn+newx]=image[row*lcols+col];	
-			newx++;
+			if (new_x>=xn || new_y>=ym) break;
+			newimage[new_y*xn+new_x]=image[row*lcols+col];	
+			new_x++;
 		}
-		newy++;
+		new_y++;
 	}
 	return newimage;
 }
@@ -443,17 +413,6 @@ double *imagediff(double *image1,double *image2,int cols,int rows){
 		}
 	}
 	return newimage;
-}
-
-
-/**
-** test the extract 
-*/
-void imageextracttest(){
-	double * image=readimage("image/tazplain/taz001.pgm");
-	double *resultImage=imageextract(image,lcols,lrows,0,0,200,200);
-	resultImage=callgradxy(1, 3, image, lrows, lcols);
-	printimage(resultImage,lrows,lcols,lmaxval);
 }
 
 
@@ -529,7 +488,6 @@ double *harrispart(double *image,int rows, int cols){
 	for(int y=0;y<lrows;y++){
 		for(int x=0;x<lcols;x++){
 			int pos;
-			double part=0;
 			pos=y*lcols+x;
 			a+=image_grad_x2[pos];
 			b+=image_grad_y2[pos];
@@ -607,28 +565,24 @@ void exercise3(int iteration){
 
 	double *displacement;
 	for(int x=0;x<iteration;x++){	
-		//fprintf(stderr,"1\n");	
+		fprintf(stderr,"1\n");	
 		displacement=calc_displacements(tw,image1,lrows,lcols);
-		//fprintf(stderr,"2\n");	
+		fprintf(stderr,"2\n");	
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
 		fprintf(stderr," Iteration %i delta_i:%f delta_j:%f\n",x+1,deltai,deltaj);
 		
-		//fprintf(stderr,"3\n");	
-		//free(tw);	
-		//fprintf(stderr,"4\n");	
+		fprintf(stderr,"3\n");		
 		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
-		//fprintf(stderr,"5\n");	
-
-		//free(displacement);
-		//fprintf(stderr,"6\n");	
-
+		fprintf(stderr,"4\n");	
 	}
 	printimage(tw,lcols,lrows,lmaxval);
 
 	free(image1);
 	free(t);
+	free(tw);
+	free(displacement);
 }
 
 /**
@@ -638,7 +592,9 @@ void exercise3(int iteration){
 */
 double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 of the equation
+	fprintf(stderr,"antes harris\n");
 	double * mat1=harrispart(Io, rows, cols);	
+	fprintf(stderr,"depois harris\n");
 	mat1 = matrixinverse(mat1,2);
 
 	//part2  of the equation
@@ -677,5 +633,5 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	exercise3(20); //<param> is the number of iterations
+	exercise3(50); //<param> is the number of iterations
 }
