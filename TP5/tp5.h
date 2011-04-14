@@ -44,7 +44,7 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols);
 double* readimage(char* filepath);
 double* sobelfilterH(int val);
 double* sobelfilterV(int val);
-double sum_matrices_values(double *matrix,int dim);
+double sum_matrices_values(double *matrix,int rows, int cols);
 int findMax(double* array, int len);
 int findMin(double* array, int len);
 int lcols, lrows, lmaxval;
