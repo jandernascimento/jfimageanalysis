@@ -506,13 +506,13 @@ double *harrispart(double *image,int rows, int cols){
 ** multiply matrices 
 */
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols){
-	double * result = (double *)malloc(sizeof(double)*rows*cols);
+	double * m = (double *)malloc(sizeof(double)*rows*cols);
 
 	for(int y=0;y<rows;y++)
 		for(int x=0;x<cols;x++)	
-			result[y*rows+x] = mat1[y*rows+x] * mat2[y*rows+x];
+			m[y*rows+x] = mat1[y*cols+x] * mat2[y*cols+x];
 
-	return result;
+	return m;
 }
 
 /**
@@ -599,7 +599,7 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 		//(1,0)
 	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
 	//mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
-	//value = sum_matrices_values(mat_temp,cols);
+	value = sum_matrices_values(mat_temp,cols);
 	mat2[1]=value;
 
 
