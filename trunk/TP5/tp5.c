@@ -210,12 +210,7 @@ double * normGradient(double *gx, double *gy, int lrows, int lcols){
 			//sqrt (val1*val1 + val2*val2)
 			int val1 = gx[y*lcols+x] * gx[y*lcols+x];
 			int val2 = gy[y*lcols+x] * gy[y*lcols+x];
-			g[y*lcols+x] = sqrt( val1 + val2);//*/
-
-			/*/mod(val1)+mod(val2)
-			int val1 = gx[y*lcols+x];
-			int val2 = gy[y*lcols+x];
-			g[y*lcols+x] = abs( val1 - val2);*/
+			g[y*lcols+x] = sqrt( val1 + val2);
 		}
 
 	return g;
@@ -369,9 +364,7 @@ void printimage(double* image,int cols, int rows, int maxval){
 /**
 ** calculates the inverse 
 */
-double* matrixinverse(double* matrix,int dim){
-
-	
+double* matrixinverse(double* matrix,int dim){	
 	double * result;
 	result = (double *)malloc(sizeof(double)*dim*dim);
 
@@ -379,7 +372,6 @@ double* matrixinverse(double* matrix,int dim){
 	double diag2=(-1*matrix[dim*1+0]*matrix[dim*0+1]);
 
 	double det=diag1+diag2;
-	//fprintf(stderr,"------ Determinante:%f -----\n",det);
 
 	result[dim*0+0]=(1/det)*matrix[dim*1+1];
 	result[dim*0+1]=(1/det)*-1*matrix[dim*0+1];
@@ -489,7 +481,6 @@ double * interpolate_image(double *image, int rows, int cols, double delta_i, do
 	if (delta_j < 0)	delta_f_j = (double) (-1)*delta_j + delta_e_j; 
 	else				delta_f_j = (double)      delta_j - delta_e_j; 
 	//fprintf(stderr,"delta_i:%f delta_e_i:%i delta_f_i:%f delta_j:%f delta_e_j:%i delta_f_j:%f,\n",delta_i,delta_e_i,delta_f_i,delta_j,delta_e_j,delta_f_j);
-	fprintf(stderr," delta_i:%f\n delta_j:%f\n",delta_i,delta_j);
 
 	//initializing the array with zeros
 	initialize_array(image_w,rows*cols,0);
@@ -521,61 +512,42 @@ double * interpolate_image(double *image, int rows, int cols, double delta_i, do
 ** creates first term of the harris 
 */
 double *harrispart(double *image,int rows, int cols){
-			//image=readimage("image/tazplain/taz001.pgm");
-			int nr=1;
-			int bin=3;
-			double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
-			double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
-			double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
+	int nr=1;
+	int bin=3;
+	double *image_grad_x2=callgradx(nr, bin, image, lrows, lcols);	
+	double *image_grad_y2=callgrady(nr, bin, image, lrows, lcols);
+	double *image_grad_xy=calc_xy(image_grad_x2, image_grad_y2, lrows, lcols);
 
-			//fprintf(stderr,"------ GRADIENTE X ------\n");
-			//matrixprint(image_grad_x2,lcols,lrows);
-		
+	image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
+
+	image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
+
+	double a=0;
+	double b=0;
+	double c=0;
+
+	for(int y=0;y<lrows;y++){
+		for(int x=0;x<lcols;x++){
+			int pos;
+			double part=0;
+			pos=y*lcols+x;
+			a+=image_grad_x2[pos];
+			b+=image_grad_y2[pos];
+			c+=image_grad_xy[pos];
+		}
+	}
+
+	double *harris=(double *)malloc(sizeof(double)*4);
+	harris[0*2+0]=a;
+	harris[0*2+1]=c;
+	harris[1*2+0]=c;
+	harris[1*2+1]=b;
 	
+	free(image_grad_x2);
+	free(image_grad_y2);
+	free(image_grad_xy);
 
-			image_grad_x2=calc_xx(image_grad_x2, lrows, lcols);
-			
-			//fprintf(stderr,"------ GRADIENTE X^2 ------\n");
-			//matrixprint(image_grad_x2,lcols,lrows);
-			
-			//fprintf(stderr,"------ GRADIENTE Y -----\n");
-			//matrixprint(image_grad_y2,lcols,lrows);
-
-			image_grad_y2=calc_yy(image_grad_y2, lrows, lcols);
-
-
-			//fprintf(stderr,"------ GRADIENTE Y^2 ------\n");
-			//matrixprint(image_grad_y2,lcols,lrows);
-
-			
-			//fprintf(stderr,"------ GRADIENTE XY ------\n");
-			//matrixprint(image_grad_xy,lcols,lrows);
-			
-			double a=0;
-			double b=0;
-			double c=0;
-
-			for(int y=0;y<lrows;y++){
-				for(int x=0;x<lcols;x++){
-					int pos;
-					double part=0;
-					pos=y*lcols+x;
-					a+=image_grad_x2[pos];
-					b+=image_grad_y2[pos];
-					c+=image_grad_xy[pos];
-				}
-			}
-
-			double *harris=(double *)malloc(sizeof(double)*4);
-			harris[0*2+0]=a;
-			harris[0*2+1]=c;
-			harris[1*2+0]=c;
-			harris[1*2+1]=b;
-
-			//fprintf(stderr,"------ HARRIS PART ------\n");
-			//matrixprint(harris,2,2);
-
-			return harris;
+	return harris;
 }
 
 
@@ -607,11 +579,11 @@ double * mult_matrices(double *mat1, double *mat2){
 /**
 ** sum the values of a matrix 
 */
-double sum_matrices_values(double *matrix,int dim){
+double sum_matrices_values(double *matrix, int rows, int cols){
 	double total=0;
-        for(int y=0;y<dim;y++)
-	  for(int x=0;x<dim;x++)	
-		total+= matrix[y*dim+x];
+        for(int y=0;y<rows;y++)
+	  for(int x=0;x<cols;x++)	
+		total+= matrix[y*cols+x];
 
 	return total;
 }
@@ -634,16 +606,23 @@ void exercise3(int iteration){
 	double* tw=readimage("image/tazplain/taz.pgm");//t;
 
 	double *displacement;
-	for(int x=0;x<iteration;x++){		
+	for(int x=0;x<iteration;x++){	
+		//fprintf(stderr,"1\n");	
 		displacement=calc_displacements(tw,image1,lrows,lcols);
+		//fprintf(stderr,"2\n");	
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
+		fprintf(stderr," Iteration %i delta_i:%f delta_j:%f\n",x+1,deltai,deltaj);
 		
-		free(tw);	
+		//fprintf(stderr,"3\n");	
+		//free(tw);	
+		//fprintf(stderr,"4\n");	
 		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
+		//fprintf(stderr,"5\n");	
 
-		free(displacement);
+		//free(displacement);
+		//fprintf(stderr,"6\n");	
 
 	}
 	printimage(tw,lcols,lrows,lmaxval);
@@ -662,69 +641,33 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 	double * mat1=harrispart(Io, rows, cols);	
 	mat1 = matrixinverse(mat1,2);
 
-	//fprintf(stderr,"----------- HARRIS INVERSE --------\n");
-	//matrixprint(mat1,2,2);
-
-
 	//part2  of the equation
 	double * mat2=(double *)malloc(sizeof(double)*2*1);
 	double * mat_diff=imagediff(T,Io,cols,rows);
 		//(0,0)
-
-	//fprintf(stderr,"----------- DIFF --------\n");
-	//fprintf(stderr,"----------- T --------\n");
-	//matrixprint(T,cols,rows);
-	//fprintf(stderr,"----------- IO --------\n");
-	//matrixprint(Io,cols,rows);
-	//fprintf(stderr,"----------- RES --------\n");
-	//matrixprint(mat_diff,cols,rows);
-	
-
-	
 	double * gradientI = callgrady(1, 3, Io, rows, cols); //grandient y = gradient i
-	
-	//fprintf(stderr,"----------- GRADENT I --------\n");
-	//matrixprint(gradientI,cols,rows);
-	
 	double * mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
-	
-	//fprintf(stderr,"----------- MULTI PIXEL --------\n");
-	//matrixprint(mat_temp,cols,rows);
-	
-	double value = sum_matrices_values(mat_temp,cols);
+	double value = sum_matrices_values(mat_temp, rows,cols);
 	mat2[0]= value;
-	
-	//fprintf(stderr,"----------- VALUE --------\n");
-	//fprintf(stderr," %f \n",value);
 
 	free(gradientI);
 	free(mat_temp);
 
 		//(1,0)
 	gradientI = callgradx(1, 3, Io, rows, cols); //grandient x = gradient j
-
-	//fprintf(stderr,"----------- RES --------\n");
-	//matrixprint(mat_diff,cols,rows);
-
-	//fprintf(stderr,"----------- GRADENT J --------\n");
-	//matrixprint(gradientI,cols,rows);
-
 	mat_temp = mult_pixels_matrices (gradientI, mat_diff, rows, cols); 
 
-	//fprintf(stderr,"----------- MULTI PIXEL --------\n");
-	//matrixprint(mat_temp,cols,rows);
-
-	value = sum_matrices_values(mat_temp,cols);
+	value = sum_matrices_values(mat_temp,rows,cols);
 	mat2[1]=value;
-
-	//fprintf(stderr,"----------- VALUE --------\n");
-	//fprintf(stderr," %f \n",value);
 
 	//part1 * part2
 	double * displ=mult_matrices(mat1, mat2);
 
-	//fprintf(stderr,"----------- MULTI. MATRICES --------\n");
-	//matrixprint(displ,1,2);
+	free(gradientI);
+	free(mat_temp);
+	free(mat1);
+	free(mat2);
+	free(mat_diff);
 
 	return displ;	
 }
@@ -734,15 +677,5 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	//double * image=readimage("image/tazplain/taz001.pgm");
-
-	//double * gradientI = callgrady(1, 3, image, lrows, lcols); //grandient y = gradient i
-
-	//double * image1=imageextract(image,lcols,lrows,50, 130, 100,84);
-                      //imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym){
-
-
-	//printimage(image1,100, 84, lmaxval);
-
-	exercise3(3); //<param> is the number of iterations
+	exercise3(20); //<param> is the number of iterations
 }
