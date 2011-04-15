@@ -586,6 +586,50 @@ void exercise3(int iteration){
 }
 
 /**
+*** Create the boundbox in an image
+**/
+double *boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2){
+	int colorvalue=180;
+
+	if(x1<0 || y1<0 || x2<0 || y2<0 ){
+		fprintf(stderr,"function boundbox:Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)",cols,rows,x1,y1,x2,y2);
+		exit(1);
+	}
+	if(x1 > cols || y1 > rows || x2 > cols || y2 > rows){
+		fprintf(stderr,"function boundbox:Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)",cols,rows,x1,y1,x2,y2);
+		exit(1);
+	}
+
+	for(int y=y1;y<rows;y++){
+		for(int x=x1;x<cols;x++){
+			int pos=y*cols+x;
+			//left
+			if(y1==y && x<x2) image[pos]=colorvalue;
+			//right
+			if(x==x2 && y>=y1 && y<=y2 ) image[pos]=colorvalue;
+			//upper
+			if(y>y1 && x==x1 && y<y2) image[pos]=colorvalue;				       //lower
+			if(y==y2 && x<x2) image[pos]=colorvalue;	
+		}	
+	}
+
+	return image;
+}
+
+
+/**
+*** Test boundbox
+**/
+void boundboxtest(){
+
+	double *image=readimage("image/tazplain/taz001.pgm");
+	
+	boundbox(image,lcols,lrows,100,100,150,120);
+
+	printimage(image,lcols,lrows,lmaxval);
+}
+
+/**
 ** estimating the displacement alog i and j (equation 1 of the TP5)
 ** the input are the images Io(i,j) and T(i,j)
 ** returns a matrix 2x1
@@ -634,4 +678,5 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 */
 int main(int argc, char* argv[]){
 	exercise3(50); //<param> is the number of iterations
+	//boundboxtest();
 }
