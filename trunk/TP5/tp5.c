@@ -478,24 +478,20 @@ double sum_matrices_values(double *matrix, int rows, int cols){
 	return total;
 }
 
-/**
-** run the ex3
-*/
-void exercise3(int iteration){
+double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_type end ,int iteration, int should_print){
 	double *image1;
+	double *t;
 
-	image1=readimage("image/tazplain/taz001.pgm");		
-	image1=imageextract(image1,lcols,lrows, 50, 130, 100,84);
-	      //imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym)
+	//image1=readimage("image/tazplain/taz001.pgm");		
+	image1=imageextract(image,lcols,lrows, start.x, start.y, end.x,end.y);
 
-	double *t=readimage("image/tazplain/taz.pgm");
-
+	t=readimage("image/tazplain/taz.pgm");
 
 	//initialize
 	double deltai=0,deltaj=0;
 	double* tw=readimage("image/tazplain/taz.pgm");
-
 	double *displacement;
+	
 	for(int x=0;x<iteration;x++){	
 		fprintf(stderr,"1\n");	
 		displacement=calc_displacements(tw,image1,lrows,lcols);
@@ -509,12 +505,39 @@ void exercise3(int iteration){
 		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
 		fprintf(stderr,"4\n");	
 	}
-	printimage(tw,lcols,lrows,lmaxval);
+	
+	if(should_print)
+		printimage(tw,lcols,lrows,lmaxval);
+		
+	displacement[0]=deltai;
+	displacement[1]=deltaj;
 
 	free(t);
 	free(tw);
-	free(displacement);
+	//free(displacement);
+	return displacement;
 	free(image1);
+}
+
+/**
+** run the ex3
+*/
+void exercise3(int iteration){
+	double *image1,*t;
+
+	image1=readimage("image/tazplain/taz001.pgm");	
+
+	pixel_type start;
+	start.x=50;
+	start.y=130;
+
+	pixel_type end;
+	end.x=84;
+	end.y=100;
+
+	findDeltas(image1, lcols, lrows, start, end, iteration, 1);
+
+	
 }
 
 
@@ -631,11 +654,11 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	//exercise3(5); //<param> is the number of iterations
+	exercise3(10); //<param> is the number of iterations
 	//boundboxtest();
 
-	double *image1;
-	image1=readimage("taz.pgm");		
-	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
-	free(image1);
+	//double *image1;
+	//image1=readimage("taz.pgm");		
+	//saveimage("out.pgm", image1, lcols, lrows, lmaxval);
+	//free(image1);
 }
