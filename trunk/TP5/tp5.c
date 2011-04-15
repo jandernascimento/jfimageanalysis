@@ -32,8 +32,7 @@ int findMin(double* array, int len){
 */
 void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len){
     double tmp;
-    for (int i=0;i<len; ++i)
-    {
+    for (int i=0;i<len; ++i){
         tmp = (((oldArr[i]-oldMin)/(double)(oldMax-oldMin))*(newMax-newMin))+newMin;
         oldArr[i] = (int)tmp;
     }
@@ -479,7 +478,6 @@ double sum_matrices_values(double *matrix, int rows, int cols){
 }
 
 double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_type end ,int iteration, int should_print){
-	//image1=readimage("image/tazplain/taz001.pgm");
 	double * image1;		
 
 	image1=imageextract(image,cols,rows, start.x, start.y, end.x,end.y);
@@ -494,17 +492,13 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 
 	//iteration step
 	for(int x=0;x<iteration;x++){	
-		//fprintf(stderr,"1\n");	
 		displacement=calc_displacements(tw,image1,lrows,lcols);
-		//fprintf(stderr,"2\n");	
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
 		fprintf(stderr," Iteration %i delta_i:%f delta_j:%f\n",x+1,deltai,deltaj);
 		
-		//fprintf(stderr,"3\n");		
 		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
-		//fprintf(stderr,"4\n");	
 	}
 	
 	if(should_print)
@@ -515,7 +509,6 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 
 	free(t);
 	free(tw);
-	//free(displacement);
 	free(image1);
 	return displacement;
 }
@@ -567,7 +560,7 @@ void saveimage(char *path,double* image,int cols,int rows,int maxval){
 /**
 *** Create the boundbox in an image
 **/
-double *boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2){
+void boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2){
 	int colorvalue=180;
 
 	if(x1<0 || y1<0 || x2<0 || y2<0 ){
@@ -615,9 +608,7 @@ void boundboxtest(){
 */
 double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 of the equation
-	//fprintf(stderr,"antes harris\n");
 	double * mat1=harrispart(Io, rows, cols);	
-	//fprintf(stderr,"depois harris\n");
 	mat1 = matrixinverse(mat1,2);
 
 	//part2  of the equation
@@ -654,46 +645,46 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 /**
 * form the name of the file to be readed
 */
-char * build_name_file(int i){
-	char *path_orig=(char*)malloc(sizeof(char)*50);
+char * build_name_file(char*name_path,int i){
+	char *path=(char*)malloc(sizeof(char)*50);
 	char *i_str=(char*)malloc(sizeof(char)*4);
 
-	strcpy(path_orig, "image/tazplain/taz");
+	strcpy(path, name_path);
 	if (i<10)
-		strcat(path_orig,"00");
+		strcat(path,"00");
 	else if (i>=10 && i<100)
-		strcat(path_orig,"0");
+		strcat(path,"0");
 	sprintf(i_str,"%i",i);//converting from int to string		
-	strcat(path_orig,i_str);
-	strcat(path_orig,".pgm");	
+	strcat(path,i_str);
+	strcat(path,".pgm");	
 
 	free(i_str);
-	return path_orig;
+	return path;
 }
 
 /**
 ** tracks an image
 */
 void tracking_object(){
-	/*double * image1, * deltas, * image_result;
+	double * image1, * deltas;
 	int n_iterations=1; //number of iterations needed to find deltas
-	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	*/
+	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	
 	char * filename;
 	
-/*	pixel_type start;
+	pixel_type start;
 	start.x=50;
 	start.y=130;
 
 	pixel_type tamanho_box;
 	tamanho_box.x=100;
 	tamanho_box.y=84;
-*/
+
 	for(int i=1;i<=139;i++){ //139 images in the folder
 		//reading
-		filename=build_name_file(i);
+		filename=build_name_file("image/tazplain/taz",i);
 			
-		printf("%s\n",filename);
-/*		image1=readimage(filename);
+		fprintf(stderr,"%s\n",filename);
+		image1=readimage(filename);
 		row_orig=lrows;
 		col_orig=lcols;	
 
@@ -703,19 +694,20 @@ void tracking_object(){
 		delta_j=deltas[1];
 		pos_ini_x=start.x + delta_j;
 		pos_ini_y=start.y + delta_i;
-	
-		image_result = boundbox(image1, col_orig, row_orig, pos_ini_x, pos_ini_y, pos_ini_x + tamanho_box.x, pos_ini_y + tamanho_box.y);
 
-		saveimage("final_"+i+".pgm",image_result,col_orig,row_orig,lmaxval);
+	
+		boundbox(image1, col_orig, row_orig, pos_ini_x, pos_ini_y, pos_ini_x + tamanho_box.x, pos_ini_y + tamanho_box.y);
+
+		filename=build_name_file("image/tazplain/result/taz",i);
+		saveimage(filename,image1,col_orig,row_orig,lmaxval);
 		
 		start.x=pos_ini_x;
-		start.y=pos_ini_y;*/
+		start.y=pos_ini_y;
 	}
 
-	/*free(filename);
+	free(filename);
 	free(deltas);
-	free(image_result);
-	free(image1);*/
+	free(image1);
 }
 
 

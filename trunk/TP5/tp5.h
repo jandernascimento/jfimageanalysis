@@ -27,7 +27,7 @@ typedef struct timage {
 // METHODS
 
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW);
-double *boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2);
+double * calc_displacements(double * T, double * Io, int rows, int cols);
 double * calc_xx(double *gx, int lrows, int lcols);
 double * calc_xy(double *gx, double *gy, int lrows, int lcols);
 double * calc_yy(double *gy, int lrows, int lcols);
@@ -43,14 +43,13 @@ double * mult_matrices(double *mat1, double *mat2);
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols);
 double * normGradient(double *gx, double *gy, int lrows, int lcols);
 double* readimage(char* filepath);
-void saveimage(char *path,double* image,int cols,int rows,int maxval);
 double* sobelfilterH(int val);
 double* sobelfilterV(int val);
 double sum_matrices_values(double *matrix,int rows, int cols);
 int findMax(double* array, int len);
 int findMin(double* array, int len);
-int lcols, lrows, lmaxval;
 int main(int argc, char* argv[]);
+void boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2);
 void exercise3();
 void imageextracttest();
 void initialize_array(double * vec, int n, int vldef);
@@ -58,5 +57,5 @@ void matrixprint(double* matrix,int cols,int rows);
 void matrixtest();
 void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len);
 void printimage(double* image,int cols, int rows, int maxval);
-double * calc_displacements(double * T, double * Io, int rows, int cols);
+void saveimage(char *path,double* image,int cols,int rows,int maxval);
 void tracking_object();
