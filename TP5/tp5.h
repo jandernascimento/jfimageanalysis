@@ -60,3 +60,4 @@ void matrixtest();
 void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int len);
 void printimage(double* image,int cols, int rows, int maxval);
 double * calc_displacements(double * T, double * Io, int rows, int cols);
+void tracking_object();
