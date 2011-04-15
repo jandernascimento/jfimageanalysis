@@ -651,14 +651,21 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 }
 
 /**
+** tracks an image
+*/
+void tracking_object(){
+
+}
+
+/**
 ** MAIN 
 */
 int main(int argc, char* argv[]){
 	exercise3(10); //<param> is the number of iterations
 	//boundboxtest();
 
-	//double *image1;
-	//image1=readimage("taz.pgm");		
-	//saveimage("out.pgm", image1, lcols, lrows, lmaxval);
-	//free(image1);
+	/*double *image1;
+	image1=readimage("taz.pgm");		
+	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
+	free(image1);*/
 }
