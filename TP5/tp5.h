@@ -27,6 +27,7 @@ typedef struct timage {
 // METHODS
 
 double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int imageW);
+double *boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2);
 double * calc_xx(double *gx, int lrows, int lcols);
 double * calc_xy(double *gx, double *gy, int lrows, int lcols);
 double * calc_yy(double *gy, int lrows, int lcols);
