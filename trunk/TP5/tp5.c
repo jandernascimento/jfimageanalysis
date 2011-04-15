@@ -652,26 +652,52 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 }
 
 /**
+* form the name of the file to be readed
+*/
+char * build_name_file(int i){
+	char *path_orig=(char*)malloc(sizeof(char)*50);
+	char *i_str=(char*)malloc(sizeof(char)*4);
+
+	strcpy(path_orig, "image/tazplain/taz");
+	if (i<10)
+		strcat(path_orig,"00");
+	else if (i>=10 && i<100)
+		strcat(path_orig,"0");
+	sprintf(i_str,"%i",i);//converting from int to string		
+	strcat(path_orig,i_str);
+	strcat(path_orig,".pgm");	
+
+	free(i_str);
+	return path_orig;
+}
+
+/**
 ** tracks an image
 */
 void tracking_object(){
-	double * image1, * deltas, * image_result;
+	/*double * image1, * deltas, * image_result;
 	int n_iterations=1; //number of iterations needed to find deltas
-	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;
-
-	pixel_type start;
+	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	*/
+	char * filename;
+	
+/*	pixel_type start;
 	start.x=50;
 	start.y=130;
 
 	pixel_type tamanho_box;
 	tamanho_box.x=100;
 	tamanho_box.y=84;
-
-	for(int i=1;i<=139;i++){ //139 imaged in the folder
-		image1=readimage("image/tazplain/taz001.pgm");
+*/
+	for(int i=1;i<=139;i++){ //139 images in the folder
+		//reading
+		filename=build_name_file(i);
+			
+		printf("%s\n",filename);
+/*		image1=readimage(filename);
 		row_orig=lrows;
 		col_orig=lcols;	
 
+		//estimating displacements
 		deltas = findDeltas(image1, col_orig, row_orig, start, tamanho_box, n_iterations, 0);
 		delta_i=deltas[0];
 		delta_j=deltas[1];
@@ -680,9 +706,18 @@ void tracking_object(){
 	
 		image_result = boundbox(image1, col_orig, row_orig, pos_ini_x, pos_ini_y, pos_ini_x + tamanho_box.x, pos_ini_y + tamanho_box.y);
 
-		saveimage("final.pgm",image_result,col_orig,row_orig,lmaxval);
+		saveimage("final_"+i+".pgm",image_result,col_orig,row_orig,lmaxval);
+		
+		start.x=pos_ini_x;
+		start.y=pos_ini_y;*/
 	}
+
+	/*free(filename);
+	free(deltas);
+	free(image_result);
+	free(image1);*/
 }
+
 
 /**
 ** MAIN 
@@ -696,5 +731,5 @@ int main(int argc, char* argv[]){
 	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
 	free(image1);*/
 
-	//tracking_object();
+	tracking_object();
 }
