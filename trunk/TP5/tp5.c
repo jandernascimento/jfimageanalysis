@@ -483,7 +483,7 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 	double *t;
 
 	//image1=readimage("image/tazplain/taz001.pgm");		
-	image1=imageextract(image,lcols,lrows, start.x, start.y, end.x,end.y);
+	image1=imageextract(image,cols,rows, start.x, start.y, end.x,end.y);
 
 	t=readimage("image/tazplain/taz.pgm");
 
