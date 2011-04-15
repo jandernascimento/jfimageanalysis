@@ -43,6 +43,7 @@ double * mult_matrices(double *mat1, double *mat2);
 double * mult_pixels_matrices(double *mat1, double *mat2, int rows, int cols);
 double * normGradient(double *gx, double *gy, int lrows, int lcols);
 double* readimage(char* filepath);
+void saveimage(char *path,double* image,int cols,int rows,int maxval);
 double* sobelfilterH(int val);
 double* sobelfilterV(int val);
 double sum_matrices_values(double *matrix,int rows, int cols);
