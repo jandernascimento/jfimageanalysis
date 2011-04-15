@@ -479,31 +479,32 @@ double sum_matrices_values(double *matrix, int rows, int cols){
 }
 
 double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_type end ,int iteration, int should_print){
-	double *image1;
-	double *t;
+	//image1=readimage("image/tazplain/taz001.pgm");
+	double * image1;		
 
-	//image1=readimage("image/tazplain/taz001.pgm");		
 	image1=imageextract(image,cols,rows, start.x, start.y, end.x,end.y);
 
-	t=readimage("image/tazplain/taz.pgm");
+	//template
+	double * t=readimage("image/tazplain/taz.pgm");
 
-	//initialize
+	//initialization step
 	double deltai=0,deltaj=0;
 	double* tw=readimage("image/tazplain/taz.pgm");
 	double *displacement;
-	
+
+	//iteration step
 	for(int x=0;x<iteration;x++){	
-		fprintf(stderr,"1\n");	
+		//fprintf(stderr,"1\n");	
 		displacement=calc_displacements(tw,image1,lrows,lcols);
-		fprintf(stderr,"2\n");	
+		//fprintf(stderr,"2\n");	
 
 		deltai-=displacement[0];
 		deltaj-=displacement[1];
 		fprintf(stderr," Iteration %i delta_i:%f delta_j:%f\n",x+1,deltai,deltaj);
 		
-		fprintf(stderr,"3\n");		
+		//fprintf(stderr,"3\n");		
 		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
-		fprintf(stderr,"4\n");	
+		//fprintf(stderr,"4\n");	
 	}
 	
 	if(should_print)
@@ -515,8 +516,8 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 	free(t);
 	free(tw);
 	//free(displacement);
-	return displacement;
 	free(image1);
+	return displacement;
 }
 
 /**
@@ -570,11 +571,11 @@ double *boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y
 	int colorvalue=180;
 
 	if(x1<0 || y1<0 || x2<0 || y2<0 ){
-		fprintf(stderr,"function boundbox:Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)",cols,rows,x1,y1,x2,y2);
+		fprintf(stderr,"function boundbox: Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)\n",cols,rows,x1,y1,x2,y2);
 		exit(1);
 	}
 	if(x1 > cols || y1 > rows || x2 > cols || y2 > rows){
-		fprintf(stderr,"function boundbox:Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)",cols,rows,x1,y1,x2,y2);
+		fprintf(stderr,"function boundbox: Invalid boundary, image(%i,%i) bound(%i,%i,%i,%i)\n",cols,rows,x1,y1,x2,y2);
 		exit(1);
 	}
 
@@ -614,9 +615,9 @@ void boundboxtest(){
 */
 double * calc_displacements(double * T, double * Io, int rows, int cols){
 	//part1 of the equation
-	fprintf(stderr,"antes harris\n");
+	//fprintf(stderr,"antes harris\n");
 	double * mat1=harrispart(Io, rows, cols);	
-	fprintf(stderr,"depois harris\n");
+	//fprintf(stderr,"depois harris\n");
 	mat1 = matrixinverse(mat1,2);
 
 	//part2  of the equation
@@ -654,18 +655,46 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 ** tracks an image
 */
 void tracking_object(){
+	double * image1, * deltas, * image_result;
+	int n_iterations=1; //number of iterations needed to find deltas
+	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;
 
+	pixel_type start;
+	start.x=50;
+	start.y=130;
+
+	pixel_type tamanho_box;
+	tamanho_box.x=100;
+	tamanho_box.y=84;
+
+	for(int i=1;i<=139;i++){ //139 imaged in the folder
+		image1=readimage("image/tazplain/taz001.pgm");
+		row_orig=lrows;
+		col_orig=lcols;	
+
+		deltas = findDeltas(image1, col_orig, row_orig, start, tamanho_box, n_iterations, 0);
+		delta_i=deltas[0];
+		delta_j=deltas[1];
+		pos_ini_x=start.x + delta_j;
+		pos_ini_y=start.y + delta_i;
+	
+		image_result = boundbox(image1, col_orig, row_orig, pos_ini_x, pos_ini_y, pos_ini_x + tamanho_box.x, pos_ini_y + tamanho_box.y);
+
+		saveimage("final.pgm",image_result,col_orig,row_orig,lmaxval);
+	}
 }
 
 /**
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	exercise3(10); //<param> is the number of iterations
+	//exercise3(10); //<param> is the number of iterations
 	//boundboxtest();
 
 	/*double *image1;
 	image1=readimage("taz.pgm");		
 	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
 	free(image1);*/
+
+	//tracking_object();
 }
