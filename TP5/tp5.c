@@ -585,6 +585,15 @@ void exercise3(int iteration){
 	free(displacement);
 }
 
+
+/**
+*** Save one image to the disk
+**/
+void saveimage(char *path,double* image,int cols,int rows,int maxval){
+
+
+}
+
 /**
 *** Create the boundbox in an image
 **/
