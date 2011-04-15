@@ -2,74 +2,6 @@
 #include <stdio.h>
 #include "tp5.h"
 
-	/*/
-	t = (double*)malloc(sizeof(double)*5*5);
-	int dim=5;
-	t[0*dim+0]=1;
-	t[0*dim+1]=3;
-	t[0*dim+2]=7;
-	t[0*dim+3]=6;
-	t[0*dim+4]=2;
-
-	t[1*dim+0]=4;
-	t[1*dim+1]=8;
-	t[1*dim+2]=1;
-	t[1*dim+3]=9;
-	t[1*dim+4]=3;
-
-	t[2*dim+0]=3;
-	t[2*dim+1]=9;
-	t[2*dim+2]=7;
-	t[2*dim+3]=1;
-	t[2*dim+4]=5;
-
-	t[3*dim+0]=4;
-	t[3*dim+1]=8;
-	t[3*dim+2]=1;
-	t[3*dim+3]=3;
-	t[3*dim+4]=6;
-
-	t[4*dim+0]=2;
-	t[4*dim+1]=1;
-	t[4*dim+2]=5;
-	t[4*dim+3]=3;
-	t[4*dim+4]=7;
-
-	image1 = (double*)malloc(sizeof(double)*5*5);
-	dim=5;
-	image1[0*dim+0]=3;
-	image1[0*dim+1]=2;
-	image1[0*dim+2]=9;
-	image1[0*dim+3]=1;
-	image1[0*dim+4]=4;
-
-	image1[1*dim+0]=7;
-	image1[1*dim+1]=9;
-	image1[1*dim+2]=2;
-	image1[1*dim+3]=1;
-	image1[1*dim+4]=5;
-
-	image1[2*dim+0]=6;
-	image1[2*dim+1]=8;
-	image1[2*dim+2]=1;
-	image1[2*dim+3]=3;
-	image1[2*dim+4]=2;
-
-	image1[3*dim+0]=5;
-	image1[3*dim+1]=9;
-	image1[3*dim+2]=0;
-	image1[3*dim+3]=8;
-	image1[3*dim+4]=2;
-
-	image1[4*dim+0]=0;
-	image1[4*dim+1]=3;
-	image1[4*dim+2]=4;
-	image1[4*dim+3]=1;
-	image1[4*dim+4]=6;
-
-	lcols=5;lrows=5;
-	/*/
-
 int lcols, lrows, lmaxval;
 
 /**
@@ -550,18 +482,18 @@ double sum_matrices_values(double *matrix, int rows, int cols){
 ** run the ex3
 */
 void exercise3(int iteration){
-	double *image1,*t;
+	double *image1;
 
 	image1=readimage("image/tazplain/taz001.pgm");		
 	image1=imageextract(image1,lcols,lrows, 50, 130, 100,84);
-	      //imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym){
+	      //imageextract(double *image,int lcols,int lrows,int x, int y, int xn,int ym)
 
-	t=readimage("image/tazplain/taz.pgm");
+	double *t=readimage("image/tazplain/taz.pgm");
 
 
 	//initialize
 	double deltai=0,deltaj=0;
-	double* tw=readimage("image/tazplain/taz.pgm");//t;
+	double* tw=readimage("image/tazplain/taz.pgm");
 
 	double *displacement;
 	for(int x=0;x<iteration;x++){	
@@ -579,10 +511,10 @@ void exercise3(int iteration){
 	}
 	printimage(tw,lcols,lrows,lmaxval);
 
-	free(image1);
 	free(t);
 	free(tw);
 	free(displacement);
+	free(image1);
 }
 
 
@@ -590,8 +522,22 @@ void exercise3(int iteration){
 *** Save one image to the disk
 **/
 void saveimage(char *path,double* image,int cols,int rows,int maxval){
+	FILE *fp;
 
+	if((fp=fopen(path, "wb"))==NULL) {
+		printf("Cannot open file.\n");
+		exit(1);
+	}
 
+    fprintf(fp, "P2\n");
+    fprintf(fp, "%d %d \n", cols, rows);
+    fprintf(fp, "%d\n",maxval);
+
+	for(int i=0; i < rows; i++)
+    	for(int j=0; j < cols ; j++)
+			fprintf(fp, "%i ",(int) image[i * cols + j] );
+
+	fclose(fp);
 }
 
 /**
@@ -681,11 +627,15 @@ double * calc_displacements(double * T, double * Io, int rows, int cols){
 	return displ;	
 }
 
-
 /**
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	exercise3(50); //<param> is the number of iterations
+	//exercise3(5); //<param> is the number of iterations
 	//boundboxtest();
+
+	double *image1;
+	image1=readimage("taz.pgm");		
+	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
+	free(image1);
 }
