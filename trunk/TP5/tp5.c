@@ -494,7 +494,7 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 	
 	for(int x=0;x<iteration;x++){	
 		fprintf(stderr,"1\n");	
-		displacement=calc_displacements(tw,image1,lrows,lcols);
+		displacement=calc_displacements(tw,image1,rows,cols);
 		fprintf(stderr,"2\n");	
 
 		deltai-=displacement[0];
@@ -502,7 +502,7 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 		fprintf(stderr," Iteration %i delta_i:%f delta_j:%f\n",x+1,deltai,deltaj);
 		
 		fprintf(stderr,"3\n");		
-		tw=interpolate_image(t, lrows, lcols, deltai, deltaj);
+		tw=interpolate_image(t, rows, cols, deltai, deltaj);
 		fprintf(stderr,"4\n");	
 	}
 	
