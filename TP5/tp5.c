@@ -81,7 +81,7 @@ double* ApplyConvolution(int dim, double* kernel, double* image, int imageH, int
 
          }
        }
-       minMax(tmpImage,findMin(tmpImage,size),findMax(tmpImage,size),0,255,size);
+      // minMax(tmpImage,findMin(tmpImage,size),findMax(tmpImage,size),0,255,size);
        return tmpImage;
 }
 
@@ -668,7 +668,7 @@ char * build_name_file(char*name_path,int i){
 void tracking_object(){
 	double * image1, * deltas;
 	int n_iterations=1; //number of iterations needed to find deltas
-	int delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	
+	double delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	
 	char * filename;
 	
 	pixel_type start;
@@ -690,10 +690,10 @@ void tracking_object(){
 
 		//estimating displacements
 		deltas = findDeltas(image1, col_orig, row_orig, start, tamanho_box, n_iterations, 0);
-		delta_i=deltas[0];
-		delta_j=deltas[1];
-		pos_ini_x=start.x + delta_j;
-		pos_ini_y=start.y + delta_i;
+		delta_i=+1.0f*deltas[0];
+		delta_j=+1.0f*deltas[1];
+		pos_ini_x=start.x - delta_j;
+		pos_ini_y=start.y - delta_i;
 
 	
 		boundbox(image1, col_orig, row_orig, pos_ini_x, pos_ini_y, pos_ini_x + tamanho_box.x, pos_ini_y + tamanho_box.y);
