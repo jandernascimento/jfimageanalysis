@@ -59,3 +59,4 @@ void minMax(double* oldArr, int oldMin, int oldMax, int newMin, int newMax, int 
 void printimage(double* image,int cols, int rows, int maxval);
 void saveimage(char *path,double* image,int cols,int rows,int maxval);
 void tracking_object();
+void test_interpolate();

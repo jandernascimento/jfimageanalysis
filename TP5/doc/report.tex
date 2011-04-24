@@ -26,20 +26,48 @@
 
 \section{Interpolation}
 
+	Bilinear Interpolation is a method to generate a new image (given a initial image {\it I}) where the value of the pixels is a sum of the intensities of its four neighbors, weighted by the distance to the neighbor's center.
 
-\section{Analysis of a static image}
+	For each pixel {\it(i,j)} of the original image {\it I}, the new pixel in the interpolated image {\it $I_w$} is calculated in the following manner:
+
+	\begin{equation}
+		I_w(i+\Delta_i^e , j+\Delta_j^e) += (1-\Delta_i^f)(1-\Delta_j^f)I(i,j)
+	\end{equation}
+	\begin{equation}
+		I_w(i+\Delta_i^e+1 , j+\Delta_j^e) += \Delta_i^f(1-\Delta_j^f)I(i,j)
+	\end{equation}
+	\begin{equation}
+  		I_w(i+\Delta_i^e , j+\Delta_j^e+1) += (1-\Delta_i^f)\Delta_j^fI(i,j)
+	\end{equation}
+	\begin{equation}
+		I_w(i+\Delta_i^e+1 , j+\Delta_j^e+1) += \Delta_i^f \Delta_j^fI(i,j)
+	\end{equation}
+
+	where: 
+		\begin{itemize}
+			\item {\it $\Delta_i$} is the translation along {\it i}
+			\item {\it $\Delta_j$} is the translation along {\it j} 
+			\item {\it $\Delta^e$} is the integer part of the translation (ie: $\Delta=-5.3$, then ${\it \Delta^e}=-5$
+			\item {\it $\Delta^f$} is the decimal part of the translation (ie: $\Delta=-5.3$, then ${\it \Delta^f}=0.3$
+		\end{itemize}
+
+	In the Figure \ref{fig:interp} we can see the result of an interpolation. It is possible to observe that the interpolated image, compared with the original image, is a little deformed, due to the fact that the pixels in the new image are interpolated with their neighbors.
+
+	\begin{figure}[H]
+		  \centering
+		  \subfloat[Original image]{\includegraphics[width=0.4\textwidth]{img/taz.png}}
+		  \hspace{0.1cm}
+		  \subfloat[Interpolated image ($\Delta_i=12.8   \Delta_j=-6.3$)]{\includegraphics[width=0.4\textwidth]{img/taz0interp.png}}
+		  \caption{Interpolation of an image}
+		  \label{fig:interp}
+	\end{figure}	
 
 
-\section{Tracking an object}
+\section{Anaysis of a static image}
 
 
-\section{Drawbacks}
+\section{Tranking an object}
 
-Lucas Kanade has shown to be very efficient in some cases, now let's take a look in the situation where this algorithm does not work that well.
-
-In large motions (at a higher speed) the tracker is not able to detect the changing region of the image with the correct direction vector.
-
-If the image changes drastically its illumination, this can produce a wrong image evaluation.
 
 \section{How to run?}
 
