@@ -721,7 +721,7 @@ char * build_name_file(char*name_path,int i){
 */
 void tracking_object(){
 	double * image1, * deltas;
-	int n_iterations=1; //number of iterations needed to find deltas
+	int n_iterations=8; //number of iterations needed to find deltas
 	double delta_i, delta_j, pos_ini_x, pos_ini_y, row_orig, col_orig;	
 	char * filename;
 	
@@ -769,8 +769,8 @@ void tracking_object(){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	//tracking_object();
+	tracking_object();
 
 	//sugestion report 2
-	test_interpolate();
+	//test_interpolate();
 }
