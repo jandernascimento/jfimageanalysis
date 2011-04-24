@@ -41,7 +41,7 @@
 		  \label{fig:formula2}
 	\end{figure}	
 
-	In this practical work, we implemented the Lucas Kanade algorithm in order to track as object in a serie of 139 images. First we implemented the interpolation function, then we implemented the algorithm itself to calculate $\Delta_i$ and $\Delta_j$, and finally we applied the algorithm in a serie of images where an object is moving, and we placed a boundbox around the object in each image. The results will be explained in the following sections.
+	In this practical work, we implemented the Lucas Kanade algorithm in order to track as object in a series of 139 images. First we implemented the interpolation function, then we implemented the algorithm itself to calculate $\Delta_i$ and $\Delta_j$, and finally we applied the algorithm in a series of images where an object is moving, and we placed a bound-box around the object in each image. The results will be explained in the following sections.
 
 
 \section{Interpolation}
@@ -86,7 +86,7 @@
 
 	
 
-	After apply a translation ($\Delta_i,\Delta_j$) in an image, we applied the inverse of the translation ($-\Delta_i,-\Delta_j$) on the interpolated image. The result can be seen in the Figure \ref{fig:inverseinterp}. In this figure it is possible to observe that the original image is not achieved when applied the inverse of the interpolation. Although the pixels return to their original position in the image, their intensities are not recovered. Another point to observe is that, when parts of the image are cut by the interpolation (for instance, the foot of Taz), they are not recovered either, due to the fact that they are not in the interpolated image anymore.
+	After apply a translation ($\Delta_i,\Delta_j$) in an image, if we apply the inverse of the translation ($-\Delta_i,-\Delta_j$) on the same interpolated image we will not get the exactly the original image. This behavior can be seen in the Figure \ref{fig:inverseinterp}. Although the pixels return to their original position in the image, their intensities are not properly recovered. Another point to observe is that, when parts of the image are cut by the interpolation (for instance, the foot of Taz), they are not recovered either, due to the fact that they are not in the interpolated image anymore.
 
 	\begin{figure}[H]
 		  \centering
@@ -114,7 +114,7 @@
 	  \label{fig:template}
 \end{figure}
 
-	We applied the algorithm for a serie of 139 images when an object is moving. As as example, we will illustrate that in the report with 3 images (Figure \ref{fig:sample}).
+	We applied the algorithm for a series of 139 images when an object is moving. As as example, we will illustrate that in the report with 3 images (Figure \ref{fig:sample}).
 
 
 \begin{figure}[H]
@@ -128,7 +128,7 @@
 \label{fig:sample}
 \end{figure}	
 
-	In the first iteration, when we crop a part of the original image and compare with the template in order to find the first $\Delta_i$ and $\Delta_j$ ones, we already place a bounding box in the image. We repeat the process for all the images of the serie, at each time we find the new displacements $\Delta_i$ and $\Delta_j$ and we paint a bounding box around the tracked object (Figure \ref{fig:tracked}). 
+	In the first iteration, when we crop a part of the original image and compare with the template in order to find the first $\Delta_i$ and $\Delta_j$ ones, we already place a bounding box in the image. We repeat the process for all the images of the series, at each time step we find the new displacements $\Delta_i$ and $\Delta_j$ and we paint a bounding box around the tracked object (Figure \ref{fig:tracked}). 
 
 	This algorithm enables the tracking of an object in the image sequence.
 
@@ -162,7 +162,7 @@ And also if the image changes drastically its illumination, this can produce a w
 		\item make \#compiles the code
 	\end{itemize}
 
-	As an input image only a set of {\bf ppm plaintext/ansii} files (P3). 
+	As an input image only a set of {\bf pgm plaintext/ansii} files (P2), that should be stored in the directory \emph{images/tazplain/}. 
 
 	Examples of usage:
 
@@ -170,7 +170,7 @@ And also if the image changes drastically its illumination, this can produce a w
 		\item ./tp5
 	\end{itemize}
 
-	Thre resulting images will be generated in \emph{SRC/image/tazplain}.
+	Tire resulting images will be generated in \emph{SAC/image/tazplain/result}.
 
 \end{document}
 
