@@ -356,6 +356,29 @@ void initialize_array(double * vec, int n, int vldef){
 }
 
 /**
+** test the interpoaltion function
+*/
+void test_interpolate(){
+	double deltai=12.8; 
+	double deltaj=-6.3;
+	
+	double * image_test=readimage("image/tazplain/taz.pgm");
+
+	//applying the translation
+	double * result=interpolate_image(image_test, lrows, lcols, deltai, deltaj);
+	saveimage("image/tazplain/taz0interp.pgm",result,lcols,lrows,lmaxval);	
+		
+	//applying the inverse of the translation
+	deltai=deltai*(-1);
+	deltaj=deltaj*(-1);
+	image_test=interpolate_image(result, lrows, lcols, deltai, deltaj);
+	saveimage("image/tazplain/taz0interp_inverse.pgm",image_test,lcols,lrows,lmaxval);
+
+	free(image_test);
+	free(result);
+}
+
+/**
 ** interpolate the image
 */
 double * interpolate_image(double *image, int rows, int cols, double delta_i, double delta_j){
@@ -378,21 +401,51 @@ double * interpolate_image(double *image, int rows, int cols, double delta_i, do
 	//interpolating
 	for(int i=0;i<rows;i++)
 		for(int j=0;j<cols;j++){
-			//point 1
-			if ( ( ((i+delta_e_i) * cols) + (j+delta_e_j)) < (rows*cols))
+			//(the same pixel)
+			if ( (i+delta_e_i < rows)  && (j+delta_e_j < cols) ) 
 				image_w[((i+delta_e_i) * cols) + (j+delta_e_j)] += ( (1.0-delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
 
-			//point 2
-			if ( ( ((i+delta_e_i) * cols) + (j+delta_e_j+1)) < (rows*cols))
-				image_w[((i+delta_e_i) * cols) + (j+delta_e_j+1)] += ( (delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
+			//(the right neighbor)
+			if ( (i+delta_e_i < rows)  && (j+delta_e_j+1 < cols) ) 
+				image_w[((i+delta_e_i) * cols) + (j+delta_e_j+1)] += ( (1.0-delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
 
-			//point 3
-			if ( ( ((i+delta_e_i+1) * cols) + (j+delta_e_j)) < (rows*cols))
-				image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j)] += ( (1.0-delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
+			//(the inferior neighbor)
+			if ( (i+delta_e_i+1 < rows)  && (j+delta_e_j < cols) ) 
+				image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j)] += ( (delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
 
-			//point 4
-			if ( ( ((i+delta_e_i+1) * cols) + (j+delta_e_j+1)) < (rows*cols))
+			//(the right/inferior neighbor)
+			if ( (i+delta_e_i+1 < rows)  && (j+delta_e_j+1 < cols) ) 
 				image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j+1)] += ( (delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
+
+
+			//(the same pixel)
+/*			if ( (i+delta_e_i < rows)  && (j+delta_e_j < cols) )
+				image_w[((i+delta_e_i) * cols) + (j+delta_e_j)] += ( (1.0-delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
+
+			if (i==0 && j==cols-1) {
+				//(the inferior neighbor)
+				if ( (i+delta_e_i+1 < rows)  && (j+delta_e_j < cols) )
+					image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j)] += ( (delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
+			}
+			else if (i==rows-1 && j==0){
+				//(the right neighbor)
+				if ( (i+delta_e_i < rows)  && (j+delta_e_j+1 < cols) )
+					image_w[((i+delta_e_i) * cols) + (j+delta_e_j+1)] += ( (1.0-delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
+			}
+			else if (i==rows-1 && j==cols-1){
+				//no neighbors
+			}
+			else{
+				//(the right neighbor)
+				if ( (i+delta_e_i < rows)  && (j+delta_e_j+1 < cols) )
+					image_w[((i+delta_e_i) * cols) + (j+delta_e_j+1)] += ( (1.0-delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
+				//(the inferior neighbor)
+				if ( (i+delta_e_i+1 < rows)  && (j+delta_e_j < cols) )
+					image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j)] += ( (delta_f_i) * (1.0-delta_f_j) * (image[i*cols+j]) );
+				//(the right/inferior neighbor)
+				if ( (i+delta_e_i+1 < rows)  && (j+delta_e_j+1 < cols) )
+					image_w[((i+delta_e_i+1) * cols) + (j+delta_e_j+1)] += ( (delta_f_i) * (delta_f_j) * (image[i*cols+j]) );
+			}*/
 		}
 	return image_w;	
 }
@@ -517,7 +570,7 @@ double *findDeltas(double* image, int cols, int rows, pixel_type start, pixel_ty
 ** run the ex3
 */
 void exercise3(int iteration){
-	double *image1,*t;
+	double *image1;
 
 	image1=readimage("image/tazplain/taz001.pgm");	
 
@@ -580,7 +633,8 @@ void boundbox(double *image, int cols, int rows, int x1, int y1, int x2,int y2){
 			//right
 			if(x==x2 && y>=y1 && y<=y2 ) image[pos]=colorvalue;
 			//upper
-			if(y>y1 && x==x1 && y<y2) image[pos]=colorvalue;				       //lower
+			if(y>y1 && x==x1 && y<y2) image[pos]=colorvalue;				       
+			//lower
 			if(y==y2 && x<x2) image[pos]=colorvalue;	
 		}	
 	}
@@ -715,13 +769,8 @@ void tracking_object(){
 ** MAIN 
 */
 int main(int argc, char* argv[]){
-	//exercise3(10); //<param> is the number of iterations
-	//boundboxtest();
+	//tracking_object();
 
-	/*double *image1;
-	image1=readimage("taz.pgm");		
-	saveimage("out.pgm", image1, lcols, lrows, lmaxval);
-	free(image1);*/
-
-	tracking_object();
+	//sugestion report 2
+	test_interpolate();
 }
