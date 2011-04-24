@@ -62,6 +62,19 @@
 		  \label{fig:interp}
 	\end{figure}	
 
+	After apply a translation ($\Delta_i,\Delta_j$) in an image, we applied the inverse of the translation ($-\Delta_i,-\Delta_j$) on the interpolated image. The result can be seen in the Figure \ref{fig:inverseinterp}. In this figure it is possible to observe that the original image is not achieved when applied the inverse of the interpolation. Although the pixels return to their original position in the image, their intensities are not recovered. Another point to observe is that, when parts of the image are cut by the interpolation (for instance, the foot of Taz), they are not recovered either, due to the fact that they are not in the interpolated image anymore.
+
+	\begin{figure}[H]
+		  \centering
+		  \subfloat[Original image]{\includegraphics[width=0.3\textwidth]{img/taz.png}}
+		  \hspace{0.1cm}
+		  \subfloat[Interpolated image ($\Delta_i=12.8   \Delta_j=-6.3$)]{\includegraphics[width=0.3\textwidth]{img/taz0interp.png}}
+		  \hspace{0.1cm}
+		  \subfloat[Inverse of the interpolation]{\includegraphics[width=0.3\textwidth]{img/taz0interp_inverse.png}}
+		  \caption{Inverse of the Interpolation}
+		  \label{fig:inverseinterp}
+	\end{figure}	
+
 
 \section{Anaysis of a static image}
 
