@@ -79,7 +79,49 @@
 \section{Anaysis of a static image}
 
 
-\section{Tranking an object}
+\section{Tracking an object}
+
+Here it is a case of Lucas Kanade application.
+
+\begin{figure}[H]
+	  \centering
+	  \subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz.png}}
+	  \caption{Sample Image}
+	  \label{fig:template}
+\end{figure}	
+
+
+\begin{figure}[H]
+\centering
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz004_nb.png}}
+		  \hspace{0.1cm}
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz020_nb.png}}
+		  \hspace{0.1cm}
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz063_nb.png}}
+\caption{Original Image}
+\label{fig:original}
+\end{figure}	
+
+
+\begin{figure}[H]
+\centering
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz004_bb.png}}
+		  \hspace{0.1cm}
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz020_bb.png}}
+		  \hspace{0.1cm}
+\subfloat[Template]{\includegraphics[width=0.3\textwidth]{../image/report/taz063_bb.png}}
+\caption{Tracked Images}
+\label{fig:original}
+\end{figure}	
+
+
+\section{Drawbacks}
+
+Lucas Kanade has shown to be very efficient in some cases, now let's take a look in the situation where this algorithm does not work that well.
+
+In large motions (at a higher speed) the tracker is not able to detect the changing region of the image with the correct direction vector.
+
+If the image changes drastically its illumination, this can produce a wrong image evaluation.
 
 
 \section{How to run?}
@@ -87,20 +129,19 @@
 	Steps to compile the application:
 	
 	\begin{itemize}
-		\item svn checkout https://jfimageanalysis.googlecode.com/svn/trunk/TP4/ \#download source code
+		\item svn checkout https://jfimageanalysis.googlecode.com/svn/trunk/TP5/ \#download source code
 		\item make \#compiles the code
 	\end{itemize}
 
-	As an input image only {\bf ppm plaintext/ansii} files are accepted (P3). 
+	As an input image only a set of {\bf ppm plaintext/ansii} files (P3). 
 
 	Examples of usage:
 
 	\begin{itemize}
-		\item Create 3 clusters:
-		\subitem ./showregion -i image\_in.ppm -g 3 $>$ image\_out.ppm
+		\item ./tp5
 	\end{itemize}
 
-	You can always type {\it ./tp5 --help} to check for more options. 
+	Thre resulting images will be generated in \emph{SRC/image/tazplain}.
 
 \end{document}
 
