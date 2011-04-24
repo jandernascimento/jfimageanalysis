@@ -23,6 +23,22 @@
 
 \section{Initial concept}
 
+	Lucas Kanade is an algorith that looks for the optimal parameters $\Delta_i$ and $\Delta_j$ that minimize the following equation:
+
+	\begin{figure}[H]
+		  \centering
+		  \subfloat{\includegraphics[width=0.4\textwidth]{img/form1.png}}
+	\end{figure}
+
+	This equation can be solved using a classical mean squared method, which results in the following new equation:
+
+	\begin{figure}[H]
+		  \centering
+		  \subfloat{\includegraphics[width=1.0\textwidth]{img/form2.png}}
+	\end{figure}	
+
+	In this practical work, we implemented the Lucas Kanade algorithm in order to track as object in a serie of 139 images. First we implemented the interpolation function, then we implemented the algorithm itself to calculate $\Delta_i$ and $\Delta_j$, and finally we applied the algorithm in a serie of images where an object is moving, and we placed a boundbox around the object in each image. The results will be explainned in the following sections.
+
 
 \section{Interpolation}
 
