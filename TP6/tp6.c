@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "tp6.h"
 
+/**
+** Get pixel information from a image type
+**/
 pixel_type *get_pixel(pimage_type image,int x, int y){
   pixel_type *pixel=(pixel_type*)malloc(sizeof(pixel_type));
   
@@ -16,12 +19,18 @@ pixel_type *get_pixel(pimage_type image,int x, int y){
 }
 
 
+/**
+** Set pixel information from a image type
+**/
 void set_pixel(pimage_type image,int x, int y, pixel_type pixel ){
   image->stream[DPC*y * image->cols + DPC*x+RED]   = pixel.r;
   image->stream[DPC*y * image->cols + DPC*x+GREEN] = pixel.g;
   image->stream[DPC*y * image->cols + DPC*x+BLUE]  = pixel.b;
 }
 
+/**
+** Print image, take the type image as input
+**/
 void printimage(pimage_type image){
 
     printf("P3\n");
@@ -36,6 +45,9 @@ void printimage(pimage_type image){
       }
 }
 
+/**
+** Read image from a file 
+**/
 pimage_type readimage(char* filepath){
     FILE* ifp;
     gray* imagemap;
@@ -90,6 +102,9 @@ pimage_type readimage(char* filepath){
 
 /** Parser method **/
 
+/**
+** Get string param
+**/
 char* getStrParam(int argc,char* argv[],char* param,char* def){
 
 	for(int i=0;i<argc;i++){
@@ -103,6 +118,9 @@ char* getStrParam(int argc,char* argv[],char* param,char* def){
 
 }
 
+/**
+** Get bool param
+**/
 int getBoolParam(int argc,char* argv[],char* param){
 
 	for(int i=0;i<argc;i++){
@@ -115,6 +133,9 @@ int getBoolParam(int argc,char* argv[],char* param){
 
 }
 
+/**
+** Get int param
+**/
 int getIntParam(int argc,char* argv[],char* param,char* def){
     char* res=getStrParam(argc,argv,param,def);
     
@@ -129,6 +150,9 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 }
 /** end Parser method **/
 
+/**
+** Main method
+**/
 int main(int argc, char* argv[]){
 
 	char *filepath=getStrParam(argc,argv,"-i","");

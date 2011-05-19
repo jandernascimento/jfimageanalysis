@@ -23,6 +23,9 @@ typedef struct timage {
 } image_type, *pimage_type;
 
 // METHODS
+//read image
 pimage_type readimage(char* filepath);
+//print image
 void printimage(pimage_type image);
+//get pixel
 pixel_type *get_pixel(pimage_type image,int x, int y);
