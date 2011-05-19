@@ -22,6 +22,13 @@ typedef struct timage {
   char* path;
 } image_type, *pimage_type;
 
+typedef struct tfilelist {
+
+  int size;
+  char **paths;
+
+} filelist_type, *pfilelist_type;
+
 // METHODS
 //read image
 pimage_type readimage(char* filepath);
@@ -29,3 +36,11 @@ pimage_type readimage(char* filepath);
 void printimage(pimage_type image);
 //get pixel
 pixel_type *get_pixel(pimage_type image,int x, int y);
+//iterate over image
+filelist_type readbackgrounds(char *path);
+//calculate the mean image
+pimage_type calculate_mean_image(filelist_type list);
+//calculate difference matrix
+gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols);
+//calculate determinant
+int matrix_determinant(gray *matrix,int rows,int cols);
