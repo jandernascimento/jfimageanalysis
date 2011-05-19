@@ -3,6 +3,34 @@
 #include "tp6.h"
 
 /**
+** read background images
+**/
+filelist_type readbackgrounds(char *path){
+
+}
+
+/**
+** calc mean image
+**/
+pimage_type calculate_mean_image(filelist_type list){
+
+}
+
+/**
+** calc subtraction
+**/
+gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
+
+}
+
+/**
+** calc determinant
+**/
+int matrix_determinant(gray *matrix,int rows,int cols){
+
+}
+
+/**
 ** Get pixel information from a image type
 **/
 pixel_type *get_pixel(pimage_type image,int x, int y){
