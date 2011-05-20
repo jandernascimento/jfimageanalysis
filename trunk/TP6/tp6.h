@@ -42,6 +42,10 @@ filelist_type readbackgrounds(char *path, int n);
 pimage_type calculate_mean_image(filelist_type list);
 //prints the matrix
 void matrix_print(gray* matrix,int rows, int cols);
+//calculate the multiplication of a matrix for a single number
+gray *matrix_multiplication_single(gray value,gray *matrix,int rows,int cols);
+//calculate the multiplication of a matrix for a single number test
+void matrix_multiplication_single_test();
 //calculate difference matrix
 gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols);
 //calculate difference matrix test

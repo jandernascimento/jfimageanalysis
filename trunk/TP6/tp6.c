@@ -114,6 +114,49 @@ pimage_type calculate_mean_image(filelist_type list){
 }
 
 /**
+** calc multiplication of a matrix by a single number test
+**/
+void matrix_multiplication_single_test(){
+
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	gray value=2;
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	gray *res=matrix_multiplication_single(value, det,dim,dim);
+	matrix_print(res,3,3);
+
+}
+
+/**
+** calc multiplication of a matrix by a single number
+**/
+gray *matrix_multiplication_single(gray value, gray *matrix,int rows,int cols){
+
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
+
+	for(int row=0;row<rows;row++){
+		for(int col=0;col<cols;col++){
+			result_matrix[row*cols+col]=value*get_matrix_pixel(matrix,row,col,cols);
+		}
+	}
+
+	return result_matrix;
+}
+
+/**
 ** calc subtraction
 **/
 gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
@@ -175,7 +218,7 @@ void matrix_subtraction_test(){
 void matrix_print(gray* matrix,int rows, int cols){
 	for(int i=0;i<rows;i++){
 		for(int j=0;j<cols;j++){		
-			fprintf(stderr," %i ",matrix[i*cols+j]);	
+			fprintf(stderr," %.3f ",matrix[i*cols+j]);	
 		}
 		fprintf(stderr,"\n");
 	}
@@ -408,8 +451,13 @@ int main(int argc, char* argv[]){
 	printimage(image);*/
 
 
-	//jander test	
-	//matrix_determinant_test();
-	//matrix_subtraction_test();
+	//jander test 
+	/*
+	fprintf(stderr,"Test 1\n");
+	matrix_determinant_test();
+	fprintf(stderr,"Test 2\n");
+	matrix_subtraction_test();
+	fprintf(stderr,"Test 3\n");
+	matrix_multiplication_single_test(); // */
 
 }
