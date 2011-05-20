@@ -40,8 +40,12 @@ gray *get_matrix_pixel(gray *matrix,int row, int col,int dim);
 filelist_type readbackgrounds(char *path, int n);
 //calculate the mean image
 pimage_type calculate_mean_image(filelist_type list);
+//prints the matrix
+void matrix_print(gray* matrix,int rows, int cols);
 //calculate difference matrix
 gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols);
+//calculate difference matrix test
+void matrix_subtraction_test();
 //calculate determinant
 int matrix_determinant(gray *matrix,int dim);
 //calculate determinant (test)

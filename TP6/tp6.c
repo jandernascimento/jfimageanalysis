@@ -56,6 +56,67 @@ pimage_type calculate_mean_image(filelist_type list){
 **/
 gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
 
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
+
+	for(int row=0;row<rows;row++){
+		for(int col=0;col<cols;col++){
+			result_matrix[row*cols+col]=get_matrix_pixel(matrix1,row,col,cols)-get_matrix_pixel(matrix2,row,col,cols);
+		}
+	}
+
+	return result_matrix;
+}
+
+/**
+** calc subtraction test
+**/
+void matrix_subtraction_test(){
+
+	const int dim=3;
+
+	gray *m1=(gray *)malloc(sizeof(gray)*dim*dim);
+	gray *m2=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	m1[dim*0+0]=1;
+	m1[dim*0+1]=2;
+	m1[dim*0+2]=1;
+
+	m1[dim*1+0]=3;
+	m1[dim*1+1]=4;
+	m1[dim*1+2]=5;
+
+	m1[dim*2+0]=5;
+	m1[dim*2+1]=6;
+	m1[dim*2+2]=7;
+
+	m2[dim*0+0]=1;
+	m2[dim*0+1]=2;
+	m2[dim*0+2]=1;
+
+	m2[dim*1+0]=3;
+	m2[dim*1+1]=4;
+	m2[dim*1+2]=5;
+
+	m2[dim*2+0]=5;
+	m2[dim*2+1]=6;
+	m2[dim*2+2]=7;
+
+	gray *res=matrix_subtraction(m1,m2,dim,dim);
+
+	matrix_print(res,3,3);
+
+}
+
+/**
+** prints the matrix dimension
+*/
+void matrix_print(gray* matrix,int rows, int cols){
+	for(int i=0;i<rows;i++){
+		for(int j=0;j<cols;j++){		
+			fprintf(stderr," %i ",matrix[i*cols+j]);	
+		}
+		fprintf(stderr,"\n");
+	}
 }
 
 /**
