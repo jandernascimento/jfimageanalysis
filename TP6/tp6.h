@@ -1,17 +1,15 @@
 #include "Util.h"
-#define DPC 4   //data per cell information
+#define DPC 3   //data per cell information
 #define RED 0   //index of the red in DPC
 #define GREEN 1 //index of the green in DPC
 #define BLUE 2  //index of the blue in DPC
-#define K 3     //index of the group k in DPC
 
 // STRUCTURE
 typedef struct tpixel {
 
   int r,g,b;
   int x,y;
-  int k; //number of the group that the pixel belongs to
-} pixel_type; //, *ppixel_type;
+} pixel_type; 
 
 
 typedef struct timage {

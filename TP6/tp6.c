@@ -120,7 +120,7 @@ pixel_type *get_pixel(pimage_type image,int x, int y){
   pixel->r = image->stream[DPC*y * image->cols + DPC*x+RED];
   pixel->g = image->stream[DPC*y * image->cols + DPC*x+GREEN];
   pixel->b = image->stream[DPC*y * image->cols + DPC*x+BLUE];
-  pixel->k = image->stream[DPC*y * image->cols + DPC*x+K];
+//  pixel->k = image->stream[DPC*y * image->cols + DPC*x+K];
   pixel->x = x;
   pixel->y = y;
   
@@ -206,7 +206,7 @@ pimage_type readimage(char* filepath){
 
       /* fermeture */
       fclose(ifp);
-      return image; //imagemap;
+      return image;
 }
 
 /** Parser method **/
@@ -264,9 +264,11 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	readbackgrounds("background_substraction/background/img_", 10);
+	//readbackgrounds("background_substraction/background/img_", 10);
 
-//	double * image_test=readimage("background_substraction/img_000053.pgm");
+	pimage_type image=readimage("background_substraction/img_000053.ppm");
+
+	printimage(image);
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
