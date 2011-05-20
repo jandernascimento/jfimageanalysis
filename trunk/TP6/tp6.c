@@ -151,7 +151,7 @@ gray matrix_determinant(gray *matrix,int dim){
 
 void matrix_determinant_test(){
 	const int dim=3;
-	gray *det=(gray *)malloc(sizeof(gray)*dim);
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
 
 	det[dim*0+0]=1;
 	det[dim*0+1]=2;
@@ -327,7 +327,6 @@ int main(int argc, char* argv[]){
 
 	//readbackgrounds("background_substraction/background/img_", 10);
 
-
 	pimage_type image=readimage("background_substraction/img_000053.ppm");
 
 	printimage(image);
@@ -347,5 +346,10 @@ int main(int argc, char* argv[]){
 	pimage_type image=readimage(filepath);
 
 	printimage(image);*/
+
+
+	//jander test	
+	//matrix_determinant_test();
+	//matrix_subtraction_test();
 
 }
