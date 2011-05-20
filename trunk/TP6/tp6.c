@@ -5,8 +5,43 @@
 /**
 ** read background images
 **/
-filelist_type readbackgrounds(char *path){
+filelist_type readbackgrounds(char *path, int n){
+	filelist_type filelist;
+	filelist.size = n;
+	filelist.paths=(char*)malloc(sizeof(char*)*n);
+	char *i_str=(char*)malloc(sizeof(char)*4);	
 
+	for(int i=0;i<=n;i++){ 					
+		filelist.paths[i]=(char*)malloc(sizeof(char)*70);
+
+		strcpy(filelist.paths[i], path);
+		strcat(filelist.paths[i],"000\0"); //we always concatenate with these zeros
+		if (i<10)
+			strcat(filelist.paths[i],"00\0");
+		else if (i>=10 && i<100)
+			strcat(filelist.paths[i],"0\0");
+		
+		sprintf(i_str,"%i\0",i);//converting from int to string		
+		strcat(filelist.paths[i],"\0");
+		strcat(filelist.paths[i],i_str);
+		strcat(filelist.paths[i],".ppm\0");	
+	}
+
+	/*/testing the structure
+	FILE* ifp;
+	for(int i=0;i<=n;i++){ 
+		fprintf(stderr,"%s\n", filelist.paths[i]);
+    	ifp = fopen(filelist.paths[i],"r");
+    	if (ifp == NULL) {
+    	  fprintf(stderr,"Error openning the file, check if you specified -i. Path: %s\n", filelist.paths[i]);
+    	  exit(1);
+    	}		
+    }
+    fclose(ifp);
+    */
+
+	free(i_str);
+	return filelist;
 }
 
 /**
@@ -229,7 +264,11 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	char *filepath=getStrParam(argc,argv,"-i","");
+	readbackgrounds("background_substraction/background/img_", 10);
+
+//	double * image_test=readimage("background_substraction/img_000053.pgm");
+
+	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
 	int ishelp=getBoolParam(argc,argv,"--help");
 
@@ -243,6 +282,6 @@ int main(int argc, char* argv[]){
 
 	pimage_type image=readimage(filepath);
 
-	printimage(image);
+	printimage(image);*/
 
 }
