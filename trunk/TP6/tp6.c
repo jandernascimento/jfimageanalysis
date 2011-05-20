@@ -24,10 +24,56 @@ gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
 }
 
 /**
+** get pixel from a matrix
+**/
+gray *get_matrix_pixel(gray *matrix,int row, int col,int dim){
+
+	return matrix[row*dim+col];
+
+}
+
+/**
 ** calc determinant
 **/
-int matrix_determinant(gray *matrix,int rows,int cols){
+int matrix_determinant(gray *matrix,int dim){
 
+	gray a=get_matrix_pixel(matrix,0,0,dim);
+	gray b=get_matrix_pixel(matrix,0,1,dim);
+	gray c=get_matrix_pixel(matrix,0,2,dim);
+
+	gray d=get_matrix_pixel(matrix,1,0,dim);
+	gray e=get_matrix_pixel(matrix,1,1,dim);
+	gray f=get_matrix_pixel(matrix,1,2,dim);
+
+	gray g=get_matrix_pixel(matrix,2,0,dim);
+	gray h=get_matrix_pixel(matrix,2,1,dim);
+	gray i=get_matrix_pixel(matrix,2,2,dim);
+
+	return (a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g);
+
+}
+
+void matrix_determinant_test(){
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim);
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	int val=matrix_determinant(det,dim);
+
+	free(det);
+
+	printf("-->%i\n",val);
 }
 
 /**
@@ -198,7 +244,5 @@ int main(int argc, char* argv[]){
 	pimage_type image=readimage(filepath);
 
 	printimage(image);
-
-
 
 }
