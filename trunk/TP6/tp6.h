@@ -35,7 +35,7 @@ void printimage(pimage_type image);
 //get pixel
 pixel_type *get_pixel(pimage_type image,int x, int y);
 //get matrix position
-gray *get_matrix_pixel(gray *matrix,int row, int col,int dim);
+gray get_matrix_pixel(gray *matrix,int row, int col,int dim);
 //iterate over image
 filelist_type readbackgrounds(char *path, int n);
 //calculate the mean image
@@ -47,6 +47,6 @@ gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols);
 //calculate difference matrix test
 void matrix_subtraction_test();
 //calculate determinant
-int matrix_determinant(gray *matrix,int dim);
+gray matrix_determinant(gray *matrix,int dim);
 //calculate determinant (test)
 void matrix_determinant_test();

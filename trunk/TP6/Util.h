@@ -2,7 +2,7 @@
 /* E.B.  12/98                   */
 
 typedef unsigned char bit;
-typedef unsigned char gray;
+typedef double gray;
 
 char pm_getc(FILE* file);
 bit pm_getbit(FILE* file);
