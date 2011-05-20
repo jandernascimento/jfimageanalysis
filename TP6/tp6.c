@@ -39,8 +39,7 @@ filelist_type readbackgrounds(char *path, int n){
     }
     fclose(ifp);
     */
-
-	free(i_str);
+    
 	return filelist;
 }
 
@@ -48,7 +47,70 @@ filelist_type readbackgrounds(char *path, int n){
 ** calc mean image
 **/
 pimage_type calculate_mean_image(filelist_type list){
+	fprintf(stderr,"\ncalculating mean\n");
+	pimage_type image_back;
+	gray* imagemap;
 
+	pimage_type image_mean=(pimage_type)malloc(sizeof(image_type));
+
+	for(int i=0;i<=list.size;i++){ 
+		fprintf(stderr,"\n%s\n", list.paths[i]);
+    	image_back=readimage(list.paths[i]);		
+		fprintf(stderr,"leu\n");
+
+		if(i==0){		
+			//dimensions
+		    image_mean->cols = image_back->cols;
+		    image_mean->rows = image_back->rows;
+		    image_mean->maxval = image_back->maxval;
+
+		    //Allocation memoire
+		    imagemap = (gray *) malloc(DPC * image_back->cols * image_back->rows * sizeof(gray));
+		    image_mean->stream=imagemap;
+
+		    //zerar image
+		    for(int i=0; i < image_mean->rows; i++){
+      			for(int j=0; j < image_mean->cols ; j++){
+					pixel_type pixel;
+					pixel.r=0;
+					pixel.g=0;
+					pixel.b=0;
+					set_pixel(image_mean,j,i,pixel);
+	   			}
+     		}
+		    fprintf(stderr,"zerou\n");
+		}
+
+		//Acumulation the value of the pixels of all background images
+    	for(int i=0; i < image_mean->rows; i++){
+      		for(int j=0; j < image_mean->cols ; j++){
+				pixel_type *pixel_back=get_pixel(image_back,j,i);
+				pixel_type *pixel_mean=get_pixel(image_mean,j,i);
+				pixel_type newpixel;				
+				newpixel.r = pixel_mean->r + pixel_back->r;
+				newpixel.g = pixel_mean->g + pixel_back->g;
+				newpixel.b = pixel_mean->b + pixel_back->b;
+				set_pixel(image_mean,j,i,newpixel);
+	   		}
+     	}
+    	fprintf(stderr,"acumulou\n");
+    }
+
+    //calculating the mean for each pixel
+   	for(int i=0; i < image_mean->rows; i++){
+   		for(int j=0; j < image_mean->cols ; j++){
+			pixel_type *pixel_mean=get_pixel(image_mean,j,i);
+			pixel_type newpixel;				
+			newpixel.r = (int) pixel_mean->r / (list.size+1); //+1 because the first image in the folder is 000000
+			newpixel.g = (int) pixel_mean->g / (list.size+1);
+			newpixel.b = (int) pixel_mean->b / (list.size+1);
+			set_pixel(image_mean,j,i,newpixel);
+   		}
+   	}
+   	fprintf(stderr,"\ncalculou\n");
+
+    printimage(image_mean);
+    fprintf(stderr,"acabou\n");
 }
 
 /**
@@ -325,11 +387,9 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	//readbackgrounds("background_substraction/background/img_", 10);
+	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 2); //just work until 8
 
-	pimage_type image=readimage("background_substraction/img_000053.ppm");
-
-	printimage(image);
+	calculate_mean_image(list_back);
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
