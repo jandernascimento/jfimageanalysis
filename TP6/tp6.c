@@ -122,7 +122,7 @@ void matrix_print(gray* matrix,int rows, int cols){
 /**
 ** get pixel from a matrix
 **/
-gray *get_matrix_pixel(gray *matrix,int row, int col,int dim){
+gray get_matrix_pixel(gray *matrix,int row, int col,int dim){
 
 	return matrix[row*dim+col];
 
@@ -131,7 +131,7 @@ gray *get_matrix_pixel(gray *matrix,int row, int col,int dim){
 /**
 ** calc determinant
 **/
-int matrix_determinant(gray *matrix,int dim){
+gray matrix_determinant(gray *matrix,int dim){
 
 	gray a=get_matrix_pixel(matrix,0,0,dim);
 	gray b=get_matrix_pixel(matrix,0,1,dim);
@@ -326,6 +326,7 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 int main(int argc, char* argv[]){
 
 	//readbackgrounds("background_substraction/background/img_", 10);
+
 
 	pimage_type image=readimage("background_substraction/img_000053.ppm");
 
