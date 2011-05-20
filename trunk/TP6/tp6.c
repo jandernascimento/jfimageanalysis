@@ -114,6 +114,45 @@ pimage_type calculate_mean_image(filelist_type list){
 }
 
 /**
+** calc the inverse of the matrix
+**/
+gray *matrix_inverse(gray *matrix,int rows,int cols){
+	gray *inverse=(gray *)malloc(sizeof(gray)*rows*cols);
+	//may generate fail duo to another dimension of matrices
+	gray coefficient=1/matrix_determinant(matrix,rows);
+	
+	//second parameter should be the cofactor matrix	
+	gray *res=matrix_multiplication_single(coefficient, matrix,rows,cols);
+
+	return res;
+}
+
+/**
+** calc the inverse of the matrix
+**/
+void matrix_inverse_test(){
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	gray value=2;
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	gray *res=matrix_inverse(det,dim,dim);
+	matrix_print(res,dim,dim);
+}
+
+/**
 ** calc multiplication of a matrix by a single number test
 **/
 void matrix_multiplication_single_test(){
@@ -458,6 +497,9 @@ int main(int argc, char* argv[]){
 	fprintf(stderr,"Test 2\n");
 	matrix_subtraction_test();
 	fprintf(stderr,"Test 3\n");
-	matrix_multiplication_single_test(); // */
+	matrix_multiplication_single_test(); 
+	fprintf(stderr,"Test 4\n");
+	matrix_inverse_test();
+	// */
 
 }
