@@ -39,7 +39,7 @@ pixel_type *get_pixel(pimage_type image,int x, int y);
 //get matrix position
 gray *get_matrix_pixel(gray *matrix,int row, int col,int dim);
 //iterate over image
-filelist_type readbackgrounds(char *path);
+filelist_type readbackgrounds(char *path, int n);
 //calculate the mean image
 pimage_type calculate_mean_image(filelist_type list);
 //calculate difference matrix
