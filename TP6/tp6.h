@@ -38,8 +38,12 @@ pixel_type *get_pixel(pimage_type image,int x, int y);
 gray get_matrix_pixel(gray *matrix,int row, int col,int dim);
 //iterate over image
 filelist_type readbackgrounds(char *path, int n);
+//initiate the matrix used in the mean method
+void initiateImageMean(pimage_type image_mean, pimage_type image_back);
 //calculate the mean image
 pimage_type calculate_mean_image(filelist_type list);
+//test mean image method
+pimage_type test_mean_image();
 //prints the matrix
 void matrix_print(gray* matrix,int rows, int cols);
 //calculate the multiplication of a matrix for a single number
