@@ -346,6 +346,13 @@ gray matrix_determinant(gray *matrix,int dim){
 }
 
 /**
+** calculate pb
+**/
+gray *calculate_pb(pimage_type image){
+
+}
+
+/**
 ** Get pixel information from a image type
 **/
 pixel_type *get_pixel(pimage_type image,int x, int y){
@@ -440,6 +447,13 @@ pimage_type readimage(char* filepath){
       /* fermeture */
       fclose(ifp);
       return image;
+}
+
+/**
+** calculate pb test
+**/
+void calculate_pb_test(){
+
 }
 
 /**
@@ -702,8 +716,8 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
-	calculate_mean_image(list_back);
+	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
+	//calculate_mean_image(list_back);
 
 	//mean_image_test();
 
@@ -725,7 +739,7 @@ int main(int argc, char* argv[]){
 
 
 	//jander test 
-	/*
+	//*
 	fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
@@ -736,6 +750,8 @@ int main(int argc, char* argv[]){
 	matrix_inverse_test();
 	fprintf(stderr,"Test 5\n");
 	matrix_multiplication_test();
+	fprintf(stderr,"Test 6\n");
+	calculate_pb_test();
 	// */
 
 }
