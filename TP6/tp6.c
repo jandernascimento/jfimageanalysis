@@ -59,7 +59,7 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back){
     image_mean->stream=imagemap;
 
     //zerar image
-    for(int i=0; i < image_mean->rows; i++){
+    for(int i=0; i < image_mean->rows; i++)
 		for(int j=0; j < image_mean->cols ; j++){
 			pixel_type pixel;
 			pixel.r=0;
@@ -67,8 +67,8 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back){
 			pixel.b=0;
 			set_pixel(image_mean,j,i,pixel);
 		}
-	}
-    fprintf(stderr,"zerou\n");
+	
+    //fprintf(stderr,"zerou\n");
 }
 
 /**
@@ -81,9 +81,9 @@ pimage_type calculate_mean_image(filelist_type list){
 	pimage_type image_mean=(pimage_type)malloc(sizeof(image_type));
 
 	for(int i=0;i<=list.size;i++){ 
-		fprintf(stderr,"\n%s\n", list.paths[i]);
+		//fprintf(stderr,"\n%s\n", list.paths[i]);
     	image_back=readimage(list.paths[i]);		
-		fprintf(stderr,"leu\n");
+		//fprintf(stderr,"leu\n");
 
 		//printimage(image_back);
 
@@ -104,7 +104,7 @@ pimage_type calculate_mean_image(filelist_type list){
 				free(pixel_mean);
 	   		}
      	}
-    	fprintf(stderr,"acumulou\n");
+    	//fprintf(stderr,"acumulou\n");
 
     	free(image_back);
     }
@@ -121,7 +121,9 @@ pimage_type calculate_mean_image(filelist_type list){
 			free(pixel_mean);
    		}
    	}
-   	fprintf(stderr,"\ncalculou\n");
+   	//fprintf(stderr,"\ncalculou\n");
+
+	//printimage(image_mean);
 
     return image_mean;
 }
@@ -660,84 +662,107 @@ gray *convert_pixelTypeToGray(pixel_type *pixel_back){
 }
 
 /**
+** acumulate two matrices in the first one
+**/
+void acumulate_matrix(gray *covar_matrix,gray *mult_matrix, int cols, int rows){
+   	for(int i=0; i < rows; i++)
+   		for(int j=0; j < cols ; j++)
+			covar_matrix[i*cols+j] += mult_matrix[i*cols+j]; 
+}
+
+/**
 ** calc covariance matrix
 **/
-gray * matrix_covariance(pimage_type image_mean,filelist_type list){
-	fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
+gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j){
 	pimage_type image_back;
 	gray *in_matrix;
 	gray *im_matrix;
 	gray *diff_in_im_matrix;
 	gray *transp_matrix;
-//	gray *covar_matrix;
+	gray *mult_matrix;
+	gray *covar_matrix=(gray *)malloc(sizeof(gray)*3*3);
 
-	for(int i=0;i<=list.size;i++){ 
-		fprintf(stderr,"\n%s\n", list.paths[i]);
-    	image_back=readimage(list.paths[i]);		
-		fprintf(stderr,"leu\n");
+	//each pixel of the image
+//   	for(int i=0; i < image_mean->rows; i++){
+//   		for(int j=0; j < image_mean->cols ; j++){
 
-//		if(i==0)
-	//		initiateImageMean(image_mean, image_back);
+			//zerar covariance matrix
+			for(int a=0; a < 3; a++)
+				for(int b=0; b < 3 ; b++)
+					covar_matrix[a*3+b]=0;
 
-		//Acumulation the value of the pixels of all background images
-    	for(int i=0; i < image_mean->rows; i++){
-      		for(int j=0; j < image_mean->cols ; j++){
+			//for each background image, calculate covariance matrix for each pixel and acumulate 
+			for(int m=0;m<=list.size;m++){ 
+				//fprintf(stderr,"\n%s\n", list.paths[m]);
+		    	image_back=readimage(list.paths[m]);		
+				//fprintf(stderr,"leu\n");
+
 				//i_n
 				pixel_type *pixel_back=get_pixel(image_back,j,i);
 				in_matrix=convert_pixelTypeToGray(pixel_back);
-				fprintf(stderr,"\n  pixel: r:%3.0f g:%3.0f b:%3.0f \n",in_matrix[0],in_matrix[1],in_matrix[2]);
+				//fprintf(stderr,"\n  pixel: r:%3.0f g:%3.0f b:%3.0f \n",in_matrix[0],in_matrix[1],in_matrix[2]);
 				//i_m
 				pixel_type *pixel_mean=get_pixel(image_mean,j,i);
 				im_matrix=convert_pixelTypeToGray(pixel_mean);
-				fprintf(stderr,"m pixel: r:%3.0f g:%3.0f b:%3.0f \n",im_matrix[0],im_matrix[1],im_matrix[2]);
+				//fprintf(stderr,"m pixel: r:%3.0f g:%3.0f b:%3.0f \n",im_matrix[0],im_matrix[1],im_matrix[2]);
 				//subtraction
 				diff_in_im_matrix=matrix_subtraction(in_matrix,im_matrix,3,1);
-				fprintf(stderr,"d pixel: r:%3.0f g:%3.0f b:%3.0f \n",diff_in_im_matrix[0],diff_in_im_matrix[1],diff_in_im_matrix[2]);
+				//fprintf(stderr,"d pixel: r:%3.0f g:%3.0f b:%3.0f \n",diff_in_im_matrix[0],diff_in_im_matrix[1],diff_in_im_matrix[2]);
 				//transpose
 				transp_matrix=matrix_transpose(diff_in_im_matrix, 3, 1);
-				fprintf(stderr,"t pixel: r:%3.0f g:%3.0f b:%3.0f \n",transp_matrix[0],transp_matrix[1],transp_matrix[2]);
-
+				//fprintf(stderr,"\nt pixel: r:%3.0f g:%3.0f b:%3.0f \n",transp_matrix[0],transp_matrix[1],transp_matrix[2]);
+				//multiplication
+				mult_matrix=matrix_multiplication(diff_in_im_matrix,3,1,transp_matrix,1,3);
+				//fprintf(stderr,"covariance matrix\n");
+				//matrix_print(mult_matrix,3,3);
+				//acumulating in the covariance matrix
+				acumulate_matrix(covar_matrix,mult_matrix,3,3);
+				//fprintf(stderr,"covariance matrix acumulate\n");
+				//matrix_print(covar_matrix,3,3);
+				
 				free(in_matrix);
 				free(pixel_back);
 				free(im_matrix);
 				free(pixel_mean);
 				free(diff_in_im_matrix);
 				free(transp_matrix);
+				free(mult_matrix);
+
+		    	free(image_back);
 	   		}
-     	}
 
-    	free(image_back);
-    }
+    		//calculating the mean of the covariance matrix
+		   	for(int i=0; i < 3; i++)
+		   		for(int j=0; j < 3 ; j++)
+					covar_matrix[i*3+j] = covar_matrix[i*3+j] / (list.size+1); //+1 because the first image in the folder is 000000
+			//fprintf(stderr,"mean of the covariance matrix\n");
+			//matrix_print(covar_matrix,3,3);
+//     	}
+//    }
 
-    /*/calculating the mean for each pixel
-   	for(int i=0; i < image_mean->rows; i++){
-   		for(int j=0; j < image_mean->cols ; j++){
-			pixel_type *pixel_mean=get_pixel(image_mean,j,i);
-			pixel_type newpixel;				
-			newpixel.r =  pixel_mean->r / (list.size+1); //+1 because the first image in the folder is 000000
-			newpixel.g =  pixel_mean->g / (list.size+1);
-			newpixel.b =  pixel_mean->b / (list.size+1);
-			set_pixel(image_mean,j,i,newpixel);
-			free(pixel_mean);
-   		}
-   	}
-   	fprintf(stderr,"\ncalculou\n");*/
 
-    //return image_mean;
+	//fprintf(stderr,"\ncalculou\n");
+    return covar_matrix;
 }
 
 /**
 ** test covariance matrix
 **/
 void matrix_covariance_test(){
-	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 4); 
+	fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
+	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
 	//pimage_type image_mean=calculate_mean_image(list_back);
 
 	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
 	pimage_type image_mean=calculate_mean_image(list_back);
 
-	//covariance matrix
-	matrix_covariance(image_mean, list_back);
+	//each pixel of the image
+   	for(int i=0; i < image_mean->rows; i++)
+   		for(int j=0; j < image_mean->cols ; j++)
+			//covariance matrix
+			matrix_covariance(image_mean, list_back, i, j);
+
+	free(image_mean);	
 }
 
 /** Parser method **/
