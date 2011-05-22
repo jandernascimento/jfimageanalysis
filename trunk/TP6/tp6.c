@@ -272,7 +272,36 @@ gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
 	return result_matrix;
 }
 
+/**
+** calc matrix multiplication
+**/
+gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int rows2,int cols2){
 
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows1*cols2);
+
+	if(cols1!=rows2){
+		fprintf(stderr,"Impossible to multiplicate those matrices\n");
+		exit(0);
+	}
+
+	for(int row=0;row<rows1;row++){
+		for(int col=0;col<cols2;col++){
+
+			result_matrix[row*cols2+col]=0;
+
+			for(int mcol=0;mcol<cols1;mcol++){
+				//printf("--> %f * %f = %f \n",get_matrix_pixel(matrix1,row,mcol,cols1),get_matrix_pixel(matrix2,mcol,col,cols2),get_matrix_pixel(matrix1,row,mcol,cols1)*get_matrix_pixel(matrix2,mcol,col,cols2));
+				result_matrix[row*cols2+col]=result_matrix[row*cols2+col]+get_matrix_pixel(matrix1,row,mcol,cols1)*get_matrix_pixel(matrix2,mcol,col,cols2);
+			}
+			//exit(0);
+			//printf("--> %f\n",result_matrix[row*cols2+col]);
+		}
+	}
+
+	return result_matrix;
+	
+
+}
 
 /**
 ** prints the matrix dimension
@@ -506,6 +535,79 @@ void matrix_subtraction_test(){
 }
 
 /**
+** matrix multiplication test
+**/
+void matrix_multiplication_test(){
+
+
+	const int dim1=3;
+	const int dim2=2;
+
+	gray *m1=(gray *)malloc(sizeof(gray)*4*3);
+	gray *m2=(gray *)malloc(sizeof(gray)*3*2);
+
+	m1[dim1*0+0]=14;
+	m1[dim1*0+1]=9;
+	m1[dim1*0+2]=3;
+
+	m1[dim1*1+0]=2;
+	m1[dim1*1+1]=11;
+	m1[dim1*1+2]=15;
+
+	m1[dim1*2+0]=0;
+	m1[dim1*2+1]=12;
+	m1[dim1*2+2]=17;
+
+	m1[dim1*3+0]=5;
+	m1[dim1*3+1]=2;
+	m1[dim1*3+2]=3;
+
+	m2[dim2*0+0]=12;
+	m2[dim2*0+1]=25;
+
+	m2[dim2*1+0]=9;
+	m2[dim2*1+1]=10;
+
+	m2[dim2*2+0]=8;
+	m2[dim2*2+1]=5;
+
+	/*m1[dim*0+0]=1;
+	m1[dim*0+1]=2;
+	m1[dim*0+2]=1;
+
+	m1[dim*1+0]=3;
+	m1[dim*1+1]=4;
+	m1[dim*1+2]=5;
+
+	m1[dim*2+0]=5;
+	m1[dim*2+1]=6;
+	m1[dim*2+2]=7;
+
+	m2[dim*0+0]=1;
+	m2[dim*0+1]=2;
+	m2[dim*0+2]=1;
+
+	m2[dim*1+0]=3;
+	m2[dim*1+1]=4;
+	m2[dim*1+2]=5;
+
+	m2[dim*2+0]=5;
+	m2[dim*2+1]=6;
+	m2[dim*2+2]=7;*/
+
+	printf("Matrix 1:\n");
+	matrix_print(m1,4,3);
+	printf("Matrix 2:\n");
+	matrix_print(m2,3,2);
+
+	gray *res=matrix_multiplication(m1,4,3,m2,3,2);
+
+	printf("Result:\n");
+	matrix_print(res,4,2);
+
+}
+
+/**
 ** calc determinant test
 **/
 void matrix_determinant_test(){
@@ -619,6 +721,8 @@ int main(int argc, char* argv[]){
 	matrix_multiplication_single_test(); 
 	fprintf(stderr,"Test 4\n");
 	matrix_inverse_test();
+	fprintf(stderr,"Test 5\n");
+	matrix_multiplication_test();
 	// */
 
 }
