@@ -48,6 +48,10 @@ pimage_type test_mean_image();
 void matrix_print(gray* matrix,int rows, int cols);
 //calculate the multiplication of a matrix for a single number
 gray *matrix_multiplication_single(gray value,gray *matrix,int rows,int cols);
+//calculate the multiplication of a matrix
+gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int rows2,int cols2);
+//calculate the multiplication of a matrix teste
+void matrix_multiplication_test();
 //calculate transpose
 gray *matrix_transpose(gray *matrix,int rows,int cols);
 //calculate the cofactor matrix
