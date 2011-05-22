@@ -175,62 +175,19 @@ gray *matrix_cofactor(gray *matrix,int rows,int cols){
 }
 
 /**
-** calc the inverse of the matrix
-**/
-void matrix_inverse_test(){
-	const int dim=3;
-	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
-
-	gray value=2;
-
-	det[dim*0+0]=1;
-	det[dim*0+1]=2;
-	det[dim*0+2]=1;
-
-	det[dim*1+0]=3;
-	det[dim*1+1]=4;
-	det[dim*1+2]=5;
-
-	det[dim*2+0]=5;
-	det[dim*2+1]=6;
-	det[dim*2+2]=7;
-
-	gray *res=matrix_inverse(det,dim,dim);
-	matrix_print(res,dim,dim);
-}
-
-/**
-** calc multiplication of a matrix by a single number test
-**/
-void matrix_multiplication_single_test(){
-
-	const int dim=3;
-	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
-
-	gray value=2;
-
-	det[dim*0+0]=1;
-	det[dim*0+1]=2;
-	det[dim*0+2]=1;
-
-	det[dim*1+0]=3;
-	det[dim*1+1]=4;
-	det[dim*1+2]=5;
-
-	det[dim*2+0]=5;
-	det[dim*2+1]=6;
-	det[dim*2+2]=7;
-
-	gray *res=matrix_multiplication_single(value, det,dim,dim);
-	matrix_print(res,3,3);
-
-}
-
-/**
 ** calc multiplication transpose
 **/
 gray *matrix_transpose(gray *matrix,int rows,int cols){
 
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
+
+	for(int row=0;row<rows;row++){
+		for(int col=0;col<cols;col++){
+			result_matrix[row*cols+col]=get_matrix_pixel(matrix,col,row,rows);
+		}
+	}
+
+/*
 	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
 
 	gray a=get_matrix_pixel(matrix,0,0,cols);
@@ -256,10 +213,7 @@ gray *matrix_transpose(gray *matrix,int rows,int cols){
 	result_matrix[2*cols+0]=c;
 	result_matrix[2*cols+1]=f;
 	result_matrix[2*cols+2]=i;
-
-	//fprintf(stderr,"transpose\n");
-	//matrix_print(result_matrix,rows,cols);	
-
+*/
 	return result_matrix;
 }
 
@@ -295,45 +249,7 @@ gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
 	return result_matrix;
 }
 
-/**
-** calc subtraction test
-**/
-void matrix_subtraction_test(){
 
-	const int dim=3;
-
-	gray *m1=(gray *)malloc(sizeof(gray)*dim*dim);
-	gray *m2=(gray *)malloc(sizeof(gray)*dim*dim);
-
-	m1[dim*0+0]=1;
-	m1[dim*0+1]=2;
-	m1[dim*0+2]=1;
-
-	m1[dim*1+0]=3;
-	m1[dim*1+1]=4;
-	m1[dim*1+2]=5;
-
-	m1[dim*2+0]=5;
-	m1[dim*2+1]=6;
-	m1[dim*2+2]=7;
-
-	m2[dim*0+0]=1;
-	m2[dim*0+1]=2;
-	m2[dim*0+2]=1;
-
-	m2[dim*1+0]=3;
-	m2[dim*1+1]=4;
-	m2[dim*1+2]=5;
-
-	m2[dim*2+0]=5;
-	m2[dim*2+1]=6;
-	m2[dim*2+2]=7;
-
-	gray *res=matrix_subtraction(m1,m2,dim,dim);
-
-	matrix_print(res,3,3);
-
-}
 
 /**
 ** prints the matrix dimension
@@ -375,29 +291,6 @@ gray matrix_determinant(gray *matrix,int dim){
 
 	return (a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g);
 
-}
-
-void matrix_determinant_test(){
-	const int dim=3;
-	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
-
-	det[dim*0+0]=1;
-	det[dim*0+1]=2;
-	det[dim*0+2]=1;
-
-	det[dim*1+0]=3;
-	det[dim*1+1]=4;
-	det[dim*1+2]=5;
-
-	det[dim*2+0]=5;
-	det[dim*2+1]=6;
-	det[dim*2+2]=7;
-
-	int val=matrix_determinant(det,dim);
-
-	free(det);
-
-	printf("-->%i\n",val);
 }
 
 /**
@@ -498,6 +391,125 @@ pimage_type readimage(char* filepath){
       return image;
 }
 
+/**
+** calc the inverse of the matrix
+**/
+void matrix_inverse_test(){
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	gray value=2;
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	gray *res=matrix_inverse(det,dim,dim);
+	matrix_print(res,dim,dim);
+}
+
+/**
+** calc multiplication of a matrix by a single number test
+**/
+void matrix_multiplication_single_test(){
+
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	gray value=2;
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	gray *res=matrix_multiplication_single(value, det,dim,dim);
+	matrix_print(res,3,3);
+
+}
+
+/**
+** calc subtraction test
+**/
+void matrix_subtraction_test(){
+
+	const int dim=3;
+
+	gray *m1=(gray *)malloc(sizeof(gray)*dim*dim);
+	gray *m2=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	m1[dim*0+0]=1;
+	m1[dim*0+1]=2;
+	m1[dim*0+2]=1;
+
+	m1[dim*1+0]=3;
+	m1[dim*1+1]=4;
+	m1[dim*1+2]=5;
+
+	m1[dim*2+0]=5;
+	m1[dim*2+1]=6;
+	m1[dim*2+2]=7;
+
+	m2[dim*0+0]=1;
+	m2[dim*0+1]=2;
+	m2[dim*0+2]=1;
+
+	m2[dim*1+0]=3;
+	m2[dim*1+1]=4;
+	m2[dim*1+2]=5;
+
+	m2[dim*2+0]=5;
+	m2[dim*2+1]=6;
+	m2[dim*2+2]=7;
+
+	gray *res=matrix_subtraction(m1,m2,dim,dim);
+
+	matrix_print(res,3,3);
+
+}
+
+/**
+** calc determinant test
+**/
+void matrix_determinant_test(){
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*dim*dim);
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	det[dim*1+0]=3;
+	det[dim*1+1]=4;
+	det[dim*1+2]=5;
+
+	det[dim*2+0]=5;
+	det[dim*2+1]=6;
+	det[dim*2+2]=7;
+
+	int val=matrix_determinant(det,dim);
+
+	free(det);
+
+	printf("Determinant -->%i\n",val);
+}
+
+
 /** Parser method **/
 
 /**
@@ -553,9 +565,9 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 2); //just work until 8
+	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 2); //just work until 8
 
-	calculate_mean_image(list_back);
+	//calculate_mean_image(list_back);
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
@@ -575,7 +587,7 @@ int main(int argc, char* argv[]){
 
 
 	//jander test 
-	/*
+	//*
 	fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
