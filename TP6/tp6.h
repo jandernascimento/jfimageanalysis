@@ -3,6 +3,7 @@
 #define RED 0   //index of the red in DPC
 #define GREEN 1 //index of the green in DPC
 #define BLUE 2  //index of the blue in DPC
+#define PI 3.1415926 //pi number
 
 // STRUCTURE
 typedef struct tpixel {
@@ -48,6 +49,8 @@ void calculate_mean_image_test();
 gray *calculate_pb(pimage_type image);
 //calculate pb test
 void calculate_pb_test();
+//get a image pixel as a gray matrix
+gray *get_pixel_matrix(pimage_type image,int j, int i);
 //prints the matrix
 void matrix_print(gray* matrix,int rows, int cols);
 //calculate the multiplication of a matrix for a single number
@@ -58,6 +61,8 @@ gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int 
 void matrix_multiplication_test();
 //calculate transpose
 gray *matrix_transpose(gray *matrix,int rows,int cols);
+//calculate transpose test
+void matrix_transpose_test();
 //calculate the cofactor matrix
 gray *matrix_cofactor(gray *matrix,int rows,int cols);
 //calculate the inverse of the matrix
