@@ -130,7 +130,7 @@ pimage_type calculate_mean_image(filelist_type list){
 /**
 ** test mean image method
 **/
-pimage_type test_mean_image(){
+pimage_type mean_image_test(){
 	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
 
 	calculate_mean_image(list_back);
@@ -633,6 +633,19 @@ void matrix_determinant_test(){
 	printf("Determinant -->%i\n",val);
 }
 
+/**
+** calc covariance matrix
+**/
+void matrix_covariance(){
+
+}
+
+/**
+** test covariance matrix
+**/
+void matrix_covariance_test(){
+
+}
 
 /** Parser method **/
 
@@ -692,7 +705,7 @@ int main(int argc, char* argv[]){
 	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
 	calculate_mean_image(list_back);
 
-	//test_mean_image();
+	//mean_image_test();
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");

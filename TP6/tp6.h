@@ -43,7 +43,7 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back);
 //calculate the mean image
 pimage_type calculate_mean_image(filelist_type list);
 //test mean image method
-pimage_type test_mean_image();
+pimage_type mean_image_test();
 //prints the matrix
 void matrix_print(gray* matrix,int rows, int cols);
 //calculate the multiplication of a matrix for a single number
@@ -70,3 +70,8 @@ void matrix_subtraction_test();
 gray matrix_determinant(gray *matrix,int dim);
 //calculate determinant (test)
 void matrix_determinant_test();
+//calc covariance matrix
+void matrix_covariance();
+//test covariance matrix
+void matrix_covariance_test();
+
