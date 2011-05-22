@@ -44,12 +44,39 @@ filelist_type readbackgrounds(char *path, int n){
 }
 
 /**
+** initiate the matrix used in the mean method
+**/
+void initiateImageMean(pimage_type image_mean, pimage_type image_back){
+	gray* imagemap;
+
+	//dimensions
+    image_mean->cols = image_back->cols;
+    image_mean->rows = image_back->rows;
+    image_mean->maxval = image_back->maxval;
+
+    //Allocation memoire
+    imagemap = (gray *) malloc(DPC * image_back->cols * image_back->rows * sizeof(gray));
+    image_mean->stream=imagemap;
+
+    //zerar image
+    for(int i=0; i < image_mean->rows; i++){
+		for(int j=0; j < image_mean->cols ; j++){
+			pixel_type pixel;
+			pixel.r=0;
+			pixel.g=0;
+			pixel.b=0;
+			set_pixel(image_mean,j,i,pixel);
+		}
+	}
+    fprintf(stderr,"zerou\n");
+}
+
+/**
 ** calc mean image
 **/
 pimage_type calculate_mean_image(filelist_type list){
 	fprintf(stderr,"\ncalculating mean\n");
 	pimage_type image_back;
-	gray* imagemap;
 
 	pimage_type image_mean=(pimage_type)malloc(sizeof(image_type));
 
@@ -58,28 +85,10 @@ pimage_type calculate_mean_image(filelist_type list){
     	image_back=readimage(list.paths[i]);		
 		fprintf(stderr,"leu\n");
 
-		if(i==0){		
-			//dimensions
-		    image_mean->cols = image_back->cols;
-		    image_mean->rows = image_back->rows;
-		    image_mean->maxval = image_back->maxval;
+		//printimage(image_back);
 
-		    //Allocation memoire
-		    imagemap = (gray *) malloc(DPC * image_back->cols * image_back->rows * sizeof(gray));
-		    image_mean->stream=imagemap;
-
-		    //zerar image
-		    for(int i=0; i < image_mean->rows; i++){
-      			for(int j=0; j < image_mean->cols ; j++){
-					pixel_type pixel;
-					pixel.r=0;
-					pixel.g=0;
-					pixel.b=0;
-					set_pixel(image_mean,j,i,pixel);
-	   			}
-     		}
-		    fprintf(stderr,"zerou\n");
-		}
+		if(i==0)
+			initiateImageMean(image_mean, image_back);
 
 		//Acumulation the value of the pixels of all background images
     	for(int i=0; i < image_mean->rows; i++){
@@ -91,9 +100,13 @@ pimage_type calculate_mean_image(filelist_type list){
 				newpixel.g = pixel_mean->g + pixel_back->g;
 				newpixel.b = pixel_mean->b + pixel_back->b;
 				set_pixel(image_mean,j,i,newpixel);
+				free(pixel_back);
+				free(pixel_mean);
 	   		}
      	}
     	fprintf(stderr,"acumulou\n");
+
+    	free(image_back);
     }
 
     //calculating the mean for each pixel
@@ -101,16 +114,26 @@ pimage_type calculate_mean_image(filelist_type list){
    		for(int j=0; j < image_mean->cols ; j++){
 			pixel_type *pixel_mean=get_pixel(image_mean,j,i);
 			pixel_type newpixel;				
-			newpixel.r = (int) pixel_mean->r / (list.size+1); //+1 because the first image in the folder is 000000
-			newpixel.g = (int) pixel_mean->g / (list.size+1);
-			newpixel.b = (int) pixel_mean->b / (list.size+1);
+			newpixel.r =  pixel_mean->r / (list.size+1); //+1 because the first image in the folder is 000000
+			newpixel.g =  pixel_mean->g / (list.size+1);
+			newpixel.b =  pixel_mean->b / (list.size+1);
 			set_pixel(image_mean,j,i,newpixel);
+			free(pixel_mean);
    		}
    	}
    	fprintf(stderr,"\ncalculou\n");
 
     printimage(image_mean);
     fprintf(stderr,"acabou\n");
+}
+
+/**
+** test mean image method
+**/
+pimage_type test_mean_image(){
+	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
+
+	calculate_mean_image(list_back);
 }
 
 /**
@@ -323,7 +346,6 @@ void set_pixel(pimage_type image,int x, int y, pixel_type pixel ){
 ** Print image, take the type image as input
 **/
 void printimage(pimage_type image){
-
     printf("P3\n");
     printf("%d %d \n", image->cols, image->rows);
     printf("%d\n",image->maxval);
@@ -565,9 +587,10 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 2); //just work until 8
+	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
+	calculate_mean_image(list_back);
 
-	//calculate_mean_image(list_back);
+	//test_mean_image();
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
@@ -587,7 +610,7 @@ int main(int argc, char* argv[]){
 
 
 	//jander test 
-	//*
+	/*
 	fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
