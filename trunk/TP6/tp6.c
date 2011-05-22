@@ -129,7 +129,7 @@ pimage_type calculate_mean_image(filelist_type list){
 /**
 ** test mean image method
 **/
-pimage_type calculate_mean_image_test(){
+void calculate_mean_image_test(){
 	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
 
 	calculate_mean_image(list_back);
@@ -662,7 +662,7 @@ gray *convert_pixelTypeToGray(pixel_type *pixel_back){
 /**
 ** calc covariance matrix
 **/
-void matrix_covariance(pimage_type image_mean,filelist_type list){
+gray * matrix_covariance(pimage_type image_mean,filelist_type list){
 	fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
 	pimage_type image_back;
 	gray *in_matrix;
@@ -685,23 +685,24 @@ void matrix_covariance(pimage_type image_mean,filelist_type list){
 				//i_n
 				pixel_type *pixel_back=get_pixel(image_back,j,i);
 				in_matrix=convert_pixelTypeToGray(pixel_back);
-				fprintf(stderr,"\npixel: r:%3.0f g:%3.0f b:%3.0f \n",in_matrix[0],in_matrix[1],in_matrix[2]);
+				fprintf(stderr,"\n  pixel: r:%3.0f g:%3.0f b:%3.0f \n",in_matrix[0],in_matrix[1],in_matrix[2]);
 				//i_m
 				pixel_type *pixel_mean=get_pixel(image_mean,j,i);
 				im_matrix=convert_pixelTypeToGray(pixel_mean);
-				fprintf(stderr,"mean pixel: r:%3.0f g:%3.0f b:%3.0f \n",im_matrix[0],im_matrix[1],im_matrix[2]);
+				fprintf(stderr,"m pixel: r:%3.0f g:%3.0f b:%3.0f \n",im_matrix[0],im_matrix[1],im_matrix[2]);
 				//subtraction
 				diff_in_im_matrix=matrix_subtraction(in_matrix,im_matrix,3,1);
-				fprintf(stderr,"diff pixel: r:%3.0f g:%3.0f b:%3.0f \n",diff_in_im_matrix[0],diff_in_im_matrix[1],diff_in_im_matrix[2]);
+				fprintf(stderr,"d pixel: r:%3.0f g:%3.0f b:%3.0f \n",diff_in_im_matrix[0],diff_in_im_matrix[1],diff_in_im_matrix[2]);
 				//transpose
-				//transp_matrix=
+				transp_matrix=matrix_transpose(diff_in_im_matrix, 3, 1);
+				fprintf(stderr,"t pixel: r:%3.0f g:%3.0f b:%3.0f \n",transp_matrix[0],transp_matrix[1],transp_matrix[2]);
 
 				free(in_matrix);
 				free(pixel_back);
 				free(im_matrix);
 				free(pixel_mean);
 				free(diff_in_im_matrix);
-				//free(transp_matrix);
+				free(transp_matrix);
 	   		}
      	}
 
@@ -729,10 +730,11 @@ void matrix_covariance(pimage_type image_mean,filelist_type list){
 ** test covariance matrix
 **/
 void matrix_covariance_test(){
-	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 4); 
-	pimage_type image_mean=calculate_mean_image(list_back);
+	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 4); 
+	//pimage_type image_mean=calculate_mean_image(list_back);
 
-    //printimage(image_mean);
+	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
+	pimage_type image_mean=calculate_mean_image(list_back);
 
 	//covariance matrix
 	matrix_covariance(image_mean, list_back);
