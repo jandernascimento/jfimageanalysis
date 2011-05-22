@@ -207,9 +207,12 @@ gray *matrix_transpose(gray *matrix,int rows,int cols){
 
 	for(int row=0;row<rows;row++){
 		for(int col=0;col<cols;col++){
+			//printf("aqui valor-->%i,%i; total:%i,%i\n",row,col,rows,cols);
 			result_matrix[row*cols+col]=get_matrix_pixel(matrix,col,row,rows);
 		}
 	}
+
+	//matrix_print(result_matrix,cols,rows);
 
 /*
 	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
@@ -347,9 +350,78 @@ gray matrix_determinant(gray *matrix,int dim){
 }
 
 /**
+** get a pixel as a matrix
+**/
+gray *get_pixel_matrix(pimage_type image,int j, int i){
+	gray *pixel_matrix=(gray *)malloc(sizeof(gray)*3);
+	pixel_type *pixel=get_pixel(image,j,i);
+
+	pixel_matrix[0]=pixel->r;
+	pixel_matrix[1]=pixel->g;
+	pixel_matrix[2]=pixel->b;
+	return pixel_matrix;
+
+}
+
+/**
 ** calculate pb
 **/
 gray *calculate_pb(pimage_type image){
+
+    printf("P3\n");
+    printf("%d %d \n", image->cols, image->rows);
+    printf("%d\n",image->maxval);
+
+    filelist_type list_back = readbackgrounds("images/img_", 1);
+
+    pimage_type imagemean=calculate_mean_image(list_back);
+
+    for(int i=0; i < image->rows; i++){
+      for(int j=0; j < image->cols ; j++){
+
+		gray *pixel=get_pixel_matrix(image,j,i);
+
+		gray *pixelmean=get_pixel_matrix(imagemean,j,i);
+
+		gray *i_minus_mean_transpose = matrix_subtraction(pixel,pixelmean,1,3); //i - i_m
+
+		gray *i_minus_mean = matrix_transpose(i_minus_mean_transpose,1,3); //(i - i_m)^t
+
+		gray *sigma=matrix_covariance(imagemean,list_back,i,j);//sigma
+
+		matrix_print(sigma,3,3);
+		
+		gray *sigma_inverse=matrix_inverse(sigma,3,3);//sigma^{-1}
+		gray half=-1/2;//-1/2
+
+		/*
+		matrix_print(sigma_inverse,3,1);
+		*/
+		//parameters for exp function		
+
+		gray *a1=matrix_multiplication(i_minus_mean_transpose,1,3,sigma_inverse,3,3);//a1=(i-i_m)^{t}*sigma^{-1}
+		
+		/*		
+		gray *a2=matrix_multiplication(a1,1,3,i_minus_mean,3,1);//a2=a1*(i-i_m)
+		gray *a3=matrix_multiplication_single(half,a2,1,1);//0.5*a2
+				
+		double exponent = exp(((double)*a3));
+
+		//coefficient of exp function
+		double b1 = pow(2*PI,2/3); //2pi^{3/2}
+		double b2 = (double)matrix_determinant(sigma,3);//b2=|sigma|
+		double b3 = b1*sqrt(b2);//b3=b1*sqrt(b2)
+		double b4 = 1/(b3); //b3^{-1}
+
+		double c1 = b4*exponent;
+		*/
+		printf("\n\n");
+		exit(0);
+
+
+      }  
+    }
+
 
 }
 
@@ -455,6 +527,10 @@ pimage_type readimage(char* filepath){
 **/
 void calculate_pb_test(){
 
+	pimage_type image = readimage("images/img_000000.ppm");
+
+	calculate_pb(image);
+
 }
 
 /**
@@ -506,6 +582,23 @@ void matrix_multiplication_single_test(){
 
 	gray *res=matrix_multiplication_single(value, det,dim,dim);
 	matrix_print(res,3,3);
+
+}
+
+void matrix_transpose_test(){
+
+	const int dim=3;
+	gray *det=(gray *)malloc(sizeof(gray)*1*3);
+
+	gray value=2;
+
+	det[dim*0+0]=1;
+	det[dim*0+1]=2;
+	det[dim*0+2]=1;
+
+	gray *res=matrix_transpose(det, 1,3);
+
+	matrix_print(res,3,1);
 
 }
 
@@ -813,7 +906,7 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	matrix_covariance_test();
+	//matrix_covariance_test();
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
@@ -832,7 +925,8 @@ int main(int argc, char* argv[]){
 	printimage(image);*/
 
 
-	/*/jander test 
+	//jander test 
+	//*	
 	fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
@@ -844,6 +938,8 @@ int main(int argc, char* argv[]){
 	fprintf(stderr,"Test 5\n");
 	matrix_multiplication_test();
 	fprintf(stderr,"Test 6\n");
+	matrix_transpose_test();
+	fprintf(stderr,"Test 7\n");
 	calculate_pb_test();
 	// */
 
