@@ -75,7 +75,9 @@ gray matrix_determinant(gray *matrix,int dim);
 //calculate determinant (test)
 void matrix_determinant_test();
 //calc covariance matrix
-void matrix_covariance();
+void matrix_covariance(pimage_type image_mean,filelist_type list);
 //test covariance matrix
 void matrix_covariance_test();
+//convert from the type <pixelType> to <gray>
+gray *convert_pixelTypeToGray(pixel_type *pixel_back);
 

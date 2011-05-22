@@ -75,7 +75,7 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back){
 ** calc mean image
 **/
 pimage_type calculate_mean_image(filelist_type list){
-	fprintf(stderr,"\ncalculating mean\n");
+	fprintf(stderr,"\n****** CALCULATING MEAN *****\n");
 	pimage_type image_back;
 
 	pimage_type image_mean=(pimage_type)malloc(sizeof(image_type));
@@ -123,8 +123,7 @@ pimage_type calculate_mean_image(filelist_type list){
    	}
    	fprintf(stderr,"\ncalculou\n");
 
-    printimage(image_mean);
-    fprintf(stderr,"acabou\n");
+    return image_mean;
 }
 
 /**
@@ -648,17 +647,98 @@ void matrix_determinant_test(){
 }
 
 /**
+** convert from the type <pixelType> to <gray>
+**/
+gray *convert_pixelTypeToGray(pixel_type *pixel_back){
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*3);
+
+	result_matrix[0]=pixel_back->r;
+	result_matrix[1]=pixel_back->g;
+	result_matrix[2]=pixel_back->b;
+	
+	return result_matrix;
+}
+
+/**
 ** calc covariance matrix
 **/
-void matrix_covariance(){
+void matrix_covariance(pimage_type image_mean,filelist_type list){
+	fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
+	pimage_type image_back;
+	gray *in_matrix;
+/*	gray *im_matrix;
+	gray *diff_in_im_matrix;
+	gray *transp_matrix;
+	gray *covar_matrix;*/
 
+	for(int i=0;i<=list.size;i++){ 
+		fprintf(stderr,"\n%s\n", list.paths[i]);
+    	image_back=readimage(list.paths[i]);		
+		fprintf(stderr,"leu\n");
+
+//		if(i==0)
+	//		initiateImageMean(image_mean, image_back);
+
+		//Acumulation the value of the pixels of all background images
+//    	for(int i=0; i < image_mean->rows; i++){
+  //    		for(int j=0; j < image_mean->cols ; j++){
+/*				pixel_type *pixel_mean=get_pixel(image_mean,j,i);
+				pixel_type newpixel;				
+				newpixel.r = pixel_mean->r + pixel_back->r;
+				newpixel.g = pixel_mean->g + pixel_back->g;
+				newpixel.b = pixel_mean->b + pixel_back->b;
+				set_pixel(image_mean,j,i,newpixel);
+				free(pixel_mean);*/
+
+				//i_n
+				pixel_type *pixel_back=get_pixel(image_back,0,0);//j,i);
+				in_matrix=convert_pixelTypeToGray(pixel_back);
+				fprintf(stderr,"\npixel: r:%i g:%i b:%i convertido: r:%d g:%d b:%d \n",pixel_back->r,pixel_back->g,pixel_back->b,in_matrix[0],in_matrix[1],in_matrix[2]);
+				//i_m
+		//		pixel_type *pixel_mean=get_pixel(image_mean,j,i);
+				//subtraction
+	//			gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols)
+
+			//	free(pixel_mean);
+				free(pixel_back);
+
+
+//	   		}
+  //   	}
+    	//fprintf(stderr,"acumulou\n");
+
+    	free(image_back);
+    }
+
+    /*/calculating the mean for each pixel
+   	for(int i=0; i < image_mean->rows; i++){
+   		for(int j=0; j < image_mean->cols ; j++){
+			pixel_type *pixel_mean=get_pixel(image_mean,j,i);
+			pixel_type newpixel;				
+			newpixel.r =  pixel_mean->r / (list.size+1); //+1 because the first image in the folder is 000000
+			newpixel.g =  pixel_mean->g / (list.size+1);
+			newpixel.b =  pixel_mean->b / (list.size+1);
+			set_pixel(image_mean,j,i,newpixel);
+			free(pixel_mean);
+   		}
+   	}
+   	fprintf(stderr,"\ncalculou\n");*/
+
+    //return image_mean;
 }
 
 /**
 ** test covariance matrix
 **/
 void matrix_covariance_test(){
+	filelist_type list_back = readbackgrounds("background_substraction/background/img_", 0); 
+	pimage_type image_mean=calculate_mean_image(list_back);
 
+    printimage(image_mean);
+    fprintf(stderr,"acabou\n");
+
+	//covariance matrix
+	matrix_covariance(image_mean, list_back);
 }
 
 /** Parser method **/
@@ -667,31 +747,23 @@ void matrix_covariance_test(){
 ** Get string param
 **/
 char* getStrParam(int argc,char* argv[],char* param,char* def){
-
-	for(int i=0;i<argc;i++){
+	for(int i=0;i<argc;i++)
 		if(strcmp(param,argv[i])==0){ 
-			if(argv[i+1][0]=='-') return def;
+			if(argv[i+1][0]=='-') 
+				return def;
 			return argv[i+1];
 		}
-	}
-
 	return def;
-
 }
 
 /**
 ** Get bool param
 **/
 int getBoolParam(int argc,char* argv[],char* param){
-
-	for(int i=0;i<argc;i++){
-		if(strcmp(param,argv[i])==0){ 
+	for(int i=0;i<argc;i++)
+		if(strcmp(param,argv[i])==0)
 			return 1;
-		}
-	}
-
 	return 0;
-
 }
 
 /**
@@ -703,8 +775,9 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
     int val=0;
  
     for(int i=0;i<strlen(res);i++){
-      	if(res[0]=='-') continue;
-	val+=pow(10,(strlen(res)-i-1))*(res[i]-'0'); 
+      	if(res[0]=='-') 
+      		continue;
+		val+=pow(10,(strlen(res)-i-1))*(res[i]-'0'); 
     }
 
     return res[0]=='-'?-1*val:val;
@@ -716,10 +789,8 @@ int getIntParam(int argc,char* argv[],char* param,char* def){
 **/
 int main(int argc, char* argv[]){
 
-	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
-	//calculate_mean_image(list_back);
 
-	//mean_image_test();
+	matrix_covariance_test();
 
 	/*char *filepath=getStrParam(argc,argv,"-i","");
 	int nro_groups=getIntParam(argc,argv,"-g","2");
