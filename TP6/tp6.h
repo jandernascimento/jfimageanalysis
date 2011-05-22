@@ -43,7 +43,7 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back);
 //calculate the mean image
 pimage_type calculate_mean_image(filelist_type list);
 //test mean image method
-pimage_type mean_image_test();
+pimage_type calculate_mean_image_test();
 //calculate pb
 gray *calculate_pb(pimage_type image);
 //calculate pb test
