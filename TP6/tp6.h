@@ -44,6 +44,10 @@ pimage_type calculate_mean_image(filelist_type list);
 void matrix_print(gray* matrix,int rows, int cols);
 //calculate the multiplication of a matrix for a single number
 gray *matrix_multiplication_single(gray value,gray *matrix,int rows,int cols);
+//calculate transpose
+gray *matrix_transpose(gray *matrix,int rows,int cols);
+//calculate the cofactor matrix
+gray *matrix_cofactor(gray *matrix,int rows,int cols);
 //calculate the inverse of the matrix
 gray *matrix_inverse(gray *matrix,int rows,int cols);
 //calculate the inverse of the matrix test

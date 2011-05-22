@@ -122,9 +122,56 @@ gray *matrix_inverse(gray *matrix,int rows,int cols){
 	gray coefficient=1/matrix_determinant(matrix,rows);
 	
 	//second parameter should be the cofactor matrix	
-	gray *res=matrix_multiplication_single(coefficient, matrix,rows,cols);
+	gray *res=matrix_multiplication_single(coefficient, matrix_transpose(matrix_cofactor(matrix,rows,cols),rows,cols),rows,cols);
 
 	return res;
+}
+
+/**
+** calc the cofactor of the matrix
+**/
+gray *matrix_cofactor(gray *matrix,int rows,int cols){
+
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
+
+	gray a11=get_matrix_pixel(matrix,0,0,cols);
+	gray a12=get_matrix_pixel(matrix,0,1,cols);
+	gray a13=get_matrix_pixel(matrix,0,2,cols);
+
+	gray a21=get_matrix_pixel(matrix,1,0,cols);
+	gray a22=get_matrix_pixel(matrix,1,1,cols);
+	gray a23=get_matrix_pixel(matrix,1,2,cols);
+
+	gray a31=get_matrix_pixel(matrix,2,0,cols);
+	gray a32=get_matrix_pixel(matrix,2,1,cols);
+	gray a33=get_matrix_pixel(matrix,2,2,cols);
+
+	gray m11=a22*a33 - a32*a23;
+	gray m12=-1*(a21*a33 - a31*a23);
+	gray m13=a21*a32 - a31*a22;
+
+	gray m21=-1*(a12*a33 - a32*a13);
+	gray m22=a11*a33 - a31*a13;
+	gray m23=-1*(a11*a32 - a31*a12);
+
+	gray m31=a12*a23 - a22*a13;
+	gray m32=-1*(a11*a23 - a21*a13);
+	gray m33=a11*a22 - a21*a12;
+
+	result_matrix[0*cols+0]=m11;
+	result_matrix[0*cols+1]=m12;
+	result_matrix[0*cols+2]=m13;
+
+	result_matrix[1*cols+0]=m21;
+	result_matrix[1*cols+1]=m22;
+	result_matrix[1*cols+2]=m23;
+
+	result_matrix[2*cols+0]=m31;
+	result_matrix[2*cols+1]=m32;
+	result_matrix[2*cols+2]=m33;
+
+	return result_matrix;
+
 }
 
 /**
@@ -177,6 +224,43 @@ void matrix_multiplication_single_test(){
 	gray *res=matrix_multiplication_single(value, det,dim,dim);
 	matrix_print(res,3,3);
 
+}
+
+/**
+** calc multiplication transpose
+**/
+gray *matrix_transpose(gray *matrix,int rows,int cols){
+
+	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows*cols);
+
+	gray a=get_matrix_pixel(matrix,0,0,cols);
+	gray b=get_matrix_pixel(matrix,0,1,cols);
+	gray c=get_matrix_pixel(matrix,0,2,cols);
+
+	gray d=get_matrix_pixel(matrix,1,0,cols);
+	gray e=get_matrix_pixel(matrix,1,1,cols);
+	gray f=get_matrix_pixel(matrix,1,2,cols);
+
+	gray g=get_matrix_pixel(matrix,2,0,cols);
+	gray h=get_matrix_pixel(matrix,2,1,cols);
+	gray i=get_matrix_pixel(matrix,2,2,cols);
+
+	result_matrix[0*cols+0]=a;
+	result_matrix[0*cols+1]=d;
+	result_matrix[0*cols+2]=g;
+
+	result_matrix[1*cols+0]=b;
+	result_matrix[1*cols+1]=e;
+	result_matrix[1*cols+2]=h;
+
+	result_matrix[2*cols+0]=c;
+	result_matrix[2*cols+1]=f;
+	result_matrix[2*cols+2]=i;
+
+	//fprintf(stderr,"transpose\n");
+	//matrix_print(result_matrix,rows,cols);	
+
+	return result_matrix;
 }
 
 /**
