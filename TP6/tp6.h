@@ -31,6 +31,10 @@ typedef struct tfilelist {
 // METHODS
 //read image
 pimage_type readimage(char* filepath);
+//read image pixel
+pixel_type *readimage_pixel(char* filepath,int row,int col);
+//read image pixel test
+void readimage_pixel_test();
 //print image
 void printimage(pimage_type image);
 //get pixel

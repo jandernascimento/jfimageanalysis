@@ -75,7 +75,7 @@ void initiateImageMean(pimage_type image_mean, pimage_type image_back){
 ** calc mean image
 **/
 pimage_type calculate_mean_image(filelist_type list){
-	fprintf(stderr,"\n****** CALCULATING MEAN *****\n");
+	//fprintf(stderr,"\n****** CALCULATING MEAN *****\n");
 	pimage_type image_back;
 
 	pimage_type image_mean=(pimage_type)malloc(sizeof(image_type));
@@ -372,7 +372,7 @@ gray *calculate_pb(pimage_type image){
     printf("%d %d \n", image->cols, image->rows);
     printf("%d\n",image->maxval);
 
-    filelist_type list_back = readbackgrounds("images/img_", 1);
+    filelist_type list_back = readbackgrounds("images/background320/background/img_", 115);
 
     pimage_type imagemean=calculate_mean_image(list_back);
 
@@ -383,40 +383,54 @@ gray *calculate_pb(pimage_type image){
 
 		gray *pixelmean=get_pixel_matrix(imagemean,j,i);
 
-		gray *i_minus_mean_transpose = matrix_subtraction(pixel,pixelmean,1,3); //i - i_m
+		gray *i_minus_mean = matrix_subtraction(pixel,pixelmean,3,1); //i - i_m
 
-		gray *i_minus_mean = matrix_transpose(i_minus_mean_transpose,1,3); //(i - i_m)^t
+		gray *i_minus_mean_transpose = matrix_transpose(i_minus_mean,3,1); //(i - i_m)^t
 
 		gray *sigma=matrix_covariance(imagemean,list_back,i,j);//sigma
 
-		matrix_print(sigma,3,3);
+		//printf("sigma matrix\n");
+		//matrix_print(sigma,3,3);
 		
 		gray *sigma_inverse=matrix_inverse(sigma,3,3);//sigma^{-1}
-		gray half=-1/2;//-1/2
+		gray half=-1.0/2.0;//-1/2
 
-		/*
-		matrix_print(sigma_inverse,3,1);
-		*/
 		//parameters for exp function		
 
 		gray *a1=matrix_multiplication(i_minus_mean_transpose,1,3,sigma_inverse,3,3);//a1=(i-i_m)^{t}*sigma^{-1}
 		
-		/*		
 		gray *a2=matrix_multiplication(a1,1,3,i_minus_mean,3,1);//a2=a1*(i-i_m)
+
 		gray *a3=matrix_multiplication_single(half,a2,1,1);//0.5*a2
 				
-		double exponent = exp(((double)*a3));
+		double exponent = exp((double)(*a3));
+	
+		double val=0.0;
 
 		//coefficient of exp function
-		double b1 = pow(2*PI,2/3); //2pi^{3/2}
-		double b2 = (double)matrix_determinant(sigma,3);//b2=|sigma|
-		double b3 = b1*sqrt(b2);//b3=b1*sqrt(b2)
-		double b4 = 1/(b3); //b3^{-1}
+		double b1 = pow(2*PI,3.0/2.0); //2pi^{3/2}
 
-		double c1 = b4*exponent;
-		*/
-		printf("\n\n");
-		exit(0);
+		double b2 = (double)matrix_determinant(sigma,3);//b2=|sigma|
+
+		double c1 = 0;
+
+		if(b2==0) {
+			//printf(" %i \n",val);
+			//continue;
+		}else{
+
+			double b3 = b1*sqrt(b2);//b3=b1*sqrt(b2)
+			double b4 = 1/(b3); //b3^{-1}
+			double c1 = b4*exponent;
+			val=c1;
+		}
+
+		if(val>0.2)
+			printf("%i\n",255);
+		else
+			printf("%i\n",0);
+
+		//exit(0);
 
 
       }  
@@ -465,6 +479,80 @@ void printimage(pimage_type image){
 		printf("%u ",get_pixel(image,j,i)->g);
 		printf("%u \n",get_pixel(image,j,i)->b);
       }
+}
+
+/**
+** Read image pixel from a file 
+**/
+pixel_type *readimage_pixel(char* filepath,int row,int col){
+    FILE* ifp;
+    gray* imagemap;
+    int ich1, ich2;
+    pimage_type image=(pimage_type)malloc(sizeof(image_type));  
+ 
+    ifp = fopen(filepath,"r");
+    if (ifp == NULL) {
+      fprintf(stderr,"Error openning the file, check if you specified -i. Path: %s\n", filepath);
+      exit(1);
+    }
+
+    image->path=filepath;
+
+    /* Lecture du Magic number */
+    ich1 = getc( ifp );
+    if ( ich1 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    ich2 = getc( ifp );
+    if ( ich2 == EOF )
+        pm_erreur( "EOF / erreur de lecture / nombre magique" );
+    if(ich2 != '6'){
+    	fprintf(stderr,"Invalid file type");
+        exit(1);
+    }
+
+    /* Lecture des dimensions */
+    image->cols = pm_getint( ifp );
+    image->rows = pm_getint( ifp );
+    image->maxval = pm_getint( ifp );
+
+    /* Allocation memoire  */
+
+    pixel_type *p=(pixel_type *)malloc(sizeof(pixel_type));
+
+    int pixel_number=3*image->cols*row+3*col;
+
+    fseek(ifp,pixel_number,SEEK_CUR);
+
+	
+    //imagemap = (gray *) malloc(DPC * image->cols * image->rows * sizeof(gray));
+    //image->stream=imagemap;
+
+/*
+	for(int j=0; j < 7 ; j++){
+		//int p=pm_getint(ifp);
+		unsigned char p=pm_getrawbyte(ifp);
+		printf("pixel -> %d\n",p);
+	}
+*/
+
+	p->r=pm_getrawbyte(ifp);
+	p->g=pm_getrawbyte(ifp);
+	p->b=pm_getrawbyte(ifp);
+
+    fclose(ifp);
+
+	return p;
+
+}
+
+/**
+** Read image pixel from a file test
+**/
+void readimage_pixel_test(){
+
+	pixel_type *p=readimage_pixel("images/background320/finalbin.ppm",5,2);
+	printf("pixel: %i, %i, %i\n",p->r,p->g,p->b);
+
 }
 
 /**
@@ -527,7 +615,8 @@ pimage_type readimage(char* filepath){
 **/
 void calculate_pb_test(){
 
-	pimage_type image = readimage("images/img_000000.ppm");
+	pimage_type image = readimage("images/background320/img_000053.ppm");
+	//pimage_type image = readimage("images/background320/background/img_000007.ppm");
 
 	calculate_pb(image);
 
@@ -842,7 +931,7 @@ gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j
 ** test covariance matrix
 **/
 void matrix_covariance_test(){
-	fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
+	//fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
 	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
 	//pimage_type image_mean=calculate_mean_image(list_back);
 
@@ -926,7 +1015,7 @@ int main(int argc, char* argv[]){
 
 
 	//jander test 
-	//*	
+	/*	
 	fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
@@ -939,8 +1028,9 @@ int main(int argc, char* argv[]){
 	matrix_multiplication_test();
 	fprintf(stderr,"Test 6\n");
 	matrix_transpose_test();
-	fprintf(stderr,"Test 7\n");
-	calculate_pb_test();
+	fprintf(stderr,"Test 7\n");*/
+	//calculate_pb_test();
+	readimage_pixel_test();
 	// */
 
 }
