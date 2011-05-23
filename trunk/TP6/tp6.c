@@ -5,26 +5,42 @@
 /**
 ** read background images
 **/
-filelist_type readbackgrounds(char *path, int n){
+filelist_type readbackgrounds(char *path,char *pathbin, int n){
 	filelist_type filelist;
 	filelist.size = n;
 	filelist.paths=(char*)malloc(sizeof(char*)*n);
+	filelist.pathsbin=(char*)malloc(sizeof(char*)*n);
 	char *i_str=(char*)malloc(sizeof(char)*4);	
 
 	for(int i=0;i<=n;i++){ 					
-		filelist.paths[i]=(char*)malloc(sizeof(char)*70);
+		filelist.paths[i]=(char*)malloc(sizeof(char)*100);
+		filelist.pathsbin[i]=(char*)malloc(sizeof(char)*100);
 
 		strcpy(filelist.paths[i], path);
+		strcpy(filelist.pathsbin[i], pathbin);
+
 		strcat(filelist.paths[i],"000\0"); //we always concatenate with these zeros
-		if (i<10)
+		strcat(filelist.pathsbin[i],"000\0"); //we always concatenate with these zeros
+
+		if (i<10){
 			strcat(filelist.paths[i],"00\0");
-		else if (i>=10 && i<100)
+			strcat(filelist.pathsbin[i],"00\0");
+
+		}else if (i>=10 && i<100){
 			strcat(filelist.paths[i],"0\0");
-		
+			strcat(filelist.pathsbin[i],"0\0");
+		}
+
 		sprintf(i_str,"%i\0",i);//converting from int to string		
+
 		strcat(filelist.paths[i],"\0");
+		strcat(filelist.pathsbin[i],"\0");
+
 		strcat(filelist.paths[i],i_str);
-		strcat(filelist.paths[i],".ppm\0");	
+		strcat(filelist.pathsbin[i],i_str);
+
+		strcat(filelist.paths[i],".ppm\0");
+		strcat(filelist.pathsbin[i],".ppm\0");		
 	}
 
 	/*/testing the structure
@@ -132,7 +148,7 @@ pimage_type calculate_mean_image(filelist_type list){
 ** test mean image method
 **/
 void calculate_mean_image_test(){
-	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
+	filelist_type list_back = readbackgrounds("background_substraction/img_","background_substraction/img_", 2);
 
 	calculate_mean_image(list_back);
 }
@@ -368,11 +384,11 @@ gray *get_pixel_matrix(pimage_type image,int j, int i){
 **/
 gray *calculate_pb(pimage_type image){
 
-    printf("P3\n");
+    printf("P1\n");
     printf("%d %d \n", image->cols, image->rows);
-    printf("%d\n",image->maxval);
+    //printf("%d\n",image->maxval);
 
-    filelist_type list_back = readbackgrounds("images/background320/background/img_", 115);
+    filelist_type list_back = readbackgrounds("images/background320/background/img_","images/background320bin/background/img_", 15);
 
     pimage_type imagemean=calculate_mean_image(list_back);
 
@@ -425,10 +441,10 @@ gray *calculate_pb(pimage_type image){
 			val=c1;
 		}
 
-		if(val>0.2)
-			printf("%i\n",255);
-		else
+		if(val>0.01)
 			printf("%i\n",0);
+		else
+			printf("%i\n",1);
 
 		//exit(0);
 
@@ -615,8 +631,8 @@ pimage_type readimage(char* filepath){
 **/
 void calculate_pb_test(){
 
-	pimage_type image = readimage("images/background320/img_000053.ppm");
-	//pimage_type image = readimage("images/background320/background/img_000007.ppm");
+	//pimage_type image = readimage("images/background320/img_000053.ppm");
+	pimage_type image = readimage("images/background320/img_000476.ppm");
 
 	calculate_pb(image);
 
@@ -768,30 +784,6 @@ void matrix_multiplication_test(){
 	m2[dim2*2+0]=8;
 	m2[dim2*2+1]=5;
 
-	/*m1[dim*0+0]=1;
-	m1[dim*0+1]=2;
-	m1[dim*0+2]=1;
-
-	m1[dim*1+0]=3;
-	m1[dim*1+1]=4;
-	m1[dim*1+2]=5;
-
-	m1[dim*2+0]=5;
-	m1[dim*2+1]=6;
-	m1[dim*2+2]=7;
-
-	m2[dim*0+0]=1;
-	m2[dim*0+1]=2;
-	m2[dim*0+2]=1;
-
-	m2[dim*1+0]=3;
-	m2[dim*1+1]=4;
-	m2[dim*1+2]=5;
-
-	m2[dim*2+0]=5;
-	m2[dim*2+1]=6;
-	m2[dim*2+2]=7;*/
-
 	printf("Matrix 1:\n");
 	matrix_print(m1,4,3);
 	printf("Matrix 2:\n");
@@ -876,11 +868,15 @@ gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j
 			//for each background image, calculate covariance matrix for each pixel and acumulate 
 			for(int m=0;m<=list.size;m++){ 
 				//fprintf(stderr,"\n%s\n", list.paths[m]);
-		    	image_back=readimage(list.paths[m]);		
+		    	//image_back=readimage(list.paths[m]);		
 				//fprintf(stderr,"leu\n");
 
 				//i_n
-				pixel_type *pixel_back=get_pixel(image_back,j,i);
+				//fprintf(stderr,"filepath: %s\n",list.pathsbin[m]);
+				//pixel_type *pixel_back=get_pixel(image_back,j,i);
+				pixel_type *pixel_back=readimage_pixel(list.pathsbin[m],i,j);
+				//printf("pixel: %i, %i, %i\n",pixel_back->r,pixel_back->g,pixel_back->b);
+				//pixel_type *pixel_back=readimage_pixel(list.pathsbin[m],i,j);//get_pixel(image_back,j,i);
 				in_matrix=convert_pixelTypeToGray(pixel_back);
 				//fprintf(stderr,"\n  pixel: r:%3.0f g:%3.0f b:%3.0f \n",in_matrix[0],in_matrix[1],in_matrix[2]);
 				//i_m
@@ -910,7 +906,7 @@ gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j
 				free(transp_matrix);
 				free(mult_matrix);
 
-		    	free(image_back);
+		    	//free(image_back);
 	   		}
 
     		//calculating the mean of the covariance matrix
@@ -935,7 +931,7 @@ void matrix_covariance_test(){
 	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
 	//pimage_type image_mean=calculate_mean_image(list_back);
 
-	filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
+	filelist_type list_back = readbackgrounds("background_substraction/img_","background_substraction/img_", 2);
 	pimage_type image_mean=calculate_mean_image(list_back);
 
 	//each pixel of the image
@@ -1029,8 +1025,8 @@ int main(int argc, char* argv[]){
 	fprintf(stderr,"Test 6\n");
 	matrix_transpose_test();
 	fprintf(stderr,"Test 7\n");*/
-	//calculate_pb_test();
-	readimage_pixel_test();
+	calculate_pb_test();
+	//readimage_pixel_test();
 	// */
 
 }
