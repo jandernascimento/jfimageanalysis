@@ -42,20 +42,7 @@ filelist_type readbackgrounds(char *path,char *pathbin, int n){
 		strcat(filelist.paths[i],".ppm\0");
 		strcat(filelist.pathsbin[i],".ppm\0");		
 	}
-
-	/*/testing the structure
-	FILE* ifp;
-	for(int i=0;i<=n;i++){ 
-		fprintf(stderr,"%s\n", filelist.paths[i]);
-    	ifp = fopen(filelist.paths[i],"r");
-    	if (ifp == NULL) {
-    	  fprintf(stderr,"Error openning the file, check if you specified -i. Path: %s\n", filelist.paths[i]);
-    	  exit(1);
-    	}		
-    }
-    fclose(ifp);
-    */
-    
+  
 	return filelist;
 }
 
@@ -296,7 +283,6 @@ gray *matrix_subtraction(gray *matrix1,gray *matrix2,int rows,int cols){
 ** calc matrix multiplication
 **/
 gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int rows2,int cols2){
-
 	gray *result_matrix=(gray *)malloc(sizeof(gray)*rows1*cols2);
 
 	if(cols1!=rows2){
@@ -310,7 +296,7 @@ gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int 
 			result_matrix[row*cols2+col]=0;
 
 			for(int mcol=0;mcol<cols1;mcol++){
-				//printf("--> %f * %f = %f \n",get_matrix_pixel(matrix1,row,mcol,cols1),get_matrix_pixel(matrix2,mcol,col,cols2),get_matrix_pixel(matrix1,row,mcol,cols1)*get_matrix_pixel(matrix2,mcol,col,cols2));
+				//fprintf(stderr,"--> %f * %f = %f \n",get_matrix_pixel(matrix1,row,mcol,cols1),get_matrix_pixel(matrix2,mcol,col,cols2),get_matrix_pixel(matrix1,row,mcol,cols1)*get_matrix_pixel(matrix2,mcol,col,cols2));
 				result_matrix[row*cols2+col]=result_matrix[row*cols2+col]+get_matrix_pixel(matrix1,row,mcol,cols1)*get_matrix_pixel(matrix2,mcol,col,cols2);
 			}
 			//exit(0);
@@ -319,8 +305,6 @@ gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int 
 	}
 
 	return result_matrix;
-	
-
 }
 
 /**
@@ -329,7 +313,7 @@ gray *matrix_multiplication(gray *matrix1,int rows1,int cols1,gray *matrix2,int 
 void matrix_print(gray* matrix,int rows, int cols){
 	for(int i=0;i<rows;i++){
 		for(int j=0;j<cols;j++){		
-			fprintf(stderr," %.3f ",matrix[i*cols+j]);	
+			fprintf(stderr," %.5f ",matrix[i*cols+j]);	
 		}
 		fprintf(stderr,"\n");
 	}
@@ -384,11 +368,16 @@ gray *get_pixel_matrix(pimage_type image,int j, int i){
 **/
 gray *calculate_pb(pimage_type image){
 
+    //fprintf(stderr,"\n****** CALCULATING Pb *****\n");
     printf("P1\n");
     printf("%d %d \n", image->cols, image->rows);
     //printf("%d\n",image->maxval);
 
-    filelist_type list_back = readbackgrounds("images/background320/background/img_","images/background320bin/background/img_", 15);
+
+    filelist_type list_back = readbackgrounds("background320/background/img_", "background320bin/background/img_", 115);
+
+	//imagem de teste 5x5
+	//filelist_type list_back = readbackgrounds("background_substraction/img_", 2);
 
     pimage_type imagemean=calculate_mean_image(list_back);
 
@@ -401,32 +390,74 @@ gray *calculate_pb(pimage_type image){
 
 		gray *i_minus_mean = matrix_subtraction(pixel,pixelmean,3,1); //i - i_m
 
+		//fprintf(stderr,"\n  pixel: r:%3.0f g:%3.0f b:%3.0f \n",pixel[0],pixel[1],pixel[2]);
+		//fprintf(stderr,"m pixel: r:%3.0f g:%3.0f b:%3.0f \n",pixelmean[0],pixelmean[1],pixelmean[2]);
+		//fprintf(stderr,"\nd pixel: r:%3.3f g:%3.3f b:%3.3f \n",i_minus_mean[0],i_minus_mean[1],i_minus_mean[2]);
+
 		gray *i_minus_mean_transpose = matrix_transpose(i_minus_mean,3,1); //(i - i_m)^t
 
 		gray *sigma=matrix_covariance(imagemean,list_back,i,j);//sigma
 
-		//printf("sigma matrix\n");
+		//fprintf(stderr,"covariance\n");
 		//matrix_print(sigma,3,3);
 		
 		gray *sigma_inverse=matrix_inverse(sigma,3,3);//sigma^{-1}
+
+		//raquel gray half=(-1.0)*(1.0/2.0);//-1/2
 		gray half=-1.0/2.0;//-1/2
 
+		//fprintf(stderr,"inverse of covariance\n");		
+		//matrix_print(sigma_inverse,3,3);
+		
 		//parameters for exp function		
-
 		gray *a1=matrix_multiplication(i_minus_mean_transpose,1,3,sigma_inverse,3,3);//a1=(i-i_m)^{t}*sigma^{-1}
+		//fprintf(stderr,"a1\n");		
+		//matrix_print(a1,1,3);
 		
 		gray *a2=matrix_multiplication(a1,1,3,i_minus_mean,3,1);//a2=a1*(i-i_m)
 
-		gray *a3=matrix_multiplication_single(half,a2,1,1);//0.5*a2
+		gray a2v = *a2;
+		free(a2);
+		//fprintf(stderr,"a2:%3.3f half:%3.3f\n",a2v,half);
+		gray a3 = half * a2v;
+		//fprintf(stderr,"a3:%3.3f\n",a3);
+
+		//jander gray *a3=matrix_multiplication_single(half,a2,1,1);//0.5*a2
 				
-		double exponent = exp((double)(*a3));
+		double exponent = exp(((double)a3));
+		//fprintf(stderr,"e^a3:%3.3f\n",exponent);
+
+		//jander double exponent = exp((double)(*a3));
 	
 		double val=0.0;
 
 		//coefficient of exp function
-		double b1 = pow(2*PI,3.0/2.0); //2pi^{3/2}
+
+		double b1 = pow(2.0*PI,3.0/2.0); //2pi^{3/2}
+		//fprintf(stderr,"b1:%3.3f\n",b1);
+
+		//jander double b1 = pow(2*PI,3.0/2.0); //2pi^{3/2}
 
 		double b2 = (double)matrix_determinant(sigma,3);//b2=|sigma|
+		//fprintf(stderr,"b2:%3.3f\n",b2);
+		double b3 = b1*sqrt(b2);//b3=b1*sqrt(b2)
+		//fprintf(stderr,"b3:%3.3f\n",b3);
+		double b4 = 1/(b3); //b3^{-1}
+		//fprintf(stderr,"b4:%3.3f\n",b4);
+
+
+/*raquel
+		double c1 = b4*exponent;
+		fprintf(stderr,"pixel %d %d - c1:%3.3f\n",i,j,c1);
+		
+		free(a1);
+		free(sigma_inverse);
+		free(sigma);
+		free(i_minus_mean_transpose);
+		free(i_minus_mean);
+		free(pixelmean);
+		free(pixel);
+      } */
 
 		double c1 = 0;
 
@@ -446,13 +477,10 @@ gray *calculate_pb(pimage_type image){
 		else
 			printf("%i\n",1);
 
-		//exit(0);
-
 
       }  
+
     }
-
-
 }
 
 /**
@@ -631,11 +659,12 @@ pimage_type readimage(char* filepath){
 **/
 void calculate_pb_test(){
 
-	//pimage_type image = readimage("images/background320/img_000053.ppm");
-	pimage_type image = readimage("images/background320/img_000476.ppm");
+
+	//pimage_type image = readimage("background_substraction/img_000000.ppm");
+	//pimage_type image = readimage("background_substraction/img_000053.ppm");
+	pimage_type image = readimage("background320/img_000053.ppm");
 
 	calculate_pb(image);
-
 }
 
 /**
@@ -784,14 +813,14 @@ void matrix_multiplication_test(){
 	m2[dim2*2+0]=8;
 	m2[dim2*2+1]=5;
 
-	printf("Matrix 1:\n");
+	fprintf(stderr,"Matrix 1:\n");
 	matrix_print(m1,4,3);
-	printf("Matrix 2:\n");
+	fprintf(stderr,"Matrix 2:\n");
 	matrix_print(m2,3,2);
 
 	gray *res=matrix_multiplication(m1,4,3,m2,3,2);
 
-	printf("Result:\n");
+	fprintf(stderr,"Result:\n");
 	matrix_print(res,4,2);
 
 }
@@ -819,7 +848,7 @@ void matrix_determinant_test(){
 
 	free(det);
 
-	printf("Determinant -->%i\n",val);
+	fprintf(stderr,"Determinant -->%i\n",val);
 }
 
 /**
@@ -842,6 +871,19 @@ void acumulate_matrix(gray *covar_matrix,gray *mult_matrix, int cols, int rows){
    	for(int i=0; i < rows; i++)
    		for(int j=0; j < cols ; j++)
 			covar_matrix[i*cols+j] += mult_matrix[i*cols+j]; 
+}
+
+/**
+** rounding
+**/
+double rounding(double val,int dec){
+	//double newv = floorf(val * 100000 +  0.5) / (100000);
+	double newv = ( floorf(val * 10000 ) ) / (10000.0);
+
+	
+	//fprintf(stderr,"\ndec:%d value:%f rounded:%f\n",dec,val,newv);
+
+	return newv;
 }
 
 /**
@@ -912,7 +954,7 @@ gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j
     		//calculating the mean of the covariance matrix
 		   	for(int i=0; i < 3; i++)
 		   		for(int j=0; j < 3 ; j++)
-					covar_matrix[i*3+j] = covar_matrix[i*3+j] / (list.size+1); //+1 because the first image in the folder is 000000
+					covar_matrix[i*3+j] = rounding(covar_matrix[i*3+j] / (list.size+1), 3); //+1 because the first image in the folder is 000000
 			//fprintf(stderr,"mean of the covariance matrix\n");
 			//matrix_print(covar_matrix,3,3);
 //     	}
@@ -928,6 +970,7 @@ gray * matrix_covariance(pimage_type image_mean,filelist_type list, int i, int j
 **/
 void matrix_covariance_test(){
 	//fprintf(stderr,"\n****** CALCULATING COVARIANCE MATRIX *****\n");
+	
 	//filelist_type list_back = readbackgrounds("background_substraction/background/img_", 10); 
 	//pimage_type image_mean=calculate_mean_image(list_back);
 
@@ -941,6 +984,13 @@ void matrix_covariance_test(){
 			matrix_covariance(image_mean, list_back, i, j);
 
 	free(image_mean);	
+}
+
+/**
+** generate a binary image that separates the foreground of the background
+**/
+void generate_binary_image(){
+
 }
 
 /** Parser method **/
@@ -1012,7 +1062,7 @@ int main(int argc, char* argv[]){
 
 	//jander test 
 	/*	
-	fprintf(stderr,"Test 1\n");
+	/*fprintf(stderr,"Test 1\n");
 	matrix_determinant_test();
 	fprintf(stderr,"Test 2\n");
 	matrix_subtraction_test();
@@ -1023,10 +1073,21 @@ int main(int argc, char* argv[]){
 	fprintf(stderr,"Test 5\n");
 	matrix_multiplication_test();
 	fprintf(stderr,"Test 6\n");
-	matrix_transpose_test();
-	fprintf(stderr,"Test 7\n");*/
+	matrix_transpose_test();*/
+	fprintf(stderr,"Test 7\n");
 	calculate_pb_test();
 	//readimage_pixel_test();
 	// */
 
+
+	/*double val = 684.666666666667;
+	fprintf(stderr,"\nvalue:%f\n",val);
+	double nearest = floorf(val * 100000); // +  0.5) ;// / 100000;
+	fprintf(stderr,"\nnearest:%f\n",nearest);
+	int inearest = (int) nearest;
+	fprintf(stderr,"\nnearest:%d\n",inearest);
+	//nearest = inearest + 0.5;
+	//fprintf(stderr,"\nnearest:%f\n",nearest);
+	nearest = inearest / 100000.0;
+	fprintf(stderr,"\nnearest:%f\n",nearest);*/
 }
