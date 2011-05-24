@@ -83,9 +83,34 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 \subsection{Effect of the threshold}
 
+	We observed that the lower the threshold is, the better is the result achieved. In the Figure \ref{fig:threshold} we can see the effect of different thresholds (denoted by T) with the same number of background images (115).
+
+	We used the threshold in the following way:
+
+	\begin{lstlisting}[frame=single]
+		T:=0.01
+		IF p(i)>T
+			pixel belongs to background
+		ELSE
+			pixel belongs to foreground
+		
+	\end{lstlisting}
+
+	\begin{figure}[H]
+		  \centering
+		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000348}}
+		  \subfloat[T=0,5]{\includegraphics[width=0.3\textwidth]{img/result_348_115-50}}
+		  \subfloat[T=0,1]{\includegraphics[width=0.3\textwidth]{img/result_348_115-10}}
+		  \subfloat[T=0,01]{\includegraphics[width=0.3\textwidth]{img/result_348_115}}
+		  \caption{Effect of the threshold (T)}
+		  \label{fig:threshold}
+	\end{figure}
+
 \subsection{Effect of the number of background images}
 
 	We observed that the more static background images you use to build the statistical model, the better the result is. Which means that the pixels will be more correctly classified in their segments. We ilustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
+	
+	However, the time consuming of the algorithm increases proportionally of the number of background images used to build the statistic model.
 
 	\begin{figure}[H]
 		  \centering
@@ -118,7 +143,18 @@ With the previous methods was possible to build the Gaussian model for all pixel
 	\end{figure}
 	
 
+\subsection{Comparison between the effects of the threshold and the number of backgroung image}
+	In the section above we said that the time consuming of the algorithm increases proportionally of the number of background images used to build the statistic model. To deal with this issue, it is possible to play with both these parameters that influence the algorithm. In the Figure \ref{thresxback} we show an example where both parameters are different. The image \ref{figure1} is the result of applying the algorithm with 115 background images, and a threshold equal to 0,06. To optimize the time, you could decrease the number of backgroung images to 5 and also decrease the threshold to 0,01 (as in image \ref{figure2}), and the result will be equivalent.
 
+	\begin{figure}[H]
+		  \centering
+		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000348}}
+		  \subfloat[N=115 T=0,06]{\label{figure1}\includegraphics[width=0.3\textwidth]{img/result_348_115-6}}
+		  \subfloat[N=5 T=0,01]{\label{figure2}\includegraphics[width=0.3\textwidth]{img/result_348_5}}
+		  \caption{Effect of both threshold (T) and number of backgrounds (N)}
+		  \label{thresxback}
+	\end{figure}
+	
 \section{Issues}
 	This method consumes much memory. In order to build the Gaussian model, for each pixel of the foreground image all the background images are read, and each background is an image with dimensions 1224x1624, which leads to 1.987.776 pixels in memory for one single image. Since we are using all the 115 background images, in the end of the day it is necessary to keep in memory 228.594.240 pixels!
 
@@ -127,11 +163,6 @@ With the previous methods was possible to build the Gaussian model for all pixel
 	To solve both problems of memory requirement and computation time, we changed our read image method to open a file and read the RGB values of only one pixel, instead of read and store all the pixels in a matrix, by calculating the position of the pixel inside a binary image file and positioning the file cursor in the exact pixel position. That change made possible to apply the method and achieve the results describe above.
 
 	This was possible just because we converted the given images in a binary format of PPM, instead of the original PNG format.
-
-	limpar o codigo
-	testar aplicando o blur antes
-	colocar imagens de diferentes thresholds
-
 
 \section{How to run?}
 

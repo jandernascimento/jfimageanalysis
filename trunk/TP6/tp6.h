@@ -92,7 +92,5 @@ void matrix_covariance_test();
 gray *convert_pixelTypeToGray(pixel_type *pixel_back);
 //acumulate two matrices in the first one
 void acumulate_matrix(gray *covar_matrix,gray *mult_matrix, int cols, int rows);
-//generate a binary image that separates the foreground of the background
-void generate_binary_image();
 //rounding the decimal part of a float
 double rounding(double val,int dec);
