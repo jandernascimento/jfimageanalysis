@@ -59,7 +59,7 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 
 \section{Results}
-	We tested the statical model with the 5 given foreground images. For each pixel, based on the model, we can determine if the pixel belongs either to a foreground or to a background of the image.
+	We tested the statistical model with the 5 given foreground images. For each pixel, based on the model, we can determine if the pixel belongs either to a foreground or to a background of the image.
 
 	Given an input image with a foreground, we create a binary image with two regions: foreground and background. What determines which region the pixel belongs to is the probability given by the Gaussian model. To do so, it is needed to threshold the probability for each pixel.
 
@@ -108,9 +108,9 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 \subsection{Effect of the number of background images}
 
-	We observed that the more static background images you use to build the statistical model, the better the result is. Which means that the pixels will be more correctly classified in their segments. We ilustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
+	We observed that the more static background images you use to build the statistical model, better the result is. Which means that the pixels will be more correctly classified in their segments. We illustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
 	
-	However, the time consuming of the algorithm increases proportionally of the number of background images used to build the statistic model.
+	However, the computational cost increases proportionally with the number of background images used to build the statistic model.
 
 	\begin{figure}[H]
 		  \centering
@@ -143,8 +143,8 @@ With the previous methods was possible to build the Gaussian model for all pixel
 	\end{figure}
 	
 
-\subsection{Comparison between the effects of the threshold and the number of backgroung image}
-	In the section above we said that the time consuming of the algorithm increases proportionally of the number of background images used to build the statistic model. To deal with this issue, it is possible to play with both these parameters that influence the algorithm. In the Figure \ref{thresxback} we show an example where both parameters are different. The image \ref{figure1} is the result of applying the algorithm with 115 background images, and a threshold equal to 0,06. To optimize the time, you could decrease the number of backgroung images to 5 and also decrease the threshold to 0,01 (as in image \ref{figure2}), and the result will be equivalent.
+\subsection{Comparison between the effects of the threshold and the number of background image}
+	As said before, the computational cost of the algorithm increases proportionally with number of background images used to build the statistical model. To deal with this issue, it is possible to play with both parameters to improve the results. In the Figure \ref{thresxback} we show an example where both parameters are different. The image \ref{figure1} is the result of applying the algorithm with 115 background images, and a threshold equal to 0,06. To optimize the time, you could decrease the number of background images to 5 and also decrease the threshold to 0,01 (as in image \ref{figure2}), and the result will be equivalent.
 
 	\begin{figure}[H]
 		  \centering
@@ -158,7 +158,7 @@ With the previous methods was possible to build the Gaussian model for all pixel
 \section{Issues}
 	This method consumes much memory. In order to build the Gaussian model, for each pixel of the foreground image all the background images are read, and each background is an image with dimensions 1224x1624, which leads to 1.987.776 pixels in memory for one single image. Since we are using all the 115 background images, in the end of the day it is necessary to keep in memory 228.594.240 pixels!
 
-	As a consequence, the computation requireted to separate foreground and background is very high. The standard implementation we used so far to read ppm images was too slow to apply this method. Our read method by default reads the whole image and stores its pixels in a matrix(in memory), which we can use for any computation.
+	As a consequence, the computation required to separate foreground and background is very high. The standard implementation we used so far to read ppm images was too slow to apply this method. Our read method by default reads the whole image and stores its pixels in a matrix(in memory), which we can use for any computation.
 
 	To solve both problems of memory requirement and computation time, we changed our read image method to open a file and read the RGB values of only one pixel, instead of read and store all the pixels in a matrix, by calculating the position of the pixel inside a binary image file and positioning the file cursor in the exact pixel position. That change made possible to apply the method and achieve the results describe above.
 
