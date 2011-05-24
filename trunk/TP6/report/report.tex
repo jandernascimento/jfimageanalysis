@@ -14,7 +14,7 @@
 
 \begin{document}
 
-\title{Image Analysis - TP5 - Lucas Kanade Tracker}
+\title{Image Analysis - TP6 - Background Subtraction}
 
 \author{Jander Nascimento, 
 \and Raquel Oliveira}
@@ -23,134 +23,103 @@
 
 \section{Introduction}
 
-	Lucas Kanade is an algorithm that looks for the optimal parameters $\Delta_i$ and $\Delta_j$ that minimize the following equation:
+The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyze. Image segmentation is the process of assigning a label to every pixel in an image such that pixels with the same label share certain visual characteristics.\cite{introduction}
 
-	\begin{figure}[H]
-		  \centering
-		  \subfloat{\includegraphics[width=0.4\textwidth]{img/form1.png}}
-		  \caption{}
-		  \label{fig:formula1}
+Segmentation is mostly used for object recognition, differentiate those objects from the background, image compression or image editing.
+
+In this practical work, we implemented an approach for image segmentation with the purpose of background subtraction, with which is possible to identify the foreground region in an image given a set of images of the background.
+
+
+\section{The method}
+
+In this exercise we use a Gaussian model to build a statistical model of the background for each pixel in the image. For each colored pixel \textit{i}, i.e., \textit{i=($i_r, i_g, i_b$)}, the associated color probability density writes:
+
+	\begin{figure} [H]
+		\centering
+		\includegraphics[scale=0.5]{img/formula}
+		\caption{Gaussian model\label{formula}}
 	\end{figure}
 
-	This equation can be solved using a classical mean squared method, which results in the following equation:
+We implemented this formula step by step, first creating all the methods that would be useful to generate the model, as subtraction and multiplication between matrices; transpose, inverse and determinant of a matrix and the covariance matrix.
+
+We calculate the mean matrix once, in the beginning of the method. Over there we stored the mean value for each pixel (\textit{$i_m$} in the formula above) with respect to their colors in all the background images considered.
+
+With the previous methods was possible to build the Gaussian model for all pixels in the images in the background. We were given 115 images of the static background, to build the model (Figure \ref{background}).
+
+	\begin{figure} [H]
+		\centering
+		\includegraphics[scale=0.3]{img/img_000000}
+		\caption{Example of background\label{background}}
+	\end{figure}
+
+
+\section{Results}
+	We tested the statical model with the 5 given foreground images. For each pixel, based on the model, we can determine if the pixel belongs either to a foreground or to a background of the image.
+
+	Given an input image with a foreground, we create a binary image with two regions: foreground and background. What determines which region the pixel belongs to is the probability given by the Gaussian model. To do so, it is needed to threshold the probability for each pixel.
+
+	The probability that a pixel belongs to a background is given by the formula described in Figure \ref{formula}. And the probability that a pixel belongs to a foreground is:
+
+	\begin{equation}
+	 p_f(i)=1-p_b(i)  
+	\end{equation}
+
+	We tested some thresholds to determine which one would be more suitable to properly distribute the pixels in the 2 regions, and the value that gave better results was 0.01. So, if {$p_b(i)>0,01$}, means that the pixel belongs to the background (which we painted in black). Otherwise, it belongs to the foreground (which we painted in white). 
+
+	We can see in Figure \ref{fig:img_000053} the results of the algorithm for a image with a foreground. To obtain this result, all the 115 background images were used to built the statistical model.
 
 	\begin{figure}[H]
 		  \centering
-		  \subfloat{\includegraphics[width=1.0\textwidth]{img/form2.png}}
-		  \caption{}
-		  \label{fig:formula2}
-	\end{figure}	
+		  \subfloat[Original Image]{\includegraphics[width=0.5\textwidth]{img/img_000053}}                
+		  \subfloat[Binary Image]{\includegraphics[width=0.5\textwidth]{img/result_53_115}}
+		  \caption{Background Subtraction}
+		  \label{fig:img_000053}
+	\end{figure}
 
-	In this practical work, we implemented the Lucas Kanade algorithm in order to track as object in a series of 139 images. First we implemented the interpolation function, then we implemented the algorithm itself to calculate $\Delta_i$ and $\Delta_j$, and finally we applied the algorithm in a series of images where an object is moving, and we placed a bound-box around the object in each image. The results will be explained in the following sections.
+\subsection{Effect of the number of background images}
 
-
-\section{Interpolation}
-
-	Bilinear Interpolation is a method to generate a new image (given a initial image {\it I}) where the value of the pixels is a sum of the intensities of its four neighbors, weighted by the distance to the neighbor's center.
-
-	For each pixel {\it(i,j)} of the original image {\it I}, the new pixel in the interpolated image {\it $I_w$} is calculated in the following manner:
-
-	\begin{equation}
-		I_w(i+\Delta_i^e , j+\Delta_j^e) += (1-\Delta_i^f)(1-\Delta_j^f)I(i,j)
-	\end{equation}
-	\begin{equation}
-		I_w(i+\Delta_i^e+1 , j+\Delta_j^e) += \Delta_i^f(1-\Delta_j^f)I(i,j)
-	\end{equation}
-	\begin{equation}
-  		I_w(i+\Delta_i^e , j+\Delta_j^e+1) += (1-\Delta_i^f)\Delta_j^fI(i,j)
-	\end{equation}
-	\begin{equation}
-		I_w(i+\Delta_i^e+1 , j+\Delta_j^e+1) += \Delta_i^f \Delta_j^fI(i,j)
-	\end{equation}
-
-	where: 
-		\begin{itemize}
-			\item {\it $\Delta_i$} is the translation along {\it i}
-			\item {\it $\Delta_j$} is the translation along {\it j} 
-			\item {\it $\Delta^e$} is the integer part of the translation (ie: $\Delta=-5.3$, then ${\it \Delta^e}=-5$
-			\item {\it $\Delta^f$} is the decimal part of the translation (ie: $\Delta=-5.3$, then ${\it \Delta^f}=0.3$
-		\end{itemize}
-
-	In the Figure \ref{fig:interp} we can see the result of an interpolation. It is possible to observe that the interpolated image, compared with the original image, is a little deformed, due to the fact that the pixels in the new image are interpolated with their neighbors.
-
+	We observed that the more static background images you use to build the statistical model, the better the result is. Which means that the pixels will be more correctly classified in their segments. We ilustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
 
 	\begin{figure}[H]
 		  \centering
-		  \subfloat[Original image]{\includegraphics[width=0.4\textwidth]{img/taz.png}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000053}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_5}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_15}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_115}}
 		  \hspace{0.1cm}
-		  \subfloat[Interpolated image ($\Delta_i=12.8   \Delta_j=-6.3$)]{\includegraphics[width=0.4\textwidth]{img/taz0interp.png}}
-		  \caption{Interpolation of an image}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000147}}                
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_5}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_15}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_115}}
 		  \hspace{0.1cm}
-		  \label{fig:interp}
-	\end{figure}		
-
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000348}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_5}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_15}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_115}}
+		  \hspace{0.1cm}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000466}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_5}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_15}}
+		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_115}}
+		  \hspace{0.1cm}
+		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000476}}
+		  \subfloat[Binary Image N=5]{\includegraphics[width=0.3\textwidth]{img/result_476_5}}
+		  \subfloat[N=15]{\includegraphics[width=0.3\textwidth]{img/result_476_15}}
+		  \subfloat[N=115]{\includegraphics[width=0.3\textwidth]{img/result_476_115}}
+		  \caption{Effect of the number of background images (N)}
+		  \label{fig:nback}
+	\end{figure}
 	
 
-	After apply a translation ($\Delta_i,\Delta_j$) in an image, if we apply the inverse of the translation ($-\Delta_i,-\Delta_j$) on the same interpolated image we will not get the exactly the original image. This behavior can be seen in the Figure \ref{fig:inverseinterp}. Although the pixels return to their original position in the image, their intensities are not properly recovered. Another point to observe is that, when parts of the image are cut by the interpolation (for instance, the foot of Taz), they are not recovered either, due to the fact that they are not in the interpolated image anymore.
 
-	\begin{figure}[H]
-		  \centering
-		  \subfloat[Original image]{\includegraphics[width=0.3\textwidth]{img/taz.png}}
-		  \hspace{0.1cm}
-		  \subfloat[Interpolated image ($\Delta_i=12.8   \Delta_j=-6.3$)]{\includegraphics[width=0.3\textwidth]{img/taz0interp.png}}
-		  \hspace{0.1cm}
-		  \subfloat[Inverse of the interpolation]{\includegraphics[width=0.3\textwidth]{img/taz0interp_inverse.png}}
-		  \caption{Inverse of the Interpolation}
-		  \label{fig:inverseinterp}
-	\end{figure}	
+\section{Issues}
+	conversao para ppm
+	memoria
+	mudar metodo de leitura
+	ver se da para encaixar mais textos dos arquivos que baixei
+	limpar o codigo
+	testar aplicando o blur antes
 
-
-
-\section{Tracking an object}
-
-	Here it is a case of Lucas Kanade application. We start from a template and an initial image (in Figure \ref{fig:template}). We calculate the error between the template and a part of the original image several times. At each time, using the equation described in Figure \ref{fig:formula2}, we calculate $\delta_i$ and $\delta_j$, in order to interpolate the image. We loop again until $\delta_i$ and $\delta_j$ reach a given threshold, when we stop the iterations and at this time we have the values of $\Delta_i$ and $\Delta_j$. 
-
-\begin{figure}[H]
-	  \centering
-	  \subfloat[Template]{\includegraphics[width=0.4\textwidth]{../image/report/taz.png}}
-		  \hspace{0.1cm}
-	  \subfloat[First Image]{\includegraphics[width=0.4\textwidth]{img/taz001.png}}
-	  \caption{Initial images}
-	  \label{fig:template}
-\end{figure}
-
-	We applied the algorithm for a series of 139 images when an object is moving. As as example, we will illustrate that in the report with 3 images (Figure \ref{fig:sample}).
-
-
-\begin{figure}[H]
-\centering
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz004_nb.png}}
-		  \hspace{0.1cm}
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz020_nb.png}}
-		  \hspace{0.1cm}
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz063_nb.png}}
-\caption{Sample Images}
-\label{fig:sample}
-\end{figure}	
-
-	In the first iteration, when we crop a part of the original image and compare with the template in order to find the first $\Delta_i$ and $\Delta_j$ ones, we already place a bounding box in the image. We repeat the process for all the images of the series, at each time step we find the new displacements $\Delta_i$ and $\Delta_j$ and we paint a bounding box around the tracked object (Figure \ref{fig:tracked}). 
-
-	This algorithm enables the tracking of an object in the image sequence.
-
-\begin{figure}[H]
-\centering
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz004_bb.png}}
-		  \hspace{0.1cm}
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz020_bb.png}}
-		  \hspace{0.1cm}
-\subfloat{\includegraphics[width=0.3\textwidth]{../image/report/taz063_bb.png}}
-\caption{Tracked Images}
-\label{fig:tracked}
-\end{figure}	
-
-
-\section{Drawbacks}
-
-Lucas Kanade has shown to be very efficient in some cases, now let's take a look in the situation where this algorithm does not work that well.
-
-In large motions (at a higher speed) the tracker is not able to detect the changing region of the image with the correct direction vector.
-
-And also if the image changes drastically its illumination, this can produce a wrong image evaluation.
 
 
 \section{How to run?}
@@ -158,19 +127,31 @@ And also if the image changes drastically its illumination, this can produce a w
 	Steps to compile the application:
 	
 	\begin{itemize}
-		\item svn checkout https://jfimageanalysis.googlecode.com/svn/trunk/TP5/ \#download source code
+		\item svn checkout https://jfimageanalysis.googlecode.com/svn/trunk/TP6/ \#download source code
 		\item make \#compiles the code
 	\end{itemize}
 
-	As an input image only a set of {\bf pgm plaintext/ansii} files (P2), that should be stored in the directory \emph{images/tazplain/}. 
 
-	Examples of usage:
+	Example of usage:
 
 	\begin{itemize}
-		\item ./tp5
+		\item ./tp6
 	\end{itemize}
 
-	The resulting images will be generated in \emph{SRC/image/tazplain/result}.
+	The resulting images will be printed in the standard output.
+
+
+\begin{thebibliography}{9}
+
+\bibitem{introduction}
+	Linda G. Shapiro and George C. Stockman
+ 	\emph{Computer Vision}.
+	pp 279-325, 
+	New Jersey, Prentice-Hall, 
+	ISBN 0-13-030796-3
+ 	2001.
+
+\end{thebibliography}
 
 \end{document}
 
