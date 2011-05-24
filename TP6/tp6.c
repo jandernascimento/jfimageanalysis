@@ -473,9 +473,9 @@ gray *calculate_pb(pimage_type image){
 		}
 
 		if(val>0.01)
-			printf("%i\n",0);
-		else
 			printf("%i\n",1);
+		else
+			printf("%i\n",0);
 
 
       }  
@@ -662,7 +662,7 @@ void calculate_pb_test(){
 
 	//pimage_type image = readimage("background_substraction/img_000000.ppm");
 	//pimage_type image = readimage("background_substraction/img_000053.ppm");
-	pimage_type image = readimage("background320/img_000053.ppm");
+	pimage_type image = readimage("background320/img_000348.ppm");
 
 	calculate_pb(image);
 }
