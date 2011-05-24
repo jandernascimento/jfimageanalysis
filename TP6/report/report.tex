@@ -27,20 +27,25 @@ The goal of segmentation is to simplify and/or change the representation of an i
 
 Segmentation is mostly used for object recognition, differentiate those objects from the background, image compression or image editing.
 
-In this practical work, we implemented an approach for image segmentation with the purpose of background subtraction, with which is possible to identify the foreground region in an image given a set of images of the background.
+In this practical work, we implemented an approach for image segmentation for background subtraction, with which is possible to identify the foreground region in an image given a set of images of the background.
 
 
 \section{The method}
 
-In this exercise we use a Gaussian model to build a statistical model of the background for each pixel in the image. For each colored pixel \textit{i}, i.e., \textit{i=($i_r, i_g, i_b$)}, the associated color probability density writes:
+In this exercise we use a Gaussian model to build a statistical model of the background for each pixel in the image. For each colored pixel \textit{i}, i.e., \textit{i=($i_r, i_g, i_b$)}, probability density applied is described in equation \ref{equa:themethod}.
 
-	\begin{figure} [H]
-		\centering
-		\includegraphics[scale=0.5]{img/formula}
-		\caption{Gaussian model\label{formula}}
-	\end{figure}
+\begin{equation}
+p_b(i)=\frac{1}{(2\pi)^{\frac{3}{2}}|\Sigma|^{\frac{1}{2}}}exp(\frac{1}{2}(i-i_m)^T\Sigma^{-1}(i-i_m))
+\label{equa:themethod}
+\end{equation}
 
-We implemented this formula step by step, first creating all the methods that would be useful to generate the model, as subtraction and multiplication between matrices; transpose, inverse and determinant of a matrix and the covariance matrix.
+%	\begin{figure} [H]
+%		\centering
+%		\includegraphics[scale=0.5]{img/formula}
+%		\caption{Gaussian model\label{formula}}
+%	\end{figure}
+
+We implemented this equation \ref{equa:themethod} step by step. First creating all the methods that would be useful to generate the model, as subtraction and multiplication between matrices; transpose, inverse and determinant of a matrix and the covariance matrix.
 
 We calculate the mean matrix once, in the beginning of the method. Over there we stored the mean value for each pixel (\textit{$i_m$} in the formula above) with respect to their colors in all the background images considered.
 
@@ -115,20 +120,17 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 
 \section{Issues}
-	This method consumes much memory. In order to build the Gaussian model, for each pixel of the foreground image all the background images are read, and each background is an image with dimensions 1224x1624, which ends in 1.987.776 pixels in memory for one image. Since we use all the 115 background images, in the end of the day it is necessary to keep in memory 228.594.240 pixels!
+	This method consumes much memory. In order to build the Gaussian model, for each pixel of the foreground image all the background images are read, and each background is an image with dimensions 1224x1624, which leads to 1.987.776 pixels in memory for one single image. Since we are using all the 115 background images, in the end of the day it is necessary to keep in memory 228.594.240 pixels!
 
-	As a consequence, the time to separate foreground and background is very high. The standard implementation we have done so far to read ppm images was too slow to apply this method. Our read method by default reads an image and stores its pixels in a matrix, which we can use for any computation.
+	As a consequence, the computation requireted to separate foreground and background is very high. The standard implementation we used so far to read ppm images was too slow to apply this method. Our read method by default reads the whole image and stores its pixels in a matrix(in memory), which we can use for any computation.
 
-	To solve both problems of memory requirement and computation time, we changed our read image method to open a file and read the RGB values of only one pixel, instead of read and store all the pixels in a matrix. With that, was possible to apply the method and achieve the results describe above.
+	To solve both problems of memory requirement and computation time, we changed our read image method to open a file and read the RGB values of only one pixel, instead of read and store all the pixels in a matrix, by calculating the position of the pixel inside a binary image file and positioning the file cursor in the exact pixel position. That change made possible to apply the method and achieve the results describe above.
 
 	This was possible just because we converted the given images in a binary format of PPM, instead of the original PNG format.
-
-
 
 	limpar o codigo
 	testar aplicando o blur antes
 	colocar imagens de diferentes thresholds
-
 
 
 \section{How to run?}
