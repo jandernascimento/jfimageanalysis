@@ -76,6 +76,8 @@ With the previous methods was possible to build the Gaussian model for all pixel
 		  \label{fig:img_000053}
 	\end{figure}
 
+\subsection{Effect of the threshold}
+
 \subsection{Effect of the number of background images}
 
 	We observed that the more static background images you use to build the statistical model, the better the result is. Which means that the pixels will be more correctly classified in their segments. We ilustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
@@ -113,12 +115,19 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 
 \section{Issues}
-	conversao para ppm
-	memoria
-	mudar metodo de leitura
-	ver se da para encaixar mais textos dos arquivos que baixei
+	This method consumes much memory. In order to build the Gaussian model, for each pixel of the foreground image all the background images are read, and each background is an image with dimensions 1224x1624, which ends in 1.987.776 pixels in memory for one image. Since we use all the 115 background images, in the end of the day it is necessary to keep in memory 228.594.240 pixels!
+
+	As a consequence, the time to separate foreground and background is very high. The standard implementation we have done so far to read ppm images was too slow to apply this method. Our read method by default reads an image and stores its pixels in a matrix, which we can use for any computation.
+
+	To solve both problems of memory requirement and computation time, we changed our read image method to open a file and read the RGB values of only one pixel, instead of read and store all the pixels in a matrix. With that, was possible to apply the method and achieve the results describe above.
+
+	This was possible just because we converted the given images in a binary format of PPM, instead of the original PNG format.
+
+
+
 	limpar o codigo
 	testar aplicando o blur antes
+	colocar imagens de diferentes thresholds
 
 
 
