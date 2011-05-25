@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[hmargin=1.5cm,vmargin=1.5cm]{geometry}
 
 \usepackage{listings}
 \usepackage{color}
@@ -32,20 +33,28 @@ In this practical work, we implemented an approach for image segmentation for ba
 
 \section{The method}
 
-In this exercise we use a Gaussian model to build a statistical model of the background for each pixel in the image. For each colored pixel \textit{i}, i.e., \textit{i=($i_r, i_g, i_b$)}, probability density applied is described in equation \ref{equa:themethod}.
+In this exercise we use a Gaussian model to build a statistical model of the background for each pixel in the image. For each colored pixel \textit{i}, i.e., \textit{i=($i_r, i_g, i_b$)}, the probability density applied is described in equation \ref{equa:themethod}:
 
 \begin{equation}
-p_b(i)=\frac{1}{(2\pi)^{\frac{3}{2}}|\Sigma|^{\frac{1}{2}}}exp(\frac{1}{2}(i-i_m)^T\Sigma^{-1}(i-i_m))
+	p_b(i)=\frac{1}{(2\pi)^{\frac{3}{2}}|\Sigma|^{\frac{1}{2}}}exp(\frac{-1}{2}(i-i_m)^T\Sigma^{-1}(i-i_m))
 \label{equa:themethod}
 \end{equation}
 
-%	\begin{figure} [H]
-%		\centering
-%		\includegraphics[scale=0.5]{img/formula}
-%		\caption{Gaussian model\label{formula}}
-%	\end{figure}
+where {$i_m$} is the mean value with respect to the given set of \textit{N} values {$i_n$}:
 
-We implemented this equation \ref{equa:themethod} step by step. First creating all the methods that would be useful to generate the model, as subtraction and multiplication between matrices; transpose, inverse and determinant of a matrix and the covariance matrix.
+\begin{equation}
+	i_m = \frac{1}{N}\sum_{n=1}^{N}{i_n}
+\end{equation}
+
+and {$\Sigma$} is the covariance matrix:
+
+\begin{equation}
+	\Sigma = \frac{1}{N}\sum_{n=1}^{N}({i_n}-{i_m})({i_n}-{i_m})^T
+\end{equation}
+
+
+\section{Results}
+We implemented the equation \ref{equa:themethod} step by step. First creating all the methods that would be useful to generate the model, as subtraction and multiplication between matrices; transpose, inverse and determinant of a matrix and the covariance matrix.
 
 We calculate the mean matrix once, in the beginning of the method. Over there we stored the mean value for each pixel (\textit{$i_m$} in the formula above) with respect to their colors in all the background images considered.
 
@@ -57,13 +66,11 @@ With the previous methods was possible to build the Gaussian model for all pixel
 		\caption{Example of background\label{background}}
 	\end{figure}
 
-
-\section{Results}
 	We tested the statistical model with the 5 given foreground images. For each pixel, based on the model, we can determine if the pixel belongs either to a foreground or to a background of the image.
 
 	Given an input image with a foreground, we create a binary image with two regions: foreground and background. What determines which region the pixel belongs to is the probability given by the Gaussian model. To do so, it is needed to threshold the probability for each pixel.
 
-	The probability that a pixel belongs to a background is given by the formula described in Figure \ref{formula}. And the probability that a pixel belongs to a foreground is:
+	The probability that a pixel belongs to a background is given by the formula described in equation \ref{equa:themethod}. And the probability that a pixel belongs to a foreground is:
 
 	\begin{equation}
 	 p_f(i)=1-p_b(i)  
@@ -75,8 +82,8 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 	\begin{figure}[H]
 		  \centering
-		  \subfloat[Original Image]{\includegraphics[width=0.5\textwidth]{img/img_000053}}                
-		  \subfloat[Binary Image]{\includegraphics[width=0.5\textwidth]{img/result_53_115}}
+		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000053}}                
+		  \subfloat[Binary Image]{\includegraphics[width=0.3\textwidth]{img/result_53_115}}
 		  \caption{Background Subtraction}
 		  \label{fig:img_000053}
 	\end{figure}
@@ -98,46 +105,44 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 	\begin{figure}[H]
 		  \centering
-		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000348}}
-		  \subfloat[T=0,5]{\includegraphics[width=0.3\textwidth]{img/result_348_115-50}}
-		  \subfloat[T=0,1]{\includegraphics[width=0.3\textwidth]{img/result_348_115-10}}
-		  \subfloat[T=0,01]{\includegraphics[width=0.3\textwidth]{img/result_348_115}}
+		  \subfloat[Original Image]{\includegraphics[width=0.2\textwidth]{img/img_000348}}
+		  \subfloat[T=0,5]{\includegraphics[width=0.2\textwidth]{img/result_348_115-50}}
+		  \subfloat[T=0,1]{\includegraphics[width=0.2\textwidth]{img/result_348_115-10}}
+		  \subfloat[T=0,01]{\includegraphics[width=0.2\textwidth]{img/result_348_115}}
 		  \caption{Effect of the threshold (T)}
 		  \label{fig:threshold}
 	\end{figure}
 
 \subsection{Effect of the number of background images}
 
-	We observed that the more static background images you use to build the statistical model, better the result is. Which means that the pixels will be more correctly classified in their segments. We illustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). 
-	
-	However, the computational cost increases proportionally with the number of background images used to build the statistic model.
+	We observed that the more static background images you use to build the statistical model, better the result is. Which means that the pixels will be more correctly classified in their segments. We illustrate this in the Figure \ref{fig:nback}, with different number of background images being used (denoted by N). However, the computational cost increases proportionally with the number of background images used to build the statistic model.
 
 	\begin{figure}[H]
 		  \centering
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000053}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_5}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_15}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_53_115}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/img_000053}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_53_5}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_53_15}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_53_115}}
 		  \hspace{0.1cm}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000147}}                
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_5}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_15}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_147_115}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/img_000147}}                
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_147_5}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_147_15}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_147_115}}
 		  \hspace{0.1cm}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000348}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_5}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_15}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_348_115}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/img_000348}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_348_5}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_348_15}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_348_115}}
 		  \hspace{0.1cm}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/img_000466}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_5}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_15}}
-		  \subfloat{\includegraphics[width=0.3\textwidth]{img/result_466_115}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/img_000466}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_466_5}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_466_15}}
+		  \subfloat{\includegraphics[width=0.2\textwidth]{img/result_466_115}}
 		  \hspace{0.1cm}
-		  \subfloat[Original Image]{\includegraphics[width=0.3\textwidth]{img/img_000476}}
-		  \subfloat[Binary Image N=5]{\includegraphics[width=0.3\textwidth]{img/result_476_5}}
-		  \subfloat[N=15]{\includegraphics[width=0.3\textwidth]{img/result_476_15}}
-		  \subfloat[N=115]{\includegraphics[width=0.3\textwidth]{img/result_476_115}}
+		  \subfloat[Original Image]{\includegraphics[width=0.2\textwidth]{img/img_000476}}
+		  \subfloat[Binary Image N=5]{\includegraphics[width=0.2\textwidth]{img/result_476_5}}
+		  \subfloat[N=15]{\includegraphics[width=0.2\textwidth]{img/result_476_15}}
+		  \subfloat[N=115]{\includegraphics[width=0.2\textwidth]{img/result_476_115}}
 		  \caption{Effect of the number of background images (N)}
 		  \label{fig:nback}
 	\end{figure}
@@ -164,6 +169,19 @@ With the previous methods was possible to build the Gaussian model for all pixel
 
 	This was possible just because we converted the given images in a binary format of PPM, instead of the original PNG format.
 
+\section{Equilikely foreground model}
+	Without any particular knowledge of the foreground image colors, if we would like all colors to be equilikely in the foreground model, we could set:
+
+	\begin{equation}
+		p_f(i)=cst
+	\end{equation}
+
+	In order to achieve this, we should change the algorithm in the following way: instead of calculate the equation \ref{equa:themethod} to build the Gaussian model, we just threshold {$p_f$} with a constant value \textit{cst}, and set {$p_b$} to be:
+
+	\begin{equation}
+	 p_b(i)=1-p_f(i)  
+	\end{equation}
+	
 \section{How to run?}
 
 	Steps to compile the application:
